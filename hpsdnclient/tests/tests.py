@@ -26,8 +26,8 @@
 
 import unittest
 
-import hpsdnclient as f
-from hpsdnclient.tools.mininet_topo import Tree
+import hpsdnclient.hpsdnclient as f
+import hpsdnclient.utils
 from mininet.net import Mininet
 from mininet.node import RemoteController, OVSKernelSwitch
 

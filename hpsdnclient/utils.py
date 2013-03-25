@@ -25,6 +25,18 @@
 from mininet.topo import Topo
 from mininet.util import irange
 
+MAC = 12
+DPID = 16
+
+def string_to_hex(s, length):
+    tmp = '{0:#x}'.format(int(s.replace(':', '').lstrip('0'),length))
+    return tmp
+
+def hex_to_string(h, length):
+    tmp = h.lstrip('0x').zfill(length)
+    tmp = ':'.join(a+b for a,b in zip(tmp[::2], tmp[1::2]))
+    return tmp
+
 class Tree(Topo):
     """Create tree topology for mininet"""
 

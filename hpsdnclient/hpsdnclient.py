@@ -34,23 +34,11 @@ import urllib
 
 import requests
 
-MAC = 12
-DPID = 16
-
 class FlareApiError(Exception):
   '''Base class for Flare API errors'''
 
   def message(self):
     return self.args[0]
-
-def string_to_hex(s, length):
-    tmp = '{0:#x}'.format(int(s.replace(':', '').lstrip('0'),length))
-    return tmp
-
-def hex_to_string(h, length):
-    tmp = h.lstrip('0x').zfill(length)
-    tmp = ':'.join(a+b for a,b in zip(tmp[::2], tmp[1::2]))
-    return tmp
 
 class Config(object):
     """The Flare API Config object"""
