@@ -24,76 +24,62 @@
 
 """Here lies the unit tests for the hpsdnclient library"""
 
-import time
 import unittest
 
 import hpsdnclient.hpsdnclient as f
-import hpsdnclient.utils as utils
+import hpsdnclient.utils
 from mininet.net import Mininet
-from mininet.cli import CLI
 from mininet.node import RemoteController, OVSKernelSwitch
-from mininet.topolib import TreeTopo
 
 FLARE_IP = '10.211.55.12'
 BASE_URL = 'http://{}:8080/sdn/v1.0'.format(FLARE_IP)
 
-net = None
-
-def setUpModule():
-        topo = utils.Tree(k=3)
-        global net
-        net = Mininet(controller=lambda name: RemoteController('flare', FLARE_IP, 6633), 
-                      switch = OVSKernelSwitch,
-                      topo=topo,
-                      xterms=False)
-        net.start()
-        time.sleep(30)
-        net.pingAll()
-
-def tearDownModule():
-        global net
-        net.stop()
-
+class TestPackage():
+    def setUpModule():
+            tree = FatTree(k=3)
+            self.net = Mininet( controller=lambda name: RemoteController('flare', FLARE_IP, 6633), switch = OVSKernelSwitch, topo=tree, xterms=terms)
+            self.net.start()
+            self.net.pingall()
+    def tearDownModule():
+            self.net.stop()
 
 class FakeFlow(f.Flow):
     def __init__(self):
-        super(FakeFlow, self).__init__(dpid = utils.hex_to_string('0x1',utils.DPID), 
-                                       in_port = '1', 
-                                       src_mac = utils.hex_to_string('0x1000',utils.MAC),
-                                       dst_mac = utils.hex_to_string('0x2000',utils.MAC), 
+        super(FakeFlow, self).__init__(dpid = f.hex_to_string('0x1',f.DPID), 
+                                       in_port = 1, 
+                                       src_mac = f.hex_to_string('0x1000',f.MAC),
+                                       dst_mac = f.hex_to_string('0x2000',f.MAC), 
                                        src_ip = '10.10.10.1', 
                                        dst_ip = '10.10.10.2', 
                                        action = 'null', 
                                        multiple_actions = 'output=2')
 
-
 class TestUtilityFunctions(unittest.TestCase):
 
     def setUp(self):
-        self.MAC_string = '00:00:00:00:00:01'
-        self.MAC_hex = '0x1'
-        self.DPID_string = '00:00:00:00:00:00:00:02'
-        self.DPID_hex = '0x2'
+        self.mac_string = '00:00:00:00:00:01'
+        self.mac_hex = '0x1'
+        self.dpid_string = '00:00:00:00:00:00:00:02'
+        self.dpid_hex = '0x2'
 
     def tearDown(self):
         pass
 
     def test_mac_string_to_hex(self):
-        tmp = utils.string_to_hex(self.MAC_string, utils.MAC)
-        self.assertEqual(tmp, self.MAC_hex)
+        tmp = f.string_to_hex(self.mac_string, f.MAC)
+        self.assertEqual(tmp, self.mac_hex)
 
     def test_dpid_string_to_hex(self):
-        tmp = utils.string_to_hex(self.DPID_string, utils.DPID)
-        self.assertEqual(tmp, self.DPID_hex)
+        tmp = f.string_to_hex(self.dpid_string, f.DPID)
+        self.assertEqual(tmp, self.dpid_hex)
 
     def test_mac_hex_to_string(self):
-        tmp = utils.hex_to_string(self.MAC_hex, utils.MAC)
-        self.assertEqual(tmp, self.MAC_string)
+        tmp = f.hex_to_string(self.mac_hex, f.MAC)
+        self.assertEqual(tmp, self.mac_string)
 
     def test_dpid_hex_to_string(self):
-        tmp = utils.hex_to_string(self.DPID_hex, utils.DPID)
-        self.assertEqual(tmp, self.DPID_string)
-
+        tmp = f.hex_to_string(self.dpid_hex, f.DPID)
+        self.assertEqual(tmp, self.dpid_string)
 
 class FlareApiBaseTest(unittest.TestCase):
 
@@ -102,6 +88,7 @@ class FlareApiBaseTest(unittest.TestCase):
 
     def tearDown(self):
         self.api = None
+        self.net.stop()
 
 class TestApiDevices(FlareApiBaseTest):
 
@@ -109,18 +96,13 @@ class TestApiDevices(FlareApiBaseTest):
         pass
 
     def test_get_flow(self):
-        r = self.api.get_flows_by_dpid(utils.hex_to_string('0x1', utils.DPID))
-        for record in r:
-            self.assertTrue(record.dpid)
-            self.assertTrue(record.in_port)
-            self.assertTrue(record.src_mac)
+        self.assertFalse(self.api.get_flows_by_dpid(f.hex_to_string('0x1', f.DPID))) 
 
     def test_create_flow(self):
         flow = FakeFlow()
-        self.assertTrue(self.api.create_flow(utils.hex_to_string('0x1', utils.DPID), flow))
+        self.assertTrue(self.api.create_flow(f.hex_to_string('0x1', f.DPID), flow))
 
-        r = self.api.get_flows_by_dpid(utils.hex_to_string('0x1', utils.DPID))
-        f1 = flow
+        r = self.api.get_flows_by_dpid(f.hex_to_string('0x1', f.DPID))
         self.assertEqual(r[0].dpid, flow.dpid)
         self.assertEqual(r[0].in_port, flow.in_port)
         self.assertEqual(r[0].src_mac, flow.src_mac)
@@ -132,10 +114,10 @@ class TestApiDevices(FlareApiBaseTest):
         flow = FakeFlow()
         self.test_create_flow()
 
-        flow.network_tos = '46'
-        self.assertTrue(self.api.update_flow(utils.hex_to_string('0x1', utils.DPID), flow))
+        flow.network_tos = 46
+        self.assertTrue(self.api.update_flow(f.hex_to_string('0x1', f.DPID), flow))
 
-        r = self.api.get_flows_by_dpid(utils.hex_to_string('0x1', utils.DPID))
+        r = self.api.get_flows_by_dpid(f.hex_to_string('0x1', f.DPID))
         self.assertEqual(r[0].network_tos, flow.network_tos)
 
     def test_delete_flow(self):

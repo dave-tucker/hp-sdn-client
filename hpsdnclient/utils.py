@@ -46,7 +46,7 @@ class Tree(Topo):
         	hconf: host configuration options
         	lcong: link configuration options """
 
-        super(Tree, self).__init__(**opts)
+        super(FatTree, self).__init__(**opts)
 
         self.k = k
 
