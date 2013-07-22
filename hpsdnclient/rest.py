@@ -22,22 +22,38 @@
 # OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-import os
-import sys
-from nose import config
-from nose import core
-import hpsdnclient.hpsdnclient as hpsdnclient
+from error import FlareApiError
 
-def main():
-    c = config.Config(stream=sys.stdout,
-                      env=os.environ,
-                      verbosity=3,
-                      includeExe=True,
-                      traverseNamespace=True,
-                      plugins=core.DefaultPluginManager())
-    c.configureWhere(hpsdnclient.tests.__path__)
-    
-    runner = core.TextTestRunner(config=c)
+import requests
 
-if __name__ == "__main__":
-    main()
+DATA_TYPES = set(['json', 'zip'])
+
+def get(url, token, data_type):
+	r = requests.get(url, auth=token)
+	if r.status_code == requests.codes.ok:
+		if not data_type in DATA_TYPES:
+			raise FlareApiError("Invalid Data Type")
+		elif data_type == 'json': 
+			data = r.json()
+			for d in data:
+				if 'error' in d:
+					raise FlareApiError("No data returned")
+			return data
+		elif data_type == 'zip':
+			pass
+		else:
+			raise FlareApiError("Oh noes! Something went wrong")
+			r.raise_for_status()
+
+
+def put(url, token, data, data_type):
+	pass
+
+def post(url, token, data, data_type):
+	pass
+
+def delete(url, token, data, data_type):
+	pass
+
+def head(url, token, data_types):
+	pass

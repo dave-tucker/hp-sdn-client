@@ -24,17 +24,20 @@
 
 """Here lies the setup script for the hp-flare module"""
 
-from distutils.core import setup
+import os
+import sys
+import setuptools
 
 def readme():
     with open('README.rst') as f:
         return f.read()
 
-setup(name='hp-sdn-client',
+setuptools.setup(name='hp-sdn-client',
       version='0.0.1',
       description="A python wrapper around the HP SDN Controller API",
       long_description=readme(),
       classifiers=[
+        'Environment :: HP SDN Controller'
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python : 2.7',
@@ -45,9 +48,17 @@ setup(name='hp-sdn-client',
       author_email="dave.j.tucker@hp.com",
       license='MIT Licence',
       packages=['hpsdnclient'],
-      install_requires=[],
-      zip_safe=False,
+      include_package_data=True,
+      install_requires=['requests',
+                        'cliff',
+                        'distribute'],
       test_suite='nose.collector',
       tests_require=['nose'
-                     'requests'])
+                     'mininet'],
+      entry_points={
+        'console_scripts': [
+            'flare = hpsdnclient.shell:main'],
+      },
+      zip_safe=False,
+      )
 

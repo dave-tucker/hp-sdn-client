@@ -22,22 +22,37 @@
 # OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-import os
+import logging
 import sys
-from nose import config
-from nose import core
-import hpsdnclient.hpsdnclient as hpsdnclient
 
-def main():
-    c = config.Config(stream=sys.stdout,
-                      env=os.environ,
-                      verbosity=3,
-                      includeExe=True,
-                      traverseNamespace=True,
-                      plugins=core.DefaultPluginManager())
-    c.configureWhere(hpsdnclient.tests.__path__)
-    
-    runner = core.TextTestRunner(config=c)
+from cliff.app import App
+from cliff.commandmanager import CommandManager
 
-if __name__ == "__main__":
-    main()
+class HpSdnClient(App):
+
+	log = logging.getLogger(__name__)
+
+	def __init__(self):
+		super(HpSdnClient, self).__init__(
+			description='HP SDN Controller Client',
+			version='0.1',
+			command_manager=CommandManager('hpsdnclient.v2'))
+
+	def initialize_app(self, argv):
+		self.log.debug('initialize_app')
+
+	def prepare_to_run_command(self, cmd):
+		self.log.debug('prepare_to_run_command %s', cmd.__class__.__name__)
+
+	def clean_up(self, cmd, result, err):
+		self.log.debug('clean_up %s', cmd.__class__.__name__)
+		if err:
+			self.log.debug('got an error: %s', err)
+
+def main(argv=sys.argv[1:]):
+    myapp = HpSdnClient()
+    return myapp.run(argv)
+
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1:]))

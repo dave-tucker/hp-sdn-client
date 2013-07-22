@@ -2,7 +2,7 @@
 #
 # Copyright (c)  2013 Hewlett-Packard Development Company, L.P.
 #
-# Permission is hereby granted, free of charge, to any person obtaining a copy
+# Permission is hereby granted, fpenrlowee of charge, to any person obtaining a copy
 # of this software  and associated documentation files (the "Software"), to deal
 # in the Software without restriction,  including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
@@ -22,22 +22,21 @@
 # OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-import os
-import sys
-from nose import config
-from nose import core
-import hpsdnclient.hpsdnclient as hpsdnclient
+class FlareApiError(Exception):
+  '''Base class for Flare API errors'''
+  pass
 
-def main():
-    c = config.Config(stream=sys.stdout,
-                      env=os.environ,
-                      verbosity=3,
-                      includeExe=True,
-                      traverseNamespace=True,
-                      plugins=core.DefaultPluginManager())
-    c.configureWhere(hpsdnclient.tests.__path__)
-    
-    runner = core.TextTestRunner(config=c)
-
-if __name__ == "__main__":
-    main()
+class HttpError(FlareApiError):
+    def __init__(self, res_code):
+        self.res_code = res_code
+        if res_code == 401:
+            msg = "You aren't authentcated. Check the username & password you supplied to Api"
+        elif res_code == 403:
+            msg = "You don't have permission to use the resource you requested"
+        elif res_code == 404:
+            msg = "Looks like the Api isn't responding. Check access to Api.base_url?"
+        elif res_code == 409:
+            msg = """Holy Grail you say? We've already got one! 
+                     On a more serious note we already have one of these objects you requested"""
+        else:
+            msg = "You were in great peril back there! HTTP threw a {}".format(res_code)

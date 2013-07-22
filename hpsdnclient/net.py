@@ -22,22 +22,32 @@
 # OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-import os
-import sys
-from nose import config
-from nose import core
-import hpsdnclient.hpsdnclient as hpsdnclient
+""" This file implements the Flare Net REST API
 
-def main():
-    c = config.Config(stream=sys.stdout,
-                      env=os.environ,
-                      verbosity=3,
-                      includeExe=True,
-                      traverseNamespace=True,
-                      plugins=core.DefaultPluginManager())
-    c.configureWhere(hpsdnclient.tests.__path__)
-    
-    runner = core.TextTestRunner(config=c)
+/clusters	GET
+/clusters/{cluster_uid}/tree	GET
+/links	GET
+/paths/forward	GET
+/arps	GET
+/nodes	GET
+/lldp	GET
+/lldp	POST
+/lldp	DELETE
+/diag/observations	GET
+/diag/observations	POST
+/diag/observations	DELETE
+/diag/packets	GET
+/diag/packets	POST
+/diag/packets/{packet_uid}	GET
+/diag/packets/{packet_uid}	DELETE
+/diag/packets/{packet_uid}/path	GET
+/diag/packets/{packet_uid}/nexthop	GET
+/diag/packets/{packet_uid}/action	POST
 
-if __name__ == "__main__":
-    main()
+"""
+
+__author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
+__version__ = '0.0.1'
+
+import urllib
+

@@ -32,21 +32,15 @@ import hpsdnclient.utils as utils
 from mininet.net import Mininet
 from mininet.cli import CLI
 from mininet.node import RemoteController, OVSKernelSwitch
-from mininet.topolib import TreeTopo
 
 FLARE_IP = '10.211.55.12'
-BASE_URL = 'http://{}:8080/sdn/v1.0'.format(FLARE_IP)
+BASE_URL = 'http://{}:8080/sdn/v2.0'.format(FLARE_IP)
 
 net = None
 
 def setUpModule():
-        topo = utils.Tree(k=3)
-        global net
-        net = Mininet(controller=lambda name: RemoteController('flare', FLARE_IP, 6633), 
-                      switch = OVSKernelSwitch,
-                      topo=topo,
-                      xterms=False)
-        net.start()
+        net = utils.Topo(k=3)
+        net.run_silent()
         time.sleep(30)
         net.pingAll()
 
@@ -70,10 +64,10 @@ class FakeFlow(f.Flow):
 class TestUtilityFunctions(unittest.TestCase):
 
     def setUp(self):
-        self.MAC_string = '00:00:00:00:00:01'
-        self.MAC_hex = '0x1'
-        self.DPID_string = '00:00:00:00:00:00:00:02'
-        self.DPID_hex = '0x2'
+        self.mac_string = '00:00:00:00:00:01'
+        self.mac_hex = '0x1'
+        self.dpid_string = '00:00:00:00:00:00:00:02'
+        self.dpid_hex = '0x2'
 
     def tearDown(self):
         pass

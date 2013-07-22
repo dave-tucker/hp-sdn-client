@@ -13,3 +13,9 @@
 
 #Tox
 .tox/
+
+#venv
+.venv/
+
+#Build dir
+build/
