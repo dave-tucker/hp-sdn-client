@@ -58,6 +58,7 @@ import urllib
 
 import rest
 import types
+from error import FlareApiError
 
 class Of(object):
 
@@ -68,17 +69,17 @@ class Of(object):
 	def get_stats(self):
 		url = 'http://{0}:8080/sdn/v2.0/of/stats'.format(self.controller)
 		r = rest.get(url, self.auth_token, 'json')
-		return r
+		return types.JsonObject.factory(r)
 
 	def get_port_stats(self):
 		url = 'http://{0}:8080/sdn/v2.0/of/stats/ports'.format(self.controller)
 		r = rest.get(url, self.auth_token, 'json')
-		return r
+		return types.JsonObject.factory(r)
 
 	def get_group_stats(self):
 		url = 'http://{0}:8080/sdn/v2.0/of/stats/groups'.format(self.controller)
 		r = rest.get(url, self.auth_token, 'json')
-		return r
+		return types.JsonObject.factory(r)
 
 	def get_meter_stats(self):
 		url = 'http://{0}:8080/sdn/v2.0/of/stats/meters'.format(self.controller)
@@ -103,95 +104,123 @@ class Of(object):
 	def get_datapath_meter_features(self, dpid):
 		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/features/meter'.format(self.controller, urllib.quote(dpid))
 		r = rest.get(url, self.auth_token, 'json')
-		return r
+		if not r:
+			raise FlareApiError('No data')
+		else:
+			return types.JsonObject.factory(r)
 
 	def get_datapath_group_features(self, dpid):
 		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/features/groups'.format(self.controller, urllib.quote(dpid))
 		r = rest.get(url, self.auth_token, 'json')
-		return r
+		if not r:
+			raise FlareApiError('No data')
+		else:
+			return types.JsonObject.factory(r)
 
 	def get_datapath_ports(self, dpid):
 		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/ports'.format(self.controller, urllib.quote(dpid))
-		r = rest.get(url, self.auth_token, 'json')
+		data = rest.get(url, self.auth_token, 'json')
+		r = []
+		for d in data['ports']:
+			r.append(types.JsonObject.factory(d))
 		return r
 
 	def get_datapaths_port(self, dpid, portid):
 		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/ports/{2}'.format(self.controller, urllib.quote(dpid), portid)
 		r = rest.get(url, self.auth_token, 'json')
-		return r
+		return types.JsonObject.factory(r)
 
 	def set_datapaths_port_actions(self, dpid, portid, actions):
 		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/ports/{2}/action'.format(self.controller, urllib.quote(dpid), portid)
 		r = rest.post(url, self.auth_token, actions, 'json')
-		return r
+		return types.JsonObject.factory(r)
 
 	def get_datapath_meters(self, dpid):
 		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/meters'.format(self.controller, urllib.quote(dpid))
 		r = rest.get(url, self.auth_token, 'json')
-		return r
+		return types.JsonObject.factory(r)
 
 	def add_datapath_meter(self, dpid, meters):
 		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/meters'.format(self.controller, urllib.quote(dpid))
 		r = rest.post(url, self.auth_token, meters, 'json')
-		return r
+		return types.JsonObject.factory(r)
 
 	def get_datapath_meter(self, dpid, meterid):
 		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/meters/{2}'.format(self.controller, urllib.quote(dpid), meterid)
 		r = rest.get(url, self.auth_token, 'json')
-		return r
+		return types.JsonObject.factory(r)
 
 	def update_datapath_meter(self, dpid, meterid, meter):
 		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/meters/{2}'.format(self.controller, urllib.quote(dpid), meterid)
 		r = rest.put(url, self.auth_token, meters, 'json')
-		return r
+		return types.JsonObject.factory(r)
 
 	def delete_datapath_meter(self, dpid, meterid):
 		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/meters/{2}'.format(self.controller, urllib.quote(dpid), meterid)
 		r = rest.delete(url, self.auth_token, 'json')
-		return r
+		return types.JsonObject.factory(r)
 
 	def get_datapath_flows(self, dpid):
 		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/flows'.format(self.controller, urllib.quote(dpid))
-		r = rest.get(url, self.auth_token, 'json')
+		data = rest.get(url, self.auth_token, 'json')
+		r = []
+		for d in data['flows']:
+			r.append(types.JsonObject.factory(d))
 		return r
 
 	def add_datapath_flows(self, dpid, flow):
 		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/flows'.format(self.controller, urllib.quote(dpid))
-		r = rest.post(url, self.auth_token, flow, 'json')
-		return r
+		if isinstance(flows, list):
+			tmp = []
+			for d in data:
+				if isinstance(d, types.Flow):
+					tmp.append(d.to_dict())
+				else:
+					raise FlareApiError("Invalid object passed to add_datapath_flows. Expected types.Flow or a list of types.Flow")
+					break
+			data = [{"flows": tmp }]
+		elif isinstance(flows, types.Flow):
+			data = [{"flows": flow.to_dict() }]
+		else:
+			raise FlareApiError("Invalid object passed to add_datapath_flows. Expected types.Flow or a list of types.Flow")
+
+		if rest.post(url, self.auth_token, json.dumps(flow), 'json'):
+			return
+		else:
+			raise FlareApiError('Something went wrong')
 
 	def update_datapath_flows(self, dpid, flow):
 		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/flows'.format(self.controller, urllib.quote(dpid))
 		r = rest.put(url, self.auth_token, flow, 'json')
-		return r
+		return types.JsonObject.factory(r)
 
 	def delete_datapath_flows(self, dpid, flows):
 		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/flows'.format(self.controller, urllib.quote(dpid))
 		r = rest.delete(url, self.auth_token, flow, 'json')
-		return r
+		return types.JsonObject.factory(r)
 
 	def get_datapath_groups(self, dpid):
 		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/groups'.format(self.controller, urllib.quote(dpid))
 		r = rest.get(url, self.auth_token, 'json')
-		return r
+		return types.JsonObject.factory(r)
 
 	def add_datapath_groups(self, dpid, group):
 		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/groups'.format(self.controller, urllib.quote(dpid))
 		r = rest.post(url, self.auth_token, group, 'json')
-		return r
+		return types.JsonObject.factory(r)
 
 	def get_datapath_group(self, dpid, groupid):
 		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/groups/{2}'.format(self.controller, urllib.quote(dpid), groupid)
 		r = rest.get(url, self.auth_token, 'json')
-		return r
+		return types.JsonObject.factory(r)
 
 	def update_datapath_groups(self, dpid, groupid, groups):
 		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/groups/{2}'.format(self.controller, urllib.quote(dpid))
 		r = rest.post(url, self.auth_token, groups, 'json')
-		return r
+		return types.JsonObject.factory(r)
 
 	def delete_datapath_groups(self, dpid, groupid):
 		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/groups/{2}'.format(self.controller, urllib.quote(dpid), groupid)
 		r = rest.delete(url, self.auth_token, 'json')
-		return r
+		return types.JsonObject.factory(r)
 
