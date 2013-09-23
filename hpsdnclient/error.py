@@ -22,8 +22,13 @@
 # OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
+""" Error handling for the HP SDN Client """
+
+__author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
+__version__ = '0.1.0'
+
 class FlareApiError(Exception):
-  '''Base class for Flare API errors'''
+  """Base class for Flare API errors"""
   pass
 
 class HttpError(FlareApiError):

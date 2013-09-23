@@ -24,6 +24,9 @@
 
 """ Data Types used for the REST objects """
 
+__author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
+__version__ = '0.1.0'
+
 import json
 import inspect
 
@@ -138,6 +141,15 @@ GROUP_TYPE = ["all", "select", "indirect", "ff"]
 
 COMMANDS = ["add", "modify", "delete"]
 
+LINK_STATE = ["link_down",
+              "blocked",
+              "live",
+              "stp_listen",
+              "stp_learn",
+              "stp_forward",
+              "stp_block"
+              ]
+
 enums = [ ETHERNET,
           VERSION, 
           ACTIONS,
@@ -156,11 +168,21 @@ enums = [ ETHERNET,
           METER_FLAGS,
           METER_TYPE,
           GROUP_TYPE,
-          COMMANDS
+          COMMANDS,
+          LINK_STATE
         ]
 
 
 def _find_class(data):
+
+    """ _find_class (data)
+
+        Finds a matching class from some JSON.
+        Checks the values in the JSON dict against the class member variables.
+        Returns the an instance of the matching class.
+
+    """
+
     keys = [d for d in data]
     for c in JsonObject.__subclasses__():
         cls = c()
@@ -169,17 +191,50 @@ def _find_class(data):
             break
 
 class JsonObject(object):
+
+    """ JsonObject (object):
+
+        This is the base class for all HP SDN Client data types.
+
+    """
+    
     def __init__(self):
+        """ __init__ (self)
+
+            Initialize the class
+
+        """
         pass
 
     def __str__(self):
+        """
+          __str__ (self)
+
+          Allows the object to be converted to a string.
+          Returns a string.
+
+        """
         return self.to_json_string()
 
     def to_json_string(self):
+        """
+          __str__ (self)
+
+          Serializes the class to a pretty-printed JSON string.
+
+        """
         tmp = self.to_dict()
         return json.dumps(tmp,sort_keys=True, indent=4, separators=(',', ': '))
     
     def to_dict(self):
+        """
+
+          to_dict (self)
+
+          Creates a representation of the class as a dictionary.
+
+        """
+
         data = {}
         attributes = [attr for attr in dir(self) if not callable(getattr(self,attr)) and not attr.startswith("__")]
         for attr in attributes:
@@ -201,6 +256,14 @@ class JsonObject(object):
 
     @staticmethod
     def factory(data):
+        """
+
+           factory (self)
+
+           Static method that creates a new instance of a class based on some JSON.
+           Finds the matching class, extracts the data in the JSON and maps it to the appropriate data types (default is string).
+
+        """
         tmp = _find_class(data)
         attributes = [attr for attr in dir(tmp) if not callable(getattr(tmp,attr)) and not attr.startswith("__")]
         for attr in attributes:
@@ -222,8 +285,14 @@ class JsonObject(object):
                 setattr(tmp, attr, data.get(attr))
         return tmp
 
+### OpenFlow ###
+
 class Datapath(JsonObject):
-    """The Flare Datapath Object"""
+    """ Datapath (JsonObject)
+
+        A python representation of the Datapath object
+
+    """
     def __init__(self, **kwargs):
         self.dpid = kwargs.get('dpid', None)
         self.negotiated_version = kwargs.get('negotiated_version', None)
@@ -240,6 +309,11 @@ class Datapath(JsonObject):
         self.slaves = kwargs.get('num_slaves', [])
 
 class Port(JsonObject):
+    """ Port (JsonObject)
+
+        A python representation of the Port object
+
+    """
     def __init__(self, **kwargs):
         self.id = kwargs.get('id', None)
         self.name = kwargs.get('name', None)
@@ -254,6 +328,11 @@ class Port(JsonObject):
         self.peer_features = kwargs.get('peer_features', [])
 
 class Flow(JsonObject):
+    """ Flow (JsonObject)
+
+        A python representation of the Flow object
+
+    """
     def __init__(self, **kwargs):
         self.table_id = kwargs.get('table_id', None)
         self.priority = kwargs.get('priority', None)
@@ -274,6 +353,11 @@ class Flow(JsonObject):
         self.actions = kwargs.get('actions', [])
 
 class Match(JsonObject):
+    """ Match (JsonObject)
+
+        A python representation of the Match object
+
+    """
     def __init__(self, **kwargs):
         self.in_port = kwargs.get('in_port', None)
         self.in_phy_port = kwargs.get('in_port_phy', None)
@@ -316,6 +400,12 @@ class Match(JsonObject):
         self.ipv6_exthdr = kwargs.get('ipv6_exthdr', None)
 
     def to_dict(self):
+        """ to_dict (self)
+
+            Creates a representation of the class as a dictionary
+            Overrides the parent method as all members variables of this class are strings
+
+        """
         data = []
         attributes = [attr for attr in dir(self) if not callable(getattr(self,attr)) and not attr.startswith("__")]
         for attr in attributes:
@@ -327,6 +417,12 @@ class Match(JsonObject):
 
     @staticmethod
     def factory(data):
+        """ factory (data)
+
+            Creates an instance of the class from some JSON.
+            Overides the parent method as in this case, JSON will be a list dictionaries
+
+        """
         tmp = Match()
         attributes = [attr for attr in dir(tmp) if not callable(getattr(tmp,attr)) and not attr.startswith("__")]
         for d in data:
@@ -338,6 +434,11 @@ class Match(JsonObject):
         return tmp
 
 class Action(JsonObject):
+    """ Action (JsonObject)
+
+        A python representation of the Action object
+
+    """
     def __init__(self, **kwargs):
         self.output = kwargs.get('output', None)
         self.copy_ttl_out = kwargs.get('copy_ttl_out', None)
@@ -359,6 +460,12 @@ class Action(JsonObject):
         self.data = kwargs.get('data', None)
 
     def to_dict(self):
+        """ to_dict (self)
+
+            Creates a representation of the class as a dictionary
+            Overrides the parent method as all members variables of this class are strings
+
+        """
         data = []
         attributes = [attr for attr in dir(self) if not callable(getattr(self,attr)) and not attr.startswith("__")]
         for attr in attributes:
@@ -370,6 +477,12 @@ class Action(JsonObject):
 
     @staticmethod
     def factory(data):
+        """ factory (data)
+
+            Creates an instance of the class from some JSON.
+            Overides the parent method as in this case, JSON will be a list dictionaries
+
+        """
         tmp = Action()
         attributes = [attr for attr in dir(tmp) if not callable(getattr(tmp,attr)) and not attr.startswith("__")]
         for d in data:
@@ -381,6 +494,11 @@ class Action(JsonObject):
         return tmp
 
 class Instruction(JsonObject,):
+    """ Instruction (JsonObject)
+
+        A python representation of the Instruction object
+
+    """
     def __init__(self, **kwargs):
         self.clear_actions = kwargs.get('clear_actions', None)
         self.write_actions = kwargs.get('write_actions', [])
@@ -391,6 +509,11 @@ class Instruction(JsonObject,):
         self.experimenter = kwargs.get('experimenter', None)
 
 class MeterStats(JsonObject):
+    """ MeterStats (JsonObject)
+
+        A python representation of the MeterStats object
+
+    """
     def __init__(self, **kwargs):
         self.id = kwargs.get('id', None)
         self.flow_count = kwargs.get('flow_count', None)
@@ -401,11 +524,21 @@ class MeterStats(JsonObject):
         self.band_stats = kwargs.get('band_stats', [])
 
 class BandStats(JsonObject):
+    """ BandStats (JsonObject)
+
+        A python representation of the BandStats object
+
+    """
     def __init__(self, **kwargs):
         self.packet_count = kwargs.get('packet_count', None)
         self.byte_count = kwargs.get('byte_count', None)
 
 class Meter(JsonObject):
+    """ Meter (JsonObject)
+
+        A python representation of the Meter object
+
+    """
     def __init__(self, **kwargs):
         self.id = kwargs.get('id', None)
         self.command = kwargs.get('command', None)
@@ -413,6 +546,11 @@ class Meter(JsonObject):
         self.bands = kwargs.get('bands',[])
 
 class MeterBand(JsonObject):
+    """ MeterBand (JsonObject)
+
+        A python representation of the MeterBand object
+
+    """
     def __init__(self, **kwargs):
         self.burst_size = kwargs.get('burst_size', None)
         self.rate = kwargs.get('rate', None)
@@ -421,6 +559,11 @@ class MeterBand(JsonObject):
         self.experimenter = kwargs.get('experimenter', None)    
 
 class Group(JsonObject):
+    """ Group (JsonObject)
+
+        A python representation of the Group object
+
+    """
     def __init__(self, **kwargs):
         self.id = kwargs.get('id',None)
         self.properties = kwargs.get('properties',None)
@@ -434,6 +577,11 @@ class Group(JsonObject):
         self.buckets = kwargs.get('buckets', [])
 
 class Bucket(JsonObject):
+    """ Bucket (JsonObject)
+
+        A python representation of the Bucket object
+
+    """
     def __init__(self, **kwargs):
         self.weight = kwargs.get('weight', None)
         self.watch_group = kwargs.get('watch_group', None)
@@ -441,6 +589,11 @@ class Bucket(JsonObject):
         self.actions = kwargs.get('actions', [])
 
 class Stats(JsonObject):
+    """ Stats (JsonObject)
+
+        A python representation of the Stats object
+
+    """
     def __init__(self, **kwargs):
         self.dpid = kwargs.get('dpid', None)
         self.version = kwargs.get('version', None)
@@ -448,6 +601,11 @@ class Stats(JsonObject):
         self.group_stats = kwargs.get('group_stats', [])
 
 class PortStats(JsonObject):
+    """ PortStats (JsonObject)
+
+        A python representation of the PortStats object
+
+    """
     def __init__(self, **kwargs):
         self.id = kwargs.get('id', None)
         self.rx_packets = kwargs.get('rx_packets', None)
@@ -465,6 +623,11 @@ class PortStats(JsonObject):
         self.rx_over_err = kwargs.get('rx_over_err', None)
 
 class GroupStats(JsonObject):
+    """ GroupStats (JsonObject)
+
+        A python representation of the GroupStats object
+
+    """
     def __init__(self, **kwargs):
         self.id = kwargs.get('id', None)
         self.ref_count = kwargs.get('ref_count', None)
@@ -474,5 +637,91 @@ class GroupStats(JsonObject):
         self.duration_nsec = kwargs.get('duration_nsec', None)
         self.bucket_stats = kwargs.get('bucket_stats', [])
 
+### Network Services ###
+
+class Cluster(JsonObject):
+    """ Cluster (JsonObject)
+
+        A python representation of the Cluster object
+
+    """
+    def __init__(self, **kwargs):
+        self.uid = kwargs.get('uid', None)
+        self.links = kwargs.get('links',[])
+
+class Link(JsonObject):
+    """ Link (JsonObject)
+
+        A python representation of the Link object
+
+    """
+    def __init__(self, **kwargs):
+        self.src_dpid = kwargs.get('src_dpid',None)
+        self.src_port = kwargs.get('src_port', None)
+        self.dst_dpid = kwargs.get('dst_dpid', None)
+        self.dst_port = kwargs.get('dst_port', None)
+
+class LinkInfo(JsonObject):
+    """ LinkInfo (JsonObject)
+
+        A python representation of the LinkInfo object
+
+    """
+    def __init__(self, **kwargs):
+        self.m_time = kwargs.get('m_time', None)
+        self.u_time = kwargs.get('s_time', None)
+        self.s_pt_state = kwargs.get('s_pt_state', [])
+        self.d_pt_state = kwargs.get('d_pt_state', [])
+
+class LldpProperties(JsonObject):
+    """ LldpProperties (JsonObject)
+
+        A python representation of the LldpProperties object
+
+    """
+    def __init__(self, **kwargs):
+        self.dpid = kwargs.get('dpid', None)
+        self.ports = kwargs.get('ports', [])
+
+class Arp(JsonObject):
+    """ Arp (JsonObject)
+
+        A python representation of the Arp object
+
+    """
+    def __init__(self, **kwargs):
+        self.ip = kwargs.get('ip', None)
+        self.mac = kwargs.get('mac', None)
+        self.vid = kwargs.get('vid', None)
+
+class Node(JsonObject):
+    """ Node (JsonObject)
+
+        A python representation of the Node object
+
+    """
+    def __init__(self, **kwargs):
+        self.ip = kwargs.get('ip', None)
+        self.mac = kwargs.get('mac', None)
+        self.vid = kwargs.get('vid', None)
+        self.dpid = kwargs.get('dpid', None)
+        self.port = kwargs.get('port', None)
+
+class Path(JsonObject):
+    """ Path (JsonObject)
+
+        A python representation of the Path object
+
+    """
+    def __init__(self, **kwargs):
+        self.cost = kwargs.get('cost', None)
+        self.links = kwargs.get('links', [])
+
+#ToDo: Rest of the Network Service Data Types from JSON Schema
+
+### Core ###
+
 class_bindings = {'match' : Match,
-                  'actions' : Action }
+                  'actions' : Action,
+                  'links' : Link,
+                  }

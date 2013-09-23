@@ -22,7 +22,7 @@
 # OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-"""This fle implements the Flare Core REST API
+""" This fle implements the Flare Core REST API
 /support GET
 /licenses GET
 /licenses POST
@@ -77,6 +77,56 @@
 """
 
 __author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
-__version__ = '0.0.1'
+__version__ = '0.1.0'
 
+import time
 import urllib
+
+import requests
+
+from error import FlareApiError
+        
+class Core(object):
+    """ Flare REST API Core Methods. i.e, those in sdn/v2.0/ """
+    	
+    def __init__(self):
+		pass
+
+    def get_auth(self):
+        """ get_auth ()
+
+            Get Authentication Token 
+
+            This method returns a dictionary with the token and expiration time. 
+
+        """
+        url = 'http://{0}:8080/sdn/v2.0/auth'.format(self.controller)
+        payload = {'login':{ 'user': self.user, 'password': self.password}}
+        r = requests.post(url, data=json.dumps(payload))
+        t = []
+        if r.status_code == requests.codes.ok:
+            data = r.json()
+            t['token'] = data[u'record'][u'token']
+            t['token_expiration'] = time.gmtime(data[u'record'][u'expiration']/1000)
+            return t
+        else:
+            raise FlareApiError("Oh no! Something went wrong")
+            r.raise_for_status()
+
+    def delete_auth(self):
+        """ delete_auth ()
+
+            Delete Authentication Token, AKA, Logout
+
+            This method logs the current user out 
+            
+        """
+        url = 'http://{0}:8080/sdn/v2.0/auth'.format(self.controller)
+        headers = {"X-Auth-Token":self.token}
+        r = requests.delete(url, headers=headers)
+        if r.status_code == requests.codes.ok:
+            return
+        else:
+            raise FlareApiError("Oh no! Something went wrong")
+            r.raise_for_status()
+

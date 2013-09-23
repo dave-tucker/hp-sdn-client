@@ -25,7 +25,7 @@
 """This library provides a Python interface to the HP SDN Controller API"""
 
 __author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
-__version__ = '0.0.1'
+__version__ = '0.1.0'
 
 import json
 import time
@@ -48,7 +48,7 @@ class ApiBase(object):
         self.user = user
         self.password = password
 
-class Api(ApiBase, of.Of):
+class Api(ApiBase, of.Of, net.Net):
     def __init__(self, **kwds):
         super(Api, self).__init__(**kwds)
         self.auth_token = XAuthToken(controller = self.controller,
@@ -57,19 +57,46 @@ class Api(ApiBase, of.Of):
  
 
 class XAuthToken(requests.auth.AuthBase, ApiBase):
+    """ XAuthToken (requests.Auth.AuthBase, ApiBase)
+
+    This class handles authentication against the HP SDN REST API and uses the Requests API.
+    XAuthToken derives from requests.auth.AuthBase and hpsdnclient.ApiBase.
+
+    """
+
     def __init__(self, **kwds):
+        """ __init__(self, **kwds)
+
+            Initializes the class. Set the controller, user and password member variables.
+            Sets the token and expiration values to None
+
+        """
         super(XAuthToken, self).__init__(**kwds)
         
         self.token = None
         self.token_expiration = None
 
     def __call__(self, r):
+        """ __call__(self, r)
+
+            This method is called when an authentication token is required.
+            We first check that the token exists and has not expired and then return the X-Auth-Token request header.
+
+        """
+
         if self.token is None or self.token_expiration <= time.gmtime():
             self.get_auth()
         r.headers['X-Auth-Token'] = self.token
         return r
 
     def get_auth(self):
+        """ get_auth ()
+
+            Get Authentication Token 
+
+            This method returns a dictionary with the token and expiration time. 
+        """
+
         url = 'http://{0}:8080/sdn/v2.0/auth'.format(self.controller)
         payload = {'login':{ 'user': self.user, 'password': self.password}}
         r = requests.post(url, data=json.dumps(payload))
@@ -82,6 +109,13 @@ class XAuthToken(requests.auth.AuthBase, ApiBase):
             r.raise_for_status()
 
     def delete_auth(self):
+        """ delete_auth ()
+
+            Delete Authentication Token, AKA, Logout
+
+            This method logs the current user out 
+        """
+
         url = 'http://{0}:8080/sdn/v2.0/auth'.format(self.controller)
         headers = {"X-Auth-Token":self.token}
         r = requests.delete(url, headers=headers)

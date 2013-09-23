@@ -50,15 +50,9 @@ setuptools.setup(name='hp-sdn-client',
       packages=['hpsdnclient'],
       include_package_data=True,
       install_requires=['requests',
-                        'cliff',
                         'distribute'],
       test_suite='nose.collector',
-      tests_require=['nose'
-                     'mininet'],
-      entry_points={
-        'console_scripts': [
-            'flare = hpsdnclient.shell:main'],
-      },
+      tests_require=['nose'],
       zip_safe=False,
       )
 

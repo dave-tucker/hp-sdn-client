@@ -27,39 +27,17 @@
 import time
 import unittest
 
-import hpsdnclient.hpsdnclient as f
-import hpsdnclient.utils as utils
-from mininet.net import Mininet
-from mininet.cli import CLI
-from mininet.node import RemoteController, OVSKernelSwitch
+import hpsdnclient.hpsdnclient as hp
 
-FLARE_IP = '10.211.55.12'
-BASE_URL = 'http://{}:8080/sdn/v2.0'.format(FLARE_IP)
-
-net = None
+SDNCTL = '10.211.55.12' #Update for your SDN Controller
+USER = 'sdn'
+PASS = 'skyline'
 
 def setUpModule():
-        net = utils.Topo(k=3)
-        net.run_silent()
-        time.sleep(30)
-        net.pingAll()
+    pass
 
 def tearDownModule():
-        global net
-        net.stop()
-
-
-class FakeFlow(f.Flow):
-    def __init__(self):
-        super(FakeFlow, self).__init__(dpid = utils.hex_to_string('0x1',utils.DPID), 
-                                       in_port = '1', 
-                                       src_mac = utils.hex_to_string('0x1000',utils.MAC),
-                                       dst_mac = utils.hex_to_string('0x2000',utils.MAC), 
-                                       src_ip = '10.10.10.1', 
-                                       dst_ip = '10.10.10.2', 
-                                       action = 'null', 
-                                       multiple_actions = 'output=2')
-
+    pass
 
 class TestUtilityFunctions(unittest.TestCase):
 
@@ -89,66 +67,13 @@ class TestUtilityFunctions(unittest.TestCase):
         self.assertEqual(tmp, self.DPID_string)
 
 
-class FlareApiBaseTest(unittest.TestCase):
+class ApiBaseTest(unittest.TestCase):
 
     def setUp(self):
-        self.api = f.Api(base_url = BASE_URL)
+        self.api = hp.Api(controller=SDNCTL, user=USER, password=PASS)
 
     def tearDown(self):
         self.api = None
 
-class TestApiDevices(FlareApiBaseTest):
 
-    def test_get_devices(self):
-        pass
-
-    def test_get_flow(self):
-        r = self.api.get_flows_by_dpid(utils.hex_to_string('0x1', utils.DPID))
-        for record in r:
-            self.assertTrue(record.dpid)
-            self.assertTrue(record.in_port)
-            self.assertTrue(record.src_mac)
-
-    def test_create_flow(self):
-        flow = FakeFlow()
-        self.assertTrue(self.api.create_flow(utils.hex_to_string('0x1', utils.DPID), flow))
-
-        r = self.api.get_flows_by_dpid(utils.hex_to_string('0x1', utils.DPID))
-        f1 = flow
-        self.assertEqual(r[0].dpid, flow.dpid)
-        self.assertEqual(r[0].in_port, flow.in_port)
-        self.assertEqual(r[0].src_mac, flow.src_mac)
-        self.assertEqual(r[0].dst_mac, flow.dst_mac)
-        self.assertEqual(r[0].action, flow.action)
-        self.assertEqual(r[0].multiple_actions, flow.multiple_actions)
-
-    def test_update_flow(self):
-        flow = FakeFlow()
-        self.test_create_flow()
-
-        flow.network_tos = '46'
-        self.assertTrue(self.api.update_flow(utils.hex_to_string('0x1', utils.DPID), flow))
-
-        r = self.api.get_flows_by_dpid(utils.hex_to_string('0x1', utils.DPID))
-        self.assertEqual(r[0].network_tos, flow.network_tos)
-
-    def test_delete_flow(self):
-        flow = FakeFlow()
-        self.test_create_flow()
-
-        self.assertTrue(self.api.delete_flow(flow))
-
-class TestApiLimiters(FlareApiBaseTest):
-
-    def test_get_limiters(self):
-        pass
-
-    def test_create_limters(self):
-        pass
-
-    def test_update_limiters(self):
-        pass
-
-    def test_delete_limiters(self):
-        pass
 

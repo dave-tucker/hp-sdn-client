@@ -22,6 +22,11 @@
 # OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
+""" Here is the implementation for the REST verbs using the Requests API """
+
+__author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
+__version__ = '0.1.0'
+
 from error import FlareApiError
 
 import requests
@@ -29,6 +34,11 @@ import requests
 DATA_TYPES = set(['json', 'zip'])
 
 def get(url, token, data_type):
+	""" get()
+
+		Implements the REST GET verb using the Requests API.
+
+	"""
 	r = requests.get(url, auth=token)
 	if r.status_code == requests.codes.ok:
 		if not data_type in DATA_TYPES:
@@ -41,19 +51,59 @@ def get(url, token, data_type):
 			return data
 		elif data_type == 'zip':
 			pass
-		else:
-			raise FlareApiError("Oh noes! Something went wrong")
-			r.raise_for_status()
+	else:
+		raise FlareApiError("Oh No! Something went wrong")
+		r.raise_for_status()
 
+def put(url, token, data):
+	""" put()
 
-def put(url, token, data, data_type):
-	pass
+		Implements the REST PUT verb using the Requests API.
 
-def post(url, token, data, data_type):
-	pass
+	"""
+	r = requests.put(url, auth=token, params=data)
+	if r.status_code in (requests.codes.ok, requests.codes.accepted, requsts.codes.no_content):
+		return
+	else:
+		raise FlareApiError("Oh No! Something went wrong")
+		r.raise_for_status()
 
-def delete(url, token, data, data_type):
-	pass
+def post(url, token, data):
+	""" post()
 
-def head(url, token, data_types):
-	pass
+		Implements the REST POST verb using the Requests API.
+
+	"""
+	r = requests.post(url, auth=token, params=data)
+	if r.status_code in (requests.codes.ok, requests.codes.accepted, requsts.codes.no_content):
+		return
+	else:
+		raise FlareApiError("Oh No! Something went wrong")
+		r.raise_for_status()
+		
+def delete(url, token, data):
+	""" delete()
+
+		Implements the REST DELETE verb using the Requests API.
+
+	"""
+	r = requests.delete(url, auth=token)
+	if r.status_code in (requests.codes.ok, requests.codes.accepted, requsts.codes.no_content):
+		return
+	else:
+		raise FlareApiError("Oh No! Something went wrong")
+		r.raise_for_status()
+		
+def head(url, token):
+	""" head()
+
+		Implements the REST HEAD verb using the Requests API.
+
+	"""
+	r = requests.head(url, auth=token)
+	if r.status_code in (requests.codes.ok, requests.codes.accepted, requsts.codes.no_content):
+		return
+	else:
+		raise FlareApiError("Oh No! Something went wrong")
+		r.raise_for_status()
+		
