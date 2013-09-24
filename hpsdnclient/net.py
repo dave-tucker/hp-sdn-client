@@ -63,43 +63,75 @@ class Net(object):
 	def get_clusters(self):
 		""" get_clusters()
 
-			Not yet implemented
+			Gets a list of clusters
 
 		"""
 
-		pass
+		url = 'http://{0}:8080/sdn/v2.0/net/clusters'.format(self.controller)
+		r = []
+		data = rest.get(url, self.auth_token, 'json')
+		for d in data['clusters']:
+			r.append(types.JsonObject.factory(d))
+		return r
 
 	def get_cluster_tree(self, clusterid):
-		""" get_cluster_tree()
+		""" get_cluster_tree( clusterid)
 
-			Not yet implemented
+			Gets the broadcast tree for a specific cluster
 
 		"""
-		pass
+		url = 'http://{0}:8080/sdn/v2.0/net/clusters/{1}/tree'.format(self.controller, clusterid)
+		r = []
+		data = rest.get(url, self.auth_token, 'json')
+		for d in data['cluster']:
+			r.append(types.JsonObject.factory(d))
+		return r
 
 	def get_links(self):
 		""" get_links()
 
-			Not yet implemented
+			Returns a list of all links discovered by the SDN controller
 
 		"""
-		pass
+		url = 'http://{0}:8080/sdn/v2.0/net/links'.format(self.controller)
+		r = []
+		data = rest.get(url, self.auth_token, 'json')
+		for d in data['links']:
+			r.append(types.JsonObject.factory(d))
+		return r
 
-	def get_paths(self):
-		""" get_paths()
+	def get_forward_path(self, src_dpid, dst_dpid):
+		""" get_forward_path()
 
-			Not yet implemented
+			Gets the shortest computed path between src_dpid and dst_dpid
 
 		"""
-		pass
+		url = 'http://{0}:8080/sdn/v2.0/paths/forward?src_dpid={1}&dst_dpid={2}'.format(self.controller, urllib.quote(src_dpid), urllib.quote(dst_dpid))
+		r = []
+		data = rest.get(url, self.auth_token, 'json')
+		for d in data['path']:
+			r.append(types.JsonObject.factory(d))
+		return r
 
-	def get_arps(self):
+	def get_arps(self, vid, ip):
 		""" get_arps()
 
-			Not yet implemented
+			Provides ARP details for the given IP address and VLAN ID
 
 		"""
-		pass
+		url = 'http://{0}:8080/sdn/v2.0/net/arps'.format(self.controller)
+		
+		if vid and not ip:
+			url = url + "?vid={0}".format(vid, ip)			
+		elif vid and ip:
+			url = url + "?vid={0}&ip={1}".format(vid, ip)
+
+		data = rest.get(url, self.auth_token, 'json')
+		r = []
+		
+		for d in data['nodes']:
+			r.append(types.JsonObject.factory(d))
+		return r
 
 	def get_nodes(self, ip=None, vid=None, dpid=None, port=None):
 		""" get_nodes()
@@ -131,10 +163,15 @@ class Net(object):
 	def get_lldp(self):
 		""" get_lldp()
 
-			Not yet implemented
+			Gets a list of LLDP supressed ports from the SDN Controller
 
 		"""
-		pass
+		url = 'http://{0}:8080/sdn/v2.0/lldp'.format(self.controller)
+		r = []
+		data = rest.get(url, self.auth_token, 'json')
+		for d in data['path']:
+			r.append(types.JsonObject.factory(d))
+		return r
 
 	def set_lldp(self):
 		""" set_lldp()

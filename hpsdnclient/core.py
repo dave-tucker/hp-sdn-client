@@ -92,6 +92,61 @@ class Core(object):
     def __init__(self):
 		pass
 
+    def get_support(self):
+        """ get_support ()
+
+            Get tech support information
+
+        """
+
+        pass
+
+    def get_licenses(self):
+        """ get_licenses ()
+
+            Get license information
+
+        """
+
+        pass
+
+    def post_licences(self):
+        """ post_licences(self)
+
+            Add licenses
+
+        """
+
+        pass
+
+    def get_licences_install_id(self):
+        """ get_licences_install_id(self)
+
+            Add licenses
+
+        """
+
+        pass
+
+    def get_licence_detail(self):
+        """ get_license_detail (self)
+
+            Get license detail
+
+        """
+
+        pass
+
+
+    def post_licence_action(self):
+        """ post_licence_action (self)
+
+            Perform an action on a license
+
+        """
+
+        pass
+
     def get_auth(self):
         """ get_auth ()
 
@@ -100,6 +155,7 @@ class Core(object):
             This method returns a dictionary with the token and expiration time. 
 
         """
+        #ToDo: Rework to return just a token
         url = 'http://{0}:8080/sdn/v2.0/auth'.format(self.controller)
         payload = {'login':{ 'user': self.user, 'password': self.password}}
         r = requests.post(url, data=json.dumps(payload))
@@ -114,12 +170,13 @@ class Core(object):
             r.raise_for_status()
 
     def delete_auth(self):
+        #ToDo: Rework 
         """ delete_auth ()
 
             Delete Authentication Token, AKA, Logout
 
             This method logs the current user out 
-            
+
         """
         url = 'http://{0}:8080/sdn/v2.0/auth'.format(self.controller)
         headers = {"X-Auth-Token":self.token}

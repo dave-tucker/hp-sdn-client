@@ -29,7 +29,7 @@ import unittest
 
 import hpsdnclient.hpsdnclient as hp
 
-SDNCTL = '10.211.55.12' #Update for your SDN Controller
+SDNCTL = '10.44.254.129' #Update for your SDN Controller
 USER = 'sdn'
 PASS = 'skyline'
 

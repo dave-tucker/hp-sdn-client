@@ -35,11 +35,11 @@ class HttpError(FlareApiError):
     def __init__(self, res_code):
         self.res_code = res_code
         if res_code == 401:
-            msg = "You aren't authentcated. Check the username & password you supplied to Api"
+            msg = "You aren't authentcated. Check the username & password you supplied"
         elif res_code == 403:
             msg = "You don't have permission to use the resource you requested"
         elif res_code == 404:
-            msg = "Looks like the Api isn't responding. Check access to Api.base_url?"
+            msg = "Looks like the Api isn't responding. Check access to the SDN Controller"
         elif res_code == 409:
             msg = """Holy Grail you say? We've already got one! 
                      On a more serious note we already have one of these objects you requested"""

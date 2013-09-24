@@ -28,7 +28,6 @@ __author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
 __version__ = '0.1.0'
 
 import json
-import inspect
 
 ETHERNET = ['ipv4','arp','rarp','snmp','ipv6','mpls_u', 'mpls_m', 'lldp', 'pbb', 'bddp']
 
@@ -149,6 +148,7 @@ LINK_STATE = ["link_down",
               "stp_forward",
               "stp_block"
               ]
+OPERATION = ["ADD", "CHANGE", "DELETE", "MOVE"]
 
 enums = [ ETHERNET,
           VERSION, 
@@ -717,11 +717,488 @@ class Path(JsonObject):
         self.cost = kwargs.get('cost', None)
         self.links = kwargs.get('links', [])
 
-#ToDo: Rest of the Network Service Data Types from JSON Schema
+class LinkSync(JsonObject):
+    """ LinkSync ()
+
+        A python representation of the LinkSync object
+
+    """
+
+    def __init__(self, **kwargs):
+        self.s_dpid = kwargs.get('s_dpid', None)
+        self.s_port = kwargs.get('s_port', None)
+        self.d_dpid = kwargs.get('d_dpid', None)
+        self.d_port = kwargs.get('d_port', None)
+        self.info = kwargs.get('info', None)
+
+class ClusterSync(JsonObject):
+    """ ClusterSync()
+
+        A python representation of the ClusterSync object
+
+    """
+
+    def __init__(self, **kwargs):
+        self.id = kwargs.get("id", None)
+        self.root = kwargs.get("root", None)
+        self.nodes = kwargs.get("nodes", None)
+
+class NodeSync(JsonObject):
+    """ NodeSync()
+
+        A python representation of the NodeSync object
+
+    """
+    def __init__(self, **kwargs):
+        self.dpid = kwargs.get('dpid', None)
+        self.links = kwargs.get('links', None)
+
+class NodeLink(JsonObject):
+    """ NodeLink()
+
+        A Pyhton representation of the NodeLink object
+
+    """
+
+    def __init__(self, **kwargs):
+        self.s_dpid = kwargs.get('s_dpid', None)
+        self.s_port = kwargs.get('s_port', None)
+        self.d_dpid = kwargs.get('d_dpid', None)
+        self.d_port = kwargs.get('d_port', None)
+        self.s_pt_state = kwargs.get('s_pt_state', None)
+        self.d_pt_state = kwargs.get('d_pt_state', None)
+
+class NodeMessage(JsonObject):
+    """ NodeMessage()
+
+        A Python representation of the NodeMessage object
+
+    """
+
+    def __init__(self, **kwargs):
+        self.ip = kwargs.get('ip', None)
+        self.mac = kwargs.get('mac', None)
+        self.vid = kwargs.get('vid', None)
+        self.dpid = kwargs.get('dpid', None)
+        self.port = kwarge.get('operation', None)
+
+#Lldp_sync == a list of LldpProperties
+
+class Btree(JsonObject):
+    """ Btree()
+
+        A Python representation of the Btree object
+
+    """
+
+    def __init__(self, **kwargs):
+        self.links = kwargs.get('links', [])
+        self.costs = kwargs.get('costs', [])
+
+class BtreeLink(JsonObject):
+    """ BtreeLink()
+
+        A Python representation of the BtreeLink object
+
+    """
+
+    def __init__(self, **kwargs):
+        self.dpid = kwargs.get('dpid', None)
+        self.link = kwargs.get('link', [])
+
+class TreeLink(JsonObject):
+    """ TreeLink()
+
+        A Python representation of the TreeLink object
+
+    """
+
+    def __init__(self, **kwargs):
+        self.s_dpid = kwargs.get('s_dpid', None)
+        self.s_port = kwargs.get('s_port', None)
+        self.d_dpid = kwargs.get('d_dpid', None)
+        self.d_port = kwargs.get('d_port', None)
+
+class Cost(JsonObject):
+    """ Cost()
+
+        A Python representation of the Cost object
+
+    """
+
+    def __init__(self, **kwargs):
+        self.dpid = kwargs.get("dpid", None)
+        self.cost = kwargs.get("cost", None)
 
 ### Core ###
 
+class Alert(JsonObject):
+    """ Alert()
+
+        A Python representation of the Alert object
+
+    """
+
+    def __init__(self, **kwargs):
+        self.uid = kwargs.get("uid", None)
+        self.org = kwargs.get("org", None)
+        self.ts = kwargs.get("ts", None)
+        self.sev = kwargs.get("sev", None)
+        self.state = kwargs.get("state", None)
+        self.topic = kwargs.get("topic", None)
+        self.desc = kwargs.get("desc", None)
+        self.system_uid = kwargs.get("system_uid", None)
+
+
+class AlertTopic(JsonObject):
+    """ AlertTopic()
+
+        A Python representation of the AlertTopic object
+
+    """
+
+    def __init__(self, **kwargs):
+        self.topic = kwargs.get("topic", None)
+        self.org = kwargs.get("org", None)
+        self.desc = kwargs.get("desc", None)
+
+class AlertTopicListener(JsonObject):
+    """ AlertTopicListener()
+
+        A Python representation of the AlertTopicListener object
+
+    """
+
+    def __init__(self, **kwargs):
+        self.uid = kwargs.get("topic", None)
+        self.app_id = kwargs.get("org", None)
+        self.name = kwargs.get("desc", None)
+        self.callbacks = kwargs.get("desc", [])
+
+class Callback(JsonObject):
+    """ Callback()
+
+        A Python representation of the Callback object
+
+    """
+
+    def __init__(self, **kwargs):
+        self.topics = kwargs.get("topics", [])
+        self.uri = kwargs.get("uri", None)
+
+class AuditLogEntry(JsonObject):
+    """ AuditLogEntry()
+
+        A Python representation of the AuditLogEnrty object
+
+    """
+
+    def __init__(self, **kwargs):
+        self.uid = kwargs.get("uid", [])
+        self.system_uid = kwargs.get("system_uid", None)
+        self.user = kwargs.get("user", None)
+        self.ts = kwargs.get("ts", None)
+        self.activity = kwargs.get("activity", None)
+        self.description = kwargs.get("description", None)
+
+class Config(JsonObject):
+    """ Config()
+
+        A Python representation of the Config class
+
+    """
+
+    def __init__(self, **kwargs):
+        self.age_out_days = kwargs.get("age_out_days", [])
+        self.trim_enabled = kwargs.get("trim_enabled", [])
+        self.trim_interval_hours = kwargs.get("trim_interval_hours", [])
+
+class ConfigItem(JsonObject):
+    """ ConfigItem()
+
+        A Python representation of the ConfigItem class
+
+    """
+
+    def __init__(self, **kwargs):
+        self.val = kwargs.get("val", None)
+        self.def_val = kwargs.get("def_val", None)
+        self.desc = kwargs.get("desc", None)
+
+class SupportEntry(JsonObject):
+    """ SupportEntry()
+
+        A Python representation of the SupportEntry class
+
+    """
+
+    def __init__(self, **kwargs):
+        self.title = kwargs.get("title", None)
+        self.id = kwargs.get("id", None)
+        self.content = kwargs.get("content", [])
+
+class System(JsonObject):
+    """ System()
+
+        A Python representation of the System class
+
+    """
+
+    def __init__(self, **kwargs):
+        self.uid = kwargs.get("uid", None)
+        self.version = kwargs.get("version", None)
+        self.address = kwargs.get("address", None)
+        self.port = kwargs.get("port", None)
+        self.role = kwargs.get("role", None)
+        self.config_revision = kwargs.get("config_revision", None)
+        self.time = kwargs.get("time", None)
+        self.self = kwargs.get("self", None)
+        self.priority = kwargs.get("priority", None)
+
+class ControllerNode(JsonObject):
+    """ ControllerNode()
+
+        A Python representation of the ControllerNode class
+
+    """
+
+    def __init__(self, **kwargs):
+        self.ip = kwargs.get("ip", None)
+        self.name = kwargs.get("name". None)
+
+class Region(JsonObject):
+    """ Region()
+
+        A Python representation of the Region class
+
+    """
+
+    def __init__(self, **kwargs):
+        self.id = kwargs.get("id", None)
+        self.master = kwargs.get("master", None)
+        self.slaves = kwargs.get("slaves", [])
+        self.networkElements = kwargs.get("networkElements",[])
+
+class Team(JsonObject):
+    """ Team()
+
+        A Python representation of the Team object
+
+    """
+
+    def __init__(self, **kwargs):
+        self.name = kwargs.get("name", None)
+        self.ip = kwargs.get("ip", None)
+        self.version = kwargs.get("version")
+        self.systems = kwargs.get("systems")
+
+class TeamSystems(JsonObject):
+    """ TeamSystems()
+
+        A Python object to represent the systems that belong to a team.
+
+    """
+
+    def __init__(self, **kwargs):
+        self.name = kwargs.get("name", None)
+        self.ip = kwargs.get("name", None)
+        self.priority = kwargs.get("name", None)
+        self.id = kwargs.get("id", None)
+        self.status = kwargs.get("status", None)
+
+class Metric(JsonObject):
+    """ Metric()
+
+        A Python object to represent the Metric object.
+
+    """
+
+    def __init__(self, **kwargs):
+        self.uid = kwargs.get("uid", None)
+        self.app_id = kwargs.get("app_id", None)
+        self.name = kwargs.get("name", None)
+        self.type = kwargs.get("type", None)
+        self.description = kwargs.get("description", None)
+        self.primary_tag = kwargs.get("primary_tag", None)
+        self.secondary_tag = kwargs.get("secondary_tag", None)
+        self.jmx = kwargs.get("jmx", None)
+        self.persistence = kwargs.get("persistence", None)
+        self.summary_interval = kwargs.get("summary_interval", None)
+        self.priming_value = kwargs.get("priming_value", None)
+
+class MetricUpdate(JsonObject):
+    """ Metric()
+
+        A Python object to represent the Metric object.
+
+    """
+
+    def __init__(self, **kwargs):
+        self.uid = kwargs.get("uid", None)
+        self.value = kwargs.get("value", None)
+        self.int_value = kwargs.get("int_value". None)
+        self.numerator = kwargs.get("numerator", None)
+        self.denominator = kwargs.get("denominator", None)
+        self.decrement = kwargs.get("decrement", None)
+        self.increment = kwargs.get("increment", None)
+        self.mark = kwargs.get("mark", None)
+        self.type = kwargs.get("type", None)
+
+class License(JsonObject):
+    """ License()
+
+        A Python object to represent the License object
+
+    """
+
+    def __init__(self, **kwargs):
+        self.install_id = kwargs.get("install_id", None)
+        self.serial_no = kwargs.get("serial_no", None)
+        self.license_metric = kwargs.get("license_metric", None)
+        self.product = kwargs.get("product", None)
+        self.metric_qty = kwargs.get("metric_qty", None)
+        self.license_type = kwargs.get("license_type", None)
+        self.base_license = kwargs.get("base_license", None)
+        self.creation_date = kwargs.get("creation_date", None)
+        self.activated_date = kwargs.get("activated_date", None)
+        self.expiry_date = kwargs.get("expiry_date", None)
+        self.license_status = kwargs.get("license_status", None)
+        self.deactivated_key = kwargs.get("deactivated_key", None)
+
+class Packet(JsonObject):
+    """ Packet()
+
+        A Python object to represent the Packet object
+
+    """
+
+    def __init__(self, **kwargs):
+        self.type = kwargs.get("type", None)
+        self.eth = kwargs.get("eth", None)
+        self.ip = kwargs.get("ip", None)
+        self.icmp = kwargs.get("icmp", None)
+        self.ipv6 = kwargs.get("ipv6", None)
+        self.icmpv6 = kwargs.get("icmpv6", None)
+        self.tcp = kwargs.get("tcp", None)
+        self.udp = kwargs.get("udp", None)
+        self.dhcp = kwargs.get("dhcp", None)
+
+class Ethernet(JsonObject):
+    """ Ethernet()
+
+        A python object to represent the Ethernet header
+
+    """
+
+    def __init__(self, **kwargs):
+        self.eth_src = kwargs.get("eth_src", None)
+        self.eth_dst = kwargs.get("eth_dst", None)
+        self.eth_type = kwargs.get("eth_type", None)
+        self.vlan_vid = kwargs.get("vlan_vid", None)
+        self.vlan_pcp = kwargs.get("vlan_pcp", None)
+
+class Ip(JsonObject):
+    """ Ip()
+
+        A python object to represent the Ip header
+
+    """
+
+    def __init__(self, **kwargs):
+        self.ipv4_src = kwargs.get("ipv4_src", None)
+        self.ipv4_dst = kwargs.get("ipv4_dst", None)
+        self.ip_proto = kwargs.get("ip_proto", None)
+        self.ip_dscn = kwargs.get("ip_dscn", None)
+        self.ip_scn = kwargs.get("ip_scn", None)
+
+class Icmp(JsonObject):
+    """ Icmp()
+
+        A python object to represent the Icmp header
+
+    """
+
+    def __init__(self, **kwargs):
+        self.icmp_code = kwargs.get("icmp_code", None)
+
+class Ipv6(JsonObject):
+    """ Ipv6()
+
+        A python object to represent the Ipv6 header
+
+    """
+
+    def __init__(self, **kwargs):
+        self.ipv6_src = kwargs.get("ipv4_src", None)
+        self.ipv6_dst = kwargs.get("ipv4_dst", None)
+        self.ip_proto = kwargs.get("ip_proto", None)
+        self.ip_dscn = kwargs.get("ip_dscn", None)
+        self.ip_hop_limit = kwargs.get("ip_hop_limit", None)
+
+class Icmpv6(JsonObject):
+    """ Icmp()
+
+        A python object to represent the Icmp header
+
+    """
+
+    def __init__(self, **kwargs):
+        self.icmp_type_code = kwargs.get("icmp_code", None)
+        self.is_sender_router = kwargs.get("is_sender_router", None)
+        self.is_solicit_response = kwargs.get("is_solicit_response", None)
+        self.override = kwargs.get("override", None)
+        self.target_address = ('target_address', None)
+
+class Tcp(JsonObject):
+    """ Tcp()
+
+        A Pyhton representation of the TCP header
+
+    """
+
+    def __init__(self, **kwargs):
+        self.tcp_dst = kwargs.get("tcp_dst", None)
+        self.tcp_src = kwargs.get("tcp_src", None)
+
+class Udp(JsonObject):
+    """ Udp()
+
+        A Pyhton representation of the UDP header
+
+    """
+
+    def __init__(self, **kwargs):
+        self.udp_dst = kwargs.get("udp_dst", None)
+        self.udp_src = kwargs.get("udp_src", None)
+
+class Dhcp(JsonObject):
+    """ Dhcp()
+
+        A Python representation of the Dhcp message
+
+    """
+
+    def __init__(self, **kwargs):
+        self.opcode = kwargs.get("opcode", None)
+        self.boot_flags = kwargs.get("boot_flags", None)
+        self.client_ip = kwargs.get("client_ip", None)
+        self.your_client_ip = kwargs.get("your_client_ip", None)
+        self.next_server_ip = kwargs.get("next_server_ip", None)
+        self.relay_agent_ip = kwargs.get("relay_agent_ip", None)
+        self.client_mac = kwargs.get("client_mac", None)
+        self.options = kwargs.get("options", None)
+
+class DhcpOptions(JsonObject):
+     """ DhcpOptions()
+
+        A Python representation of DHCP Options 
+
+    """   
+        self.type = kwargs.get("type", None)
+        self.parameter_request_list = kwargs("parameter_request_list", None)
+
 class_bindings = {'match' : Match,
                   'actions' : Action,
-                  'links' : Link,
+                  #'links' : Link,
+                  #'links' : TreeLink
                   }
