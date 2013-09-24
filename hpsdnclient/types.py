@@ -673,6 +673,8 @@ class LinkInfo(JsonObject):
         self.s_pt_state = kwargs.get('s_pt_state', [])
         self.d_pt_state = kwargs.get('d_pt_state', [])
 
+#lldp_suppressed == list of LldpProperties
+
 class LldpProperties(JsonObject):
     """ LldpProperties (JsonObject)
 

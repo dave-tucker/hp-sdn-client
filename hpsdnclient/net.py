@@ -49,6 +49,7 @@
 __author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
 __version__ = '0.1.0'
 
+import json
 import urllib
 
 import rest
@@ -173,21 +174,23 @@ class Net(object):
 			r.append(types.JsonObject.factory(d))
 		return r
 
-	def set_lldp(self):
+	def set_lldp(self, ports):
 		""" set_lldp()
 
-			Not yet implemented
+			Puts selected ports in to LLDP suppressed state
 
 		"""
-		pass
+		url = 'http://{0}:8080/sdn/v2.0/lldp'.format(self.controller)
+		r = rest.post(url, self.auth_token, json.dumps(ports))
 
-	def delete_lldp(self):
+	def delete_lldp(self, ports):
 		""" delete_lldp()
 
-			Not yet implemented
+			Removes ports from LLDP suppressed state
 
 		"""
-		pass
+		url = 'http://{0}:8080/sdn/v2.0/lldp'.format(self.controller)
+		r = rest.delete(url, self.auth_token, json.dumps(ports))
 
 	def get_diag_observations(self):
 		""" get_diag_observations()

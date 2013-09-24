@@ -87,7 +87,7 @@ def delete(url, token, data):
 		Implements the REST DELETE verb using the Requests API.
 
 	"""
-	r = requests.delete(url, auth=token)
+	r = requests.delete(url, auth=token, params=data)
 	if r.status_code in (requests.codes.ok, requests.codes.accepted, requsts.codes.no_content):
 		return
 	else:
