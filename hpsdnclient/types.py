@@ -1191,11 +1191,12 @@ class Dhcp(JsonObject):
         self.options = kwargs.get("options", None)
 
 class DhcpOptions(JsonObject):
-     """ DhcpOptions()
+    """ DhcpOptions()
 
         A Python representation of DHCP Options 
 
-    """   
+    """
+    def __init__(self, **kwargs):
         self.type = kwargs.get("type", None)
         self.parameter_request_list = kwargs("parameter_request_list", None)
 
