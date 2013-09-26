@@ -68,7 +68,7 @@ class Net(object):
 
 		"""
 
-		url = 'http://{0}:8080/sdn/v2.0/net/clusters'.format(self.controller)
+		url = 'https://{0}:8443/sdn/v2.0/net/clusters'.format(self.controller)
 		r = []
 		data = rest.get(url, self.auth_token, 'json')
 		for d in data['clusters']:
@@ -81,7 +81,7 @@ class Net(object):
 			Gets the broadcast tree for a specific cluster
 
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/net/clusters/{1}/tree'.format(self.controller, clusterid)
+		url = 'https://{0}:8443/sdn/v2.0/net/clusters/{1}/tree'.format(self.controller, clusterid)
 		r = []
 		data = rest.get(url, self.auth_token, 'json')
 		for d in data['cluster']:
@@ -94,7 +94,7 @@ class Net(object):
 			Returns a list of all links discovered by the SDN controller
 
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/net/links'.format(self.controller)
+		url = 'https://{0}:8443/sdn/v2.0/net/links'.format(self.controller)
 		r = []
 		data = rest.get(url, self.auth_token, 'json')
 		for d in data['links']:
@@ -107,7 +107,7 @@ class Net(object):
 			Gets the shortest computed path between src_dpid and dst_dpid
 
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/paths/forward?src_dpid={1}&dst_dpid={2}'.format(self.controller, urllib.quote(src_dpid), urllib.quote(dst_dpid))
+		url = 'https://{0}:8443/sdn/v2.0/paths/forward?src_dpid={1}&dst_dpid={2}'.format(self.controller, urllib.quote(src_dpid), urllib.quote(dst_dpid))
 		r = []
 		data = rest.get(url, self.auth_token, 'json')
 		for d in data['path']:
@@ -120,7 +120,7 @@ class Net(object):
 			Provides ARP details for the given IP address and VLAN ID
 
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/net/arps'.format(self.controller)
+		url = 'https://{0}:8443/sdn/v2.0/net/arps'.format(self.controller)
 		
 		if vid and not ip:
 			url = url + "?vid={0}".format(vid, ip)			
@@ -143,7 +143,7 @@ class Net(object):
 			Provides the end node list for a given datapath ID and port
 		
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/net/nodes'.format(self.controller)
+		url = 'https://{0}:8443/sdn/v2.0/net/nodes'.format(self.controller)
 		
 		if vid and not ip:
 			url = url + "?vid={0}".format(vid, ip)			
@@ -167,7 +167,7 @@ class Net(object):
 			Gets a list of LLDP supressed ports from the SDN Controller
 
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/lldp'.format(self.controller)
+		url = 'https://{0}:8443/sdn/v2.0/lldp'.format(self.controller)
 		r = []
 		data = rest.get(url, self.auth_token, 'json')
 		for d in data['path']:
@@ -180,7 +180,7 @@ class Net(object):
 			Puts selected ports in to LLDP suppressed state
 
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/lldp'.format(self.controller)
+		url = 'https://{0}:8443/sdn/v2.0/lldp'.format(self.controller)
 		r = rest.post(url, self.auth_token, json.dumps(ports))
 
 	def delete_lldp(self, ports):
@@ -189,7 +189,7 @@ class Net(object):
 			Removes ports from LLDP suppressed state
 
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/lldp'.format(self.controller)
+		url = 'https://{0}:8443/sdn/v2.0/lldp'.format(self.controller)
 		r = rest.delete(url, self.auth_token, json.dumps(ports))
 
 	def get_diag_observations(self):

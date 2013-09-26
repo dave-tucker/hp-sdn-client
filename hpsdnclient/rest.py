@@ -39,7 +39,7 @@ def get(url, token, data_type):
 		Implements the REST GET verb using the Requests API.
 
 	"""
-	r = requests.get(url, auth=token)
+	r = requests.get(url, auth=token, verify=False)
 	if r.status_code == requests.codes.ok:
 		if not data_type in DATA_TYPES:
 			raise FlareApiError("Invalid Data Type")
@@ -61,7 +61,7 @@ def put(url, token, data):
 		Implements the REST PUT verb using the Requests API.
 
 	"""
-	r = requests.put(url, auth=token, params=data)
+	r = requests.put(url, auth=token, params=data, verify=False)
 	if r.status_code in (requests.codes.ok, requests.codes.accepted, requsts.codes.no_content):
 		return
 	else:
@@ -74,7 +74,7 @@ def post(url, token, data):
 		Implements the REST POST verb using the Requests API.
 
 	"""
-	r = requests.post(url, auth=token, params=data)
+	r = requests.post(url, auth=token, params=data, verify=False)
 	if r.status_code in (requests.codes.ok, requests.codes.accepted, requsts.codes.no_content):
 		return
 	else:
@@ -87,7 +87,7 @@ def delete(url, token, data):
 		Implements the REST DELETE verb using the Requests API.
 
 	"""
-	r = requests.delete(url, auth=token, params=data)
+	r = requests.delete(url, auth=token, params=data, verify=False)
 	if r.status_code in (requests.codes.ok, requests.codes.accepted, requsts.codes.no_content):
 		return
 	else:
@@ -100,7 +100,7 @@ def head(url, token):
 		Implements the REST HEAD verb using the Requests API.
 
 	"""
-	r = requests.head(url, auth=token)
+	r = requests.head(url, auth=token, verify=False)
 	if r.status_code in (requests.codes.ok, requests.codes.accepted, requsts.codes.no_content):
 		return
 	else:

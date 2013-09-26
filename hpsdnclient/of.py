@@ -77,7 +77,7 @@ class Of(object):
 
 		"""
 
-		url = 'http://{0}:8080/sdn/v2.0/of/stats'.format(self.controller)
+		url = 'https://{0}:8443/sdn/v2.0/of/stats'.format(self.controller)
 		r = []
 		data = rest.get(url, self.auth_token, 'json')
 		for d in data['stats']:
@@ -92,7 +92,7 @@ class Of(object):
 			Notes: Always returns stat block for dpid b0:0b:00:00:36:00:65:02
 
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/of/stats/ports?dpid={1}'.format(self.controller, urllib.quote(dpid))
+		url = 'https://{0}:8443/sdn/v2.0/of/stats/ports?dpid={1}'.format(self.controller, urllib.quote(dpid))
 		if port_id:
 			url = url + '&port_id={0}'.format(port_id)
 		r = []
@@ -109,7 +109,7 @@ class Of(object):
 			Notes: Returns error for dpid not found.
 
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/of/stats/groups?dpid={1}'.format(self.controller, urllib.quote(dpid))
+		url = 'https://{0}:8443/sdn/v2.0/of/stats/groups?dpid={1}'.format(self.controller, urllib.quote(dpid))
 		if group_id:
 			url = url + '&port_id={0}'.format(group_id)
 		r = rest.get(url, self.auth_token, 'json')
@@ -123,7 +123,7 @@ class Of(object):
 			Notes: 
 
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/of/stats/meters?dpid={1}'.format(self.controller, urllib.quote(dpid))
+		url = 'https://{0}:8443/sdn/v2.0/of/stats/meters?dpid={1}'.format(self.controller, urllib.quote(dpid))
 		r = rest.get(url, self.auth_token, 'json')
 		return r
 
@@ -135,7 +135,7 @@ class Of(object):
 			List all datapaths that are managed by this controller.
 
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/of/datapaths'.format(self.controller)
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths'.format(self.controller)
 		data = rest.get(url, self.auth_token, 'json')
 		r = []
 		for d in data['datapaths']:
@@ -148,7 +148,7 @@ class Of(object):
 			Get detail information on a datapath.
 
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}'.format(self.controller, urllib.quote(dpid))
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}'.format(self.controller, urllib.quote(dpid))
 		r = rest.get(url, self.auth_token, 'json')
 		return types.JsonObject.factory(r['datapath'])
 
@@ -159,7 +159,7 @@ class Of(object):
 
 		"""
 
-		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/features/meter'.format(self.controller, urllib.quote(dpid))
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/features/meter'.format(self.controller, urllib.quote(dpid))
 		pass
 
 	def get_datapath_group_features(self, dpid):
@@ -168,7 +168,7 @@ class Of(object):
 			Not implemented
 
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/features/groups'.format(self.controller, urllib.quote(dpid))
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/features/groups'.format(self.controller, urllib.quote(dpid))
 		pass
 
 	def get_ports(self, dpid):
@@ -178,7 +178,7 @@ class Of(object):
 
 		"""
 
-		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/ports'.format(self.controller, urllib.quote(dpid))
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/ports'.format(self.controller, urllib.quote(dpid))
 		data = rest.get(url, self.auth_token, 'json')
 		r = []
 		for d in data['ports']:
@@ -191,7 +191,7 @@ class Of(object):
 			Gets detailed port information
 			
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/ports/{2}'.format(self.controller, urllib.quote(dpid), port_id)
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/ports/{2}'.format(self.controller, urllib.quote(dpid), port_id)
 		r = rest.get(url, self.auth_token, 'json')
 		return types.JsonObject.factory(r['port'])
 
@@ -201,7 +201,7 @@ class Of(object):
 			List all meters
 			
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/meters'.format(self.controller, urllib.quote(dpid))
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/meters'.format(self.controller, urllib.quote(dpid))
 		r = rest.get(url, self.auth_token, 'json')
 		return types.JsonObject.factory(r)
 
@@ -211,7 +211,7 @@ class Of(object):
 			Add a new meter
 			
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/meters'.format(self.controller, urllib.quote(dpid))
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/meters'.format(self.controller, urllib.quote(dpid))
 		r = rest.post(url, self.auth_token, meters, 'json')
 		return types.JsonObject.factory(r)
 
@@ -221,7 +221,7 @@ class Of(object):
 			Get detailed meter information
 
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/meters/{2}'.format(self.controller, urllib.quote(dpid), meter_id)
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/meters/{2}'.format(self.controller, urllib.quote(dpid), meter_id)
 		r = rest.get(url, self.auth_token, 'json')
 		return types.JsonObject.factory(r)
 
@@ -231,7 +231,7 @@ class Of(object):
 			Update a meter 
 
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/meters/{2}'.format(self.controller, urllib.quote(dpid), meterid)
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/meters/{2}'.format(self.controller, urllib.quote(dpid), meterid)
 		r = rest.put(url, self.auth_token, meters, 'json')
 		return types.JsonObject.factory(r)
 
@@ -242,7 +242,7 @@ class Of(object):
 			
 		"""
 
-		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/meters/{2}'.format(self.controller, urllib.quote(dpid), meterid)
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/meters/{2}'.format(self.controller, urllib.quote(dpid), meterid)
 		r = rest.delete(url, self.auth_token, 'json')
 		return types.JsonObject.factory(r)
 
@@ -252,7 +252,7 @@ class Of(object):
 			Gets a list of flows
 			
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/flows'.format(self.controller, urllib.quote(dpid))
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/flows'.format(self.controller, urllib.quote(dpid))
 		data = rest.get(url, self.auth_token, 'json')
 		r = []
 		for d in data['flows']:
@@ -265,7 +265,7 @@ class Of(object):
 			Add a flow, or flows
 			
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/flows'.format(self.controller, urllib.quote(dpid))
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/flows'.format(self.controller, urllib.quote(dpid))
 		if isinstance(flows, list):
 			tmp = []
 			for d in data:
@@ -292,7 +292,7 @@ class Of(object):
 			
 		"""
 
-		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/flows'.format(self.controller, urllib.quote(dpid))
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/flows'.format(self.controller, urllib.quote(dpid))
 		r = rest.put(url, self.auth_token, flow, 'json')
 		return types.JsonObject.factory(r)
 
@@ -303,7 +303,7 @@ class Of(object):
 
 		"""
 
-		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/flows'.format(self.controller, urllib.quote(dpid))
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/flows'.format(self.controller, urllib.quote(dpid))
 		r = rest.delete(url, self.auth_token, flow, 'json')
 		return types.JsonObject.factory(r)
 
@@ -313,7 +313,7 @@ class Of(object):
 			Get a list of groups
 
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/groups'.format(self.controller, urllib.quote(dpid))
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/groups'.format(self.controller, urllib.quote(dpid))
 		r = rest.get(url, self.auth_token, 'json')
 		return types.JsonObject.factory(r)
 
@@ -323,17 +323,17 @@ class Of(object):
 			Add a group, or groups
 
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/groups'.format(self.controller, urllib.quote(dpid))
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/groups'.format(self.controller, urllib.quote(dpid))
 		r = rest.post(url, self.auth_token, group, 'json')
 		return types.JsonObject.factory(r)
 
-	def get_group(self, dpid, groupid):
+	def get_group_details(self, dpid, groupid):
 		""" get_groups ()
 
 			Get group details
 
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/groups/{2}'.format(self.controller, urllib.quote(dpid), groupid)
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/groups/{2}'.format(self.controller, urllib.quote(dpid), groupid)
 		r = rest.get(url, self.auth_token, 'json')
 		return types.JsonObject.factory(r)
 
@@ -343,7 +343,7 @@ class Of(object):
 			Update a group, or groups
 
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/groups/{2}'.format(self.controller, urllib.quote(dpid))
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/groups/{2}'.format(self.controller, urllib.quote(dpid))
 		r = rest.post(url, self.auth_token, groups, 'json')
 		return types.JsonObject.factory(r)
 
@@ -353,7 +353,7 @@ class Of(object):
 			Delete a group or groups
 
 		"""
-		url = 'http://{0}:8080/sdn/v2.0/of/datapaths/{1}/groups/{2}'.format(self.controller, urllib.quote(dpid), groupid)
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/groups/{2}'.format(self.controller, urllib.quote(dpid), groupid)
 		r = rest.delete(url, self.auth_token, 'json')
 		return types.JsonObject.factory(r)
 

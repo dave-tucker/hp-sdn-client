@@ -782,7 +782,7 @@ class NodeMessage(JsonObject):
         self.mac = kwargs.get('mac', None)
         self.vid = kwargs.get('vid', None)
         self.dpid = kwargs.get('dpid', None)
-        self.port = kwarge.get('operation', None)
+        self.port = kwargs.get('operation', None)
 
 #Lldp_sync == a list of LldpProperties
 

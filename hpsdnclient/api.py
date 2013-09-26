@@ -97,9 +97,9 @@ class XAuthToken(requests.auth.AuthBase, ApiBase):
             This method returns a dictionary with the token and expiration time. 
         """
 
-        url = 'http://{0}:8080/sdn/v2.0/auth'.format(self.controller)
+        url = 'https://{0}:8443/sdn/v2.0/auth'.format(self.controller)
         payload = {'login':{ 'user': self.user, 'password': self.password}}
-        r = requests.post(url, data=json.dumps(payload))
+        r = requests.post(url, data=json.dumps(payload), verify=False)
         if r.status_code == requests.codes.ok:
             data = r.json()
             self.token = data[u'record'][u'token']
@@ -116,9 +116,9 @@ class XAuthToken(requests.auth.AuthBase, ApiBase):
             This method logs the current user out 
         """
 
-        url = 'http://{0}:8080/sdn/v2.0/auth'.format(self.controller)
+        url = 'https://{0}:8443/sdn/v2.0/auth'.format(self.controller)
         headers = {"X-Auth-Token":self.token}
-        r = requests.delete(url, headers=headers)
+        r = requests.delete(url, headers=headers, verify=False)
         if r.status_code == requests.codes.ok:
             self.token = None
             self.token_expiration = None

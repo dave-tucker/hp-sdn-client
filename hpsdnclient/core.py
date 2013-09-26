@@ -156,7 +156,7 @@ class Core(object):
 
         """
         #ToDo: Rework to return just a token
-        url = 'http://{0}:8080/sdn/v2.0/auth'.format(self.controller)
+        url = 'https://{0}:8443/sdn/v2.0/auth'.format(self.controller)
         payload = {'login':{ 'user': self.user, 'password': self.password}}
         r = requests.post(url, data=json.dumps(payload))
         t = []
@@ -178,7 +178,7 @@ class Core(object):
             This method logs the current user out 
 
         """
-        url = 'http://{0}:8080/sdn/v2.0/auth'.format(self.controller)
+        url = 'https://{0}:8443/sdn/v2.0/auth'.format(self.controller)
         headers = {"X-Auth-Token":self.token}
         r = requests.delete(url, headers=headers)
         if r.status_code == requests.codes.ok:
