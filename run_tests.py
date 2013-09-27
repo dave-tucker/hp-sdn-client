@@ -26,7 +26,7 @@ import os
 import sys
 from nose import config
 from nose import core
-import hpsdnclient.hpsdnclient as hpsdnclient
+import hpsdnclient
 
 def main():
     c = config.Config(stream=sys.stdout,

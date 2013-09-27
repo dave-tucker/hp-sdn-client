@@ -27,9 +27,10 @@
 __author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
 __version__ = '0.1.0'
 
-from error import FlareApiError
-
+import json
 import requests
+
+from error import FlareApiError
 
 DATA_TYPES = set(['json', 'zip'])
 
@@ -46,14 +47,22 @@ def get(url, token, data_type):
 		elif data_type == 'json': 
 			data = r.json()
 			for d in data:
-				if 'error' in d:
-					raise FlareApiError("No data returned")
+				if "error" in d:
+					raise FlareApiError(d["message"])
+					break
 			return data
 		elif data_type == 'zip':
 			pass
 	else:
-		raise FlareApiError("Oh No! Something went wrong")
-		r.raise_for_status()
+		try:
+			data = r.json()
+			for d in data:
+				if "error" in d:
+					raise FlareApiError(d["message"])
+					break
+		except Exception, e:
+			raise FlareApiError("Oh No! Something went wrong")
+			r.raise_for_status()
 
 def put(url, token, data):
 	""" put()
@@ -61,12 +70,19 @@ def put(url, token, data):
 		Implements the REST PUT verb using the Requests API.
 
 	"""
-	r = requests.put(url, auth=token, params=data, verify=False)
+	r = requests.put(url, auth=token, data=data, verify=False)
 	if r.status_code in (requests.codes.ok, requests.codes.accepted, requsts.codes.no_content):
 		return
 	else:
-		raise FlareApiError("Oh No! Something went wrong")
-		r.raise_for_status()
+		try:
+			data = r.json()
+			for d in data:
+				if "error" in d:
+					raise FlareApiError(d["message"])
+					break
+		except Exception, e:
+			raise FlareApiError("Oh No! Something went wrong")
+			r.raise_for_status()
 
 def post(url, token, data):
 	""" post()
@@ -74,12 +90,19 @@ def post(url, token, data):
 		Implements the REST POST verb using the Requests API.
 
 	"""
-	r = requests.post(url, auth=token, params=data, verify=False)
+	r = requests.post(url, auth=token, data=data, verify=False)
 	if r.status_code in (requests.codes.ok, requests.codes.accepted, requsts.codes.no_content):
 		return
 	else:
-		raise FlareApiError("Oh No! Something went wrong")
-		r.raise_for_status()
+		try:
+			data = r.json()
+			for d in data:
+				if "error" in d:
+					raise FlareApiError(d["message"])
+					break
+		except Exception, e:
+			raise FlareApiError("Oh No! Something went wrong")
+			r.raise_for_status()
 		
 def delete(url, token, data):
 	""" delete()
@@ -87,12 +110,19 @@ def delete(url, token, data):
 		Implements the REST DELETE verb using the Requests API.
 
 	"""
-	r = requests.delete(url, auth=token, params=data, verify=False)
+	r = requests.delete(url, auth=token, data=data, verify=False)
 	if r.status_code in (requests.codes.ok, requests.codes.accepted, requsts.codes.no_content):
 		return
 	else:
-		raise FlareApiError("Oh No! Something went wrong")
-		r.raise_for_status()
+		try:
+			data = r.json()
+			for d in data:
+				if "error" in d:
+					raise FlareApiError(d["message"])
+					break
+		except Exception, e:
+			raise FlareApiError("Oh No! Something went wrong")
+			r.raise_for_status()
 		
 def head(url, token):
 	""" head()
@@ -104,6 +134,13 @@ def head(url, token):
 	if r.status_code in (requests.codes.ok, requests.codes.accepted, requsts.codes.no_content):
 		return
 	else:
-		raise FlareApiError("Oh No! Something went wrong")
-		r.raise_for_status()
+		try:
+			data = r.json()
+			for d in data:
+				if "error" in d:
+					raise FlareApiError(d["message"])
+					break
+		except Exception, e:
+			raise FlareApiError("Oh No! Something went wrong")
+			r.raise_for_status()
 		

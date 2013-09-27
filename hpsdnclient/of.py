@@ -56,6 +56,7 @@ Currently:
 __author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
 __version__ = '0.1.0'
 
+import json
 import urllib
 
 import rest
@@ -73,14 +74,12 @@ class Of(object):
 
 			List controller statistics for all controllers that are part of this controller's team.
 
-			Notes: Currently returns []. Not implemented
-
 		"""
 
 		url = 'https://{0}:8443/sdn/v2.0/of/stats'.format(self.controller)
 		r = []
 		data = rest.get(url, self.auth_token, 'json')
-		for d in data['stats']:
+		for d in data['controller_stats']:
 			r.append(types.JsonObject.factory(d))
 		return r
 
@@ -88,8 +87,6 @@ class Of(object):
 		""" get_port_stats()
 
 			List all port statistics or by a given datapath or by a given datapath and port number.
-
-			Notes: Always returns stat block for dpid b0:0b:00:00:36:00:65:02
 
 		"""
 		url = 'https://{0}:8443/sdn/v2.0/of/stats/ports?dpid={1}'.format(self.controller, urllib.quote(dpid))
@@ -205,15 +202,19 @@ class Of(object):
 		r = rest.get(url, self.auth_token, 'json')
 		return types.JsonObject.factory(r)
 
-	def add_meter(self, dpid, meters):
+	def add_meters(self, dpid, meters):
 		""" add_meter()
 
 			Add a new meter
 			
 		"""
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/meters'.format(self.controller, urllib.quote(dpid))
-		r = rest.post(url, self.auth_token, meters, 'json')
-		return types.JsonObject.factory(r)
+		try:
+			rest.post(url, self.auth_token, json.dumps(meters.to_dict()))
+		
+		except Exception, FlareApiError:
+			raise FlareApiError('Something went wrong')
+			return False
 
 	def get_meter_details(self, dpid, meter_id):
 		""" get_meter_details ()
@@ -259,7 +260,7 @@ class Of(object):
 			r.append(types.JsonObject.factory(d))
 		return r
 
-	def add_flows(self, dpid, flow):
+	def add_flows(self, dpid, flows):
 		""" add_flows()
 
 			Add a flow, or flows
@@ -267,22 +268,23 @@ class Of(object):
 		"""
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/flows'.format(self.controller, urllib.quote(dpid))
 		if isinstance(flows, list):
-			tmp = []
-			for d in data:
+			data = '{ "flows" : '
+			for f in flows:
 				if isinstance(d, types.Flow):
-					tmp.append(d.to_dict())
+					data = data + json.dumps(d.to_dict())
 				else:
 					raise FlareApiError("Invalid object passed to add_datapath_flows. Expected types.Flow or a list of types.Flow")
 					break
-			data = [{"flows": tmp }]
+			data =  data + '}'
 		elif isinstance(flows, types.Flow):
-			data = [{"flows": flow.to_dict() }]
+			data = '{ "flow" : ' + json.dumps(flows.to_dict()) + ' }'
 		else:
 			raise FlareApiError("Invalid object passed to add_datapath_flows. Expected types.Flow or a list of types.Flow")
 
-		if rest.post(url, self.auth_token, json.dumps(flow), 'json'):
-			return
-		else:
+		try:
+			rest.post(url, self.auth_token, json.dumps(data))
+		except Exception, e:
+			print data
 			raise FlareApiError('Something went wrong')
 
 	def update_flows(self, dpid, flow):
@@ -317,15 +319,17 @@ class Of(object):
 		r = rest.get(url, self.auth_token, 'json')
 		return types.JsonObject.factory(r)
 
-	def add_groups(self, dpid, group):
+	def add_groups(self, dpid, groups):
 		""" add_groups ()
 
 			Add a group, or groups
 
 		"""
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/groups'.format(self.controller, urllib.quote(dpid))
-		r = rest.post(url, self.auth_token, group, 'json')
-		return types.JsonObject.factory(r)
+		try:
+			rest.post(url, self.auth_token, json.dummps(groups.to_dict()))
+		except Exception, FlareApiError:
+			raise FlareApiError('Something went wrong')
 
 	def get_group_details(self, dpid, groupid):
 		""" get_groups ()
@@ -344,8 +348,10 @@ class Of(object):
 
 		"""
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/groups/{2}'.format(self.controller, urllib.quote(dpid))
-		r = rest.post(url, self.auth_token, groups, 'json')
-		return types.JsonObject.factory(r)
+		try:
+			rest.post(url, self.auth_token, json.dumps(groups.to_dict()))
+		except Exception, FlareApiError:
+			raise FlareApiError('Something went wrong')
 
 	def delete_groups(self, dpid, groupid):
 		""" delete_groups ()

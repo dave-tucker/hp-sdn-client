@@ -360,12 +360,12 @@ class Match(JsonObject):
     """
     def __init__(self, **kwargs):
         self.in_port = kwargs.get('in_port', None)
-        self.in_phy_port = kwargs.get('in_port_phy', None)
+        self.in_phy_port = kwargs.get('in_phy_port', None)
         self.metadata = kwargs.get('metadata', None)
         self.tunnel_id = kwargs.get('tunnel_id', None)
         self.eth_dst = kwargs.get('eth_dst', None) 
         self.eth_src = kwargs.get('eth_src', None)
-        self.eth_type = kwargs.get('eth_src', None)
+        self.eth_type = kwargs.get('eth_type', None)
         self.ip_proto = kwargs.get('ip_proto', None)
         self.icmpv6_type = kwargs.get('icmpv6_type', None)
         self.ipv6_nd_sll = kwargs.get('ipv6_nd_sll', None)
@@ -420,7 +420,7 @@ class Match(JsonObject):
         """ factory (data)
 
             Creates an instance of the class from some JSON.
-            Overides the parent method as in this case, JSON will be a list dictionaries
+            Overrides the parent method as in this case, JSON will be a list dictionaries
 
         """
         tmp = Match()
@@ -966,7 +966,7 @@ class ControllerNode(JsonObject):
 
     def __init__(self, **kwargs):
         self.ip = kwargs.get("ip", None)
-        self.name = kwargs.get("name". None)
+        self.name = kwargs.get("name", None)
 
 class Region(JsonObject):
     """ Region()
@@ -1038,7 +1038,7 @@ class MetricUpdate(JsonObject):
     def __init__(self, **kwargs):
         self.uid = kwargs.get("uid", None)
         self.value = kwargs.get("value", None)
-        self.int_value = kwargs.get("int_value". None)
+        self.int_value = kwargs.get("int_value", None)
         self.numerator = kwargs.get("numerator", None)
         self.denominator = kwargs.get("denominator", None)
         self.decrement = kwargs.get("decrement", None)
@@ -1198,7 +1198,7 @@ class DhcpOptions(JsonObject):
     """
     def __init__(self, **kwargs):
         self.type = kwargs.get("type", None)
-        self.parameter_request_list = kwargs("parameter_request_list", None)
+        self.parameter_request_list = kwargs.get("parameter_request_list", None)
 
 class_bindings = {'match' : Match,
                   'actions' : Action,

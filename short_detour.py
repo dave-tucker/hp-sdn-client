@@ -22,21 +22,20 @@
 # OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-import hpsdnclient
-from hpsdnclient import types as types
+import hpsdnclient as hp
 
 """ Short Detour 2.0 """
 
-match = types.Match(eth_type="ipv4",ipv4_src="10.0.0.1",ipv4_dst="10.0.0.22",ip_proto="tcp", tcp_dst="80")
-output1 = types.Action(output=1)
-output6 = types.Action(output=6)
+match = hp.types.Match(eth_type="ipv4",ipv4_src="10.0.0.1",ipv4_dst="10.0.0.22",ip_proto="tcp", tcp_dst="80")
+output1 = hp.types.Action(output=1)
+output6 = hp.types.Action(output=6)
 
-flow1 = types.Flow(priority=30000, idle_timeout=30, match=match, action=output6)
-flow2 = types.Flow(priority=30000, idle_timeout=30, match=match, action=output1)
+flow1 = hp.types.Flow(priority=30000, idle_timeout=30, match=match, action=output6)
+flow2 = hp.types.Flow(priority=30000, idle_timeout=30, match=match, action=output1)
 
 # initialize the api
-api = hpsdnclient.Api(controller='10.44.254.129', user=sdn, password=skyline)
+api = hp.Api(controller='10.44.254.129', user="sdn", password="skyline")
 
-api.add_flow('00:00:00:00:00:00:00:0e', flow1)
-api.add_flow('00:00:00:00:00:00:00:01', flow1)
-api.add_flow('00:00:00:00:00:00:00:0b', flow2)
+api.add_flows('00:00:00:00:00:00:00:0e', flow1)
+api.add_flows('00:00:00:00:00:00:00:01', flow1)
+api.add_flows('00:00:00:00:00:00:00:0b', flow2)

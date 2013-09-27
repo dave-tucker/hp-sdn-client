@@ -22,16 +22,28 @@
 # OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-"""Here lies the unit tests for the hpsdnclient library"""
+"""
+    Here lies the unit tests for the hpsdnclient library
+
+    In order to run these tests you must:
+        - have the HP SDN Controller running
+        - have a physical or MiniNet topology running
+        - have traffic running across the network topology
+
+    Before running these tests, update SDNCTL, USER and PASS
+
+"""
 
 import time
 import unittest
 
-import hpsdnclient.hpsdnclient as hp
+import hpsdnclient as hp
+from hpsdnclient import utils as utils
 
-SDNCTL = '10.44.254.129' #Update for your SDN Controller
+SDNCTL = '10.44.254.129'
 USER = 'sdn'
 PASS = 'skyline'
+DPID = '00:00:00:00:00:00:00:02'
 
 def setUpModule():
     pass
@@ -51,20 +63,20 @@ class TestUtilityFunctions(unittest.TestCase):
         pass
 
     def test_mac_string_to_hex(self):
-        tmp = utils.string_to_hex(self.MAC_string, utils.MAC)
-        self.assertEqual(tmp, self.MAC_hex)
+        tmp = utils.string_to_hex(self.mac_string, utils.MAC)
+        self.assertEqual(tmp, self.mac_hex)
 
     def test_dpid_string_to_hex(self):
-        tmp = utils.string_to_hex(self.DPID_string, utils.DPID)
-        self.assertEqual(tmp, self.DPID_hex)
+        tmp = utils.string_to_hex(self.dpid_string, utils.DPID)
+        self.assertEqual(tmp, self.dpid_hex)
 
     def test_mac_hex_to_string(self):
-        tmp = utils.hex_to_string(self.MAC_hex, utils.MAC)
-        self.assertEqual(tmp, self.MAC_string)
+        tmp = utils.hex_to_string(self.mac_hex, utils.MAC)
+        self.assertEqual(tmp, self.mac_string)
 
     def test_dpid_hex_to_string(self):
-        tmp = utils.hex_to_string(self.DPID_hex, utils.DPID)
-        self.assertEqual(tmp, self.DPID_string)
+        tmp = utils.hex_to_string(self.dpid_hex, utils.DPID)
+        self.assertEqual(tmp, self.dpid_string)
 
 
 class ApiBaseTest(unittest.TestCase):
@@ -75,5 +87,89 @@ class ApiBaseTest(unittest.TestCase):
     def tearDown(self):
         self.api = None
 
+class OfTest(ApiBaseTest):
 
+    def setUp(self):
+        super(OfTest, self).setUp()
 
+    def tearDown(self):
+        super(OfTest, self).tearDown()
+
+    def test_get_stats(self):
+        data = self.api.get_stats()
+        self.assertTrue(data)
+
+    def test_get_port_stats(self):
+        data = self.api.get_port_stats(DPID, 1)
+        self.assertTrue(data)
+
+    def test_get_group_stats(self):
+        #need to create a group on an OF1.3 DPID
+        pass
+
+    def test_get_meter_stats(self):
+        #need to create a meter on an OF1.3 DPID
+        pass
+
+    def test_get_datapaths(self):
+        data = self.api.get_datapaths()
+        self.assertTrue(data)
+        
+    def test_get_datapath_detail(self):
+        data = self.api.get_datapath_detail(DPID)
+        self.assertTrue(data)
+
+    def test_get_datapath_meter_features(self):
+        data = self.api.get_datapath_meter_features(DPID)
+        #Not supported on OF1.0 devices
+        self.assertRaises(hp.error.FlareApiError)
+
+    def test_get_datapath_group_features(self):
+        data = self.api.get_datapath_group_features(DPID)
+        #Not supported on OF1.0 devices
+        self.assertRaises(hp.error.FlareApiError)
+
+    def test_get_ports(self):
+        data = self.api.get_ports(DPID)
+        self.assertTrue(data)
+
+    def test_get_port_detail(self):
+        data = self.api.get_port_detail(DPID, 1)
+        self.assertTrue(data)
+        
+    def test_get_meters(self):
+        #need to create a meter on an OF1.3 DPID
+        pass
+
+    def test_get_meter_details(self):
+        #need to create a meter on an OF1.3 DPID
+        pass
+    
+    def test_get_flows(self):
+        data = self.api.get_flows(DPID)
+        self.assertTrue(data)
+
+    def test_get_groups(self):
+        data = self.api.get_groups(DPID)
+        self.assertRaises(hp.error.FlareApiError)
+    
+    def test_get_group_details(self):
+        data = self.api.get_group_details(DPID, 1)
+        self.assertRaises(hp.error.FlareApiError)
+
+    def test_add_groups(self):
+        group = hp.types.Group()
+        data = self.api.add_groups(DPID, group)
+        self.assertRaises(hp.error.FlareApiError)
+
+    def test_add_flows(self):
+        match = hp.types.Match(eth_type="ipv4",ipv4_src="10.0.0.1",ipv4_dst="10.0.0.22",ip_proto="tcp", tcp_dst="80")
+        output6 = hp.types.Action(output=6)
+        flow = hp.types.Flow(priority=30000, idle_timeout=30, match=match, actions=output6)
+        self.assertTrue(self.api.add_flows(DPID, flow))
+        self.assertTrue(flow in self.api.get_flows(DPID))
+
+    def test_add_meters(self):
+        meter = hp.types.Meter()
+        data = self.api.add_meters(DPID, meter)
+        self.assertRaises(hp.error.FlareApiError)

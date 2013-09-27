@@ -34,7 +34,7 @@ def readme():
 
 setuptools.setup(name='hp-sdn-client',
       version='0.0.1',
-      description="A python wrapper around the HP SDN Controller API",
+      description="A python library for the HP SDN Controller REST API",
       long_description=readme(),
       classifiers=[
         'Environment :: HP SDN Controller'
