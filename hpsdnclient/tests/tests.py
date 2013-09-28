@@ -34,7 +34,6 @@
 
 """
 
-import time
 import unittest
 
 import hpsdnclient as hp
@@ -87,13 +86,13 @@ class ApiBaseTest(unittest.TestCase):
     def tearDown(self):
         self.api = None
 
-class OfTest(ApiBaseTest):
+class TestOfApi(ApiBaseTest):
 
     def setUp(self):
-        super(OfTest, self).setUp()
+        super(TestOfApi, self).setUp()
 
     def tearDown(self):
-        super(OfTest, self).tearDown()
+        super(TestOfApi, self).tearDown()
 
     def test_get_stats(self):
         data = self.api.get_stats()
@@ -104,12 +103,10 @@ class OfTest(ApiBaseTest):
         self.assertTrue(data)
 
     def test_get_group_stats(self):
-        #need to create a group on an OF1.3 DPID
-        pass
+        self.assertRaises(hp.error.FlareApiError, self.api.get_group_stats, DPID, 1)
 
     def test_get_meter_stats(self):
-        #need to create a meter on an OF1.3 DPID
-        pass
+        self.assertRaises(hp.error.FlareApiError, self.api.get_meter_stats, DPID, 1)
 
     def test_get_datapaths(self):
         data = self.api.get_datapaths()
@@ -120,14 +117,10 @@ class OfTest(ApiBaseTest):
         self.assertTrue(data)
 
     def test_get_datapath_meter_features(self):
-        data = self.api.get_datapath_meter_features(DPID)
-        #Not supported on OF1.0 devices
-        self.assertRaises(hp.error.FlareApiError)
+        self.assertRaises(hp.error.FlareApiError, self.api.get_datapath_meter_features, DPID)
 
     def test_get_datapath_group_features(self):
-        data = self.api.get_datapath_group_features(DPID)
-        #Not supported on OF1.0 devices
-        self.assertRaises(hp.error.FlareApiError)
+        self.assertRaises(hp.error.FlareApiError, self.api.get_datapath_group_features, DPID)
 
     def test_get_ports(self):
         data = self.api.get_ports(DPID)
@@ -138,38 +131,42 @@ class OfTest(ApiBaseTest):
         self.assertTrue(data)
         
     def test_get_meters(self):
-        #need to create a meter on an OF1.3 DPID
-        pass
+        self.assertRaises(hp.error.FlareApiError, self.api.get_meters, DPID)
 
     def test_get_meter_details(self):
-        #need to create a meter on an OF1.3 DPID
-        pass
+        self.assertRaises(hp.error.FlareApiError, self.api.get_meter_details, DPID, 1)
     
     def test_get_flows(self):
         data = self.api.get_flows(DPID)
         self.assertTrue(data)
 
     def test_get_groups(self):
-        data = self.api.get_groups(DPID)
-        self.assertRaises(hp.error.FlareApiError)
+        self.assertRaises(hp.error.FlareApiError, self.api.get_groups, DPID)
     
     def test_get_group_details(self):
-        data = self.api.get_group_details(DPID, 1)
-        self.assertRaises(hp.error.FlareApiError)
+        self.assertRaises(hp.error.FlareApiError, self.api.get_group_details, DPID, 1)
 
     def test_add_groups(self):
         group = hp.types.Group()
-        data = self.api.add_groups(DPID, group)
-        self.assertRaises(hp.error.FlareApiError)
+        self.assertRaises(hp.error.FlareApiError,self.api.add_groups, DPID, group)
 
     def test_add_flows(self):
         match = hp.types.Match(eth_type="ipv4",ipv4_src="10.0.0.1",ipv4_dst="10.0.0.22",ip_proto="tcp", tcp_dst="80")
         output6 = hp.types.Action(output=6)
         flow = hp.types.Flow(priority=30000, idle_timeout=30, match=match, actions=output6)
-        self.assertTrue(self.api.add_flows(DPID, flow))
+        self.api.add_flows(DPID, flow)
         self.assertTrue(flow in self.api.get_flows(DPID))
 
     def test_add_meters(self):
         meter = hp.types.Meter()
-        data = self.api.add_meters(DPID, meter)
-        self.assertRaises(hp.error.FlareApiError)
+        self.assertRaises(hp.error.FlareApiError, self.api.add_meters, DPID, meter)
+
+
+
+class TestNetApi(ApiBaseTest):
+
+    def setUp(self):
+        super(TestNetApi, self).setUp()
+
+    def tearDown(self):
+        super(TestNetApi, self).tearDown()

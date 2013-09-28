@@ -33,6 +33,7 @@ import requests
 from error import FlareApiError
 
 DATA_TYPES = set(['json', 'zip'])
+SUCCESS_CODES = 200,201,204
 
 def get(url, token, data_type):
 	""" get()
@@ -40,29 +41,27 @@ def get(url, token, data_type):
 		Implements the REST GET verb using the Requests API.
 
 	"""
-	r = requests.get(url, auth=token, verify=False)
-	if r.status_code == requests.codes.ok:
-		if not data_type in DATA_TYPES:
-			raise FlareApiError("Invalid Data Type")
-		elif data_type == 'json': 
-			data = r.json()
-			for d in data:
-				if "error" in d:
-					raise FlareApiError(d["message"])
-					break
-			return data
-		elif data_type == 'zip':
-			pass
-	else:
-		try:
-			data = r.json()
-			for d in data:
-				if "error" in d:
-					raise FlareApiError(d["message"])
-					break
-		except Exception, e:
-			raise FlareApiError("Oh No! Something went wrong")
+	try:
+		r = requests.get(url, auth=token, verify=False)
+	except Exception, e:
+		data = r.json()
+		if "message" in data:
+			raise FlareApiError(data["message"])
+		else:
 			r.raise_for_status()
+	if r.status_code != requests.codes.ok:
+		data = r.json()
+		if "message" in data:
+			raise FlareApiError(data["message"])
+		else:
+			r.raise_for_status()
+	else:
+		data = r.json()
+		if data == [] or data == None:
+			raise FlareApiError("There is nothing to see here....")
+		else:
+			return data
+
 
 def put(url, token, data):
 	""" put()
@@ -70,18 +69,21 @@ def put(url, token, data):
 		Implements the REST PUT verb using the Requests API.
 
 	"""
-	r = requests.put(url, auth=token, data=data, verify=False)
-	if r.status_code in (requests.codes.ok, requests.codes.accepted, requsts.codes.no_content):
-		return
-	else:
-		try:
-			data = r.json()
-			for d in data:
-				if "error" in d:
-					raise FlareApiError(d["message"])
-					break
-		except Exception, e:
-			raise FlareApiError("Oh No! Something went wrong")
+	headers = {'content-type': 'application/json'}
+	try:
+		r = requests.put(url, auth=token, data=data, headers=headers, verify=False)
+	except Exception, e:
+		data = r.json()
+		if "message" in data:
+			raise FlareApiError(data["message"])
+		else:
+			r.raise_for_status()
+
+	if not r.status_code in SUCCESS_CODES:
+		data = r.json()
+		if "message" in data:
+			raise FlareApiError(data["message"])
+		else:
 			r.raise_for_status()
 
 def post(url, token, data):
@@ -90,38 +92,45 @@ def post(url, token, data):
 		Implements the REST POST verb using the Requests API.
 
 	"""
-	r = requests.post(url, auth=token, data=data, verify=False)
-	if r.status_code in (requests.codes.ok, requests.codes.accepted, requsts.codes.no_content):
-		return
-	else:
-		try:
-			data = r.json()
-			for d in data:
-				if "error" in d:
-					raise FlareApiError(d["message"])
-					break
-		except Exception, e:
-			raise FlareApiError("Oh No! Something went wrong")
+	headers = {'content-type': 'application/json'}
+	
+	try:
+		r = requests.post(url, auth=token, data=data, headers=headers, verify=False)
+	except Exception, e:
+		data = r.json()
+		if "message" in data:
+			raise FlareApiError(data["message"])
+		else:
 			r.raise_for_status()
-		
+
+	if not r.status_code in SUCCESS_CODES:
+		data = r.json()
+		if "message" in data:
+			raise FlareApiError(data["message"])
+		else:
+			r.raise_for_status()
+	
 def delete(url, token, data):
 	""" delete()
 
 		Implements the REST DELETE verb using the Requests API.
 
 	"""
-	r = requests.delete(url, auth=token, data=data, verify=False)
-	if r.status_code in (requests.codes.ok, requests.codes.accepted, requsts.codes.no_content):
-		return
-	else:
-		try:
-			data = r.json()
-			for d in data:
-				if "error" in d:
-					raise FlareApiError(d["message"])
-					break
-		except Exception, e:
-			raise FlareApiError("Oh No! Something went wrong")
+	headers = {'content-type': 'application/json'}
+	try:
+		r = requests.delete(url, auth=token, data=data, headers=headers, verify=False)
+	except Exception, e:
+		data = r.json()
+		if "message" in data:
+			raise FlareApiError(data["message"])
+		else:
+			r.raise_for_status()
+
+	if not r.status_code in SUCCESS_CODES:
+		data = r.json()
+		if "message" in data:
+			raise FlareApiError(data["message"])
+		else:
 			r.raise_for_status()
 		
 def head(url, token):
@@ -130,17 +139,19 @@ def head(url, token):
 		Implements the REST HEAD verb using the Requests API.
 
 	"""
-	r = requests.head(url, auth=token, verify=False)
-	if r.status_code in (requests.codes.ok, requests.codes.accepted, requsts.codes.no_content):
-		return
-	else:
-		try:
-			data = r.json()
-			for d in data:
-				if "error" in d:
-					raise FlareApiError(d["message"])
-					break
-		except Exception, e:
-			raise FlareApiError("Oh No! Something went wrong")
+	headers = {'content-type': 'application/json'}
+	try:
+		r = requests.head(url, auth=token, headers=headers, verify=False)
+	except Exception, e:
+		data = r.json()
+		if "message" in data:
+			raise FlareApiError(data["message"])
+		else:
 			r.raise_for_status()
-		
+
+	if not r.status_code in SUCCESS_CODES:
+		data = r.json()
+		if "message" in data:
+			raise FlareApiError(data["message"])
+		else:
+			r.raise_for_status()

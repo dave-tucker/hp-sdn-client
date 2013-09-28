@@ -78,7 +78,11 @@ class Of(object):
 
 		url = 'https://{0}:8443/sdn/v2.0/of/stats'.format(self.controller)
 		r = []
-		data = rest.get(url, self.auth_token, 'json')
+		try:
+			data = rest.get(url, self.auth_token, 'json')
+		except Exception, e:
+			raise FlareApiError("Something went wrong with your request. {0}".format(e))
+
 		for d in data['controller_stats']:
 			r.append(types.JsonObject.factory(d))
 		return r
@@ -93,7 +97,12 @@ class Of(object):
 		if port_id:
 			url = url + '&port_id={0}'.format(port_id)
 		r = []
-		data = rest.get(url, self.auth_token, 'json')
+		
+		try:
+			data = rest.get(url, self.auth_token, 'json')
+		except Exception, e:
+			raise FlareApiError("Something went wrong with your request. {0}".format(e))
+
 		for d in data['stats']:
 			r.append(types.JsonObject.factory(d))
 		return r
@@ -109,10 +118,15 @@ class Of(object):
 		url = 'https://{0}:8443/sdn/v2.0/of/stats/groups?dpid={1}'.format(self.controller, urllib.quote(dpid))
 		if group_id:
 			url = url + '&port_id={0}'.format(group_id)
-		r = rest.get(url, self.auth_token, 'json')
+		
+		try:
+			r = rest.get(url, self.auth_token, 'json')
+		except Exception, e:
+			raise FlareApiError("Something went wrong with your request. {0}".format(e))
+
 		return types.JsonObject.factory(r)
 
-	def get_meter_stats(self, dpid):
+	def get_meter_stats(self, dpid, meter_id):
 		""" get_meter_stats()
 
 			List meter statistics
@@ -120,8 +134,12 @@ class Of(object):
 			Notes: 
 
 		"""
-		url = 'https://{0}:8443/sdn/v2.0/of/stats/meters?dpid={1}'.format(self.controller, urllib.quote(dpid))
-		r = rest.get(url, self.auth_token, 'json')
+		url = 'https://{0}:8443/sdn/v2.0/of/stats/meters?dpid={1}&meter={2}'.format(self.controller, urllib.quote(dpid), meter_id)
+		try:
+			r = rest.get(url, self.auth_token, 'json')
+		except Exception, e:
+			raise FlareApiError("Something went wrong with your request. {0}".format(e))
+
 		return r
 
 	# DATAPATHS #
@@ -133,7 +151,11 @@ class Of(object):
 
 		"""
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths'.format(self.controller)
-		data = rest.get(url, self.auth_token, 'json')
+		try:
+			data = rest.get(url, self.auth_token, 'json')
+		except Exception, e:
+			raise FlareApiError("Something went wrong with your request. {0}".format(e))
+
 		r = []
 		for d in data['datapaths']:
 			r.append(types.JsonObject.factory(d))
@@ -146,7 +168,11 @@ class Of(object):
 
 		"""
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}'.format(self.controller, urllib.quote(dpid))
-		r = rest.get(url, self.auth_token, 'json')
+		try:
+			r = rest.get(url, self.auth_token, 'json')
+		except Exception, e:
+			raise FlareApiError("Something went wrong with your request. {0}".format(e))
+
 		return types.JsonObject.factory(r['datapath'])
 
 	def get_datapath_meter_features(self, dpid):
@@ -157,7 +183,13 @@ class Of(object):
 		"""
 
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/features/meter'.format(self.controller, urllib.quote(dpid))
-		pass
+		try:
+			r = rest.get(url, self.auth_token, 'json')
+		except Exception, e:
+			raise FlareApiError("Something went wrong with your request. {0}".format(e))
+
+		return types.JsonObject.factory(r['meter_features'])
+
 
 	def get_datapath_group_features(self, dpid):
 		""" get_datapath_group_features()
@@ -166,7 +198,13 @@ class Of(object):
 
 		"""
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/features/groups'.format(self.controller, urllib.quote(dpid))
-		pass
+		try:
+			r = rest.get(url, self.auth_token, 'json')
+		except Exception, e:
+			raise FlareApiError("Something went wrong with your request. {0}".format(e))
+
+		return types.JsonObject.factory(r['group_features'])
+
 
 	def get_ports(self, dpid):
 		""" get_ports()
@@ -176,7 +214,12 @@ class Of(object):
 		"""
 
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/ports'.format(self.controller, urllib.quote(dpid))
-		data = rest.get(url, self.auth_token, 'json')
+		
+		try:
+			data = rest.get(url, self.auth_token, 'json')
+		except Exception, e:
+			raise FlareApiError("Something went wrong with your request. {0}".format(e))
+
 		r = []
 		for d in data['ports']:
 			r.append(types.JsonObject.factory(d))
@@ -189,7 +232,11 @@ class Of(object):
 			
 		"""
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/ports/{2}'.format(self.controller, urllib.quote(dpid), port_id)
-		r = rest.get(url, self.auth_token, 'json')
+		try:
+			r = rest.get(url, self.auth_token, 'json')
+		except Exception, e:
+			raise FlareApiError("Something went wrong with your request. {0}".format(e))
+
 		return types.JsonObject.factory(r['port'])
 
 	def get_meters(self, dpid):
@@ -199,7 +246,11 @@ class Of(object):
 			
 		"""
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/meters'.format(self.controller, urllib.quote(dpid))
-		r = rest.get(url, self.auth_token, 'json')
+		try:
+			r = rest.get(url, self.auth_token, 'json')
+		except Exception, e:
+			raise FlareApiError("Something went wrong with your request. {0}".format(e))
+
 		return types.JsonObject.factory(r)
 
 	def add_meters(self, dpid, meters):
@@ -211,10 +262,8 @@ class Of(object):
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/meters'.format(self.controller, urllib.quote(dpid))
 		try:
 			rest.post(url, self.auth_token, json.dumps(meters.to_dict()))
-		
-		except Exception, FlareApiError:
-			raise FlareApiError('Something went wrong')
-			return False
+		except Exception, e:
+			raise FlareApiError('Something went wrong... {0}'.format(e))
 
 	def get_meter_details(self, dpid, meter_id):
 		""" get_meter_details ()
@@ -223,28 +272,40 @@ class Of(object):
 
 		"""
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/meters/{2}'.format(self.controller, urllib.quote(dpid), meter_id)
-		r = rest.get(url, self.auth_token, 'json')
+		try:
+			r = rest.get(url, self.auth_token, 'json')
+		except Exception, e:
+			raise FlareApiError("Something went wrong with your request. {0}".format(e))
+
 		return types.JsonObject.factory(r)
 
-	def update_meter(self, dpid, meterid, meter):
+	def update_meter(self, dpid, meter_id, meter):
 		""" update_meter ()
 
 			Update a meter 
 
 		"""
-		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/meters/{2}'.format(self.controller, urllib.quote(dpid), meterid)
-		r = rest.put(url, self.auth_token, meters, 'json')
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/meters/{2}'.format(self.controller, urllib.quote(dpid), meter_id)
+		try:
+			r = rest.put(url, self.auth_token, meters, 'json')
+		except Exception, e:
+			raise FlareApiError("Something went wrong with your request. {0}".format(e))
+
 		return types.JsonObject.factory(r)
 
-	def delete_meter(self, dpid, meterid):
+	def delete_meter(self, dpid, meter_id):
 		""" delete_meter()
 
 			Delete a meter
 			
 		"""
 
-		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/meters/{2}'.format(self.controller, urllib.quote(dpid), meterid)
-		r = rest.delete(url, self.auth_token, 'json')
+		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/meters/{2}'.format(self.controller, urllib.quote(dpid), meter_id)
+		try:
+			r = rest.delete(url, self.auth_token, 'json')
+		except Exception, e:
+			raise FlareApiError("Something went wrong with your request. {0}".format(e))
+
 		return types.JsonObject.factory(r)
 
 	def get_flows(self, dpid):
@@ -254,7 +315,11 @@ class Of(object):
 			
 		"""
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/flows'.format(self.controller, urllib.quote(dpid))
-		data = rest.get(url, self.auth_token, 'json')
+		try:
+			data = rest.get(url, self.auth_token, 'json')
+		except Exception, e:
+			raise FlareApiError("Something went wrong with your request. {0}".format(e))
+
 		r = []
 		for d in data['flows']:
 			r.append(types.JsonObject.factory(d))
@@ -268,24 +333,23 @@ class Of(object):
 		"""
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/flows'.format(self.controller, urllib.quote(dpid))
 		if isinstance(flows, list):
-			data = '{ "flows" : '
+			tmp = []
 			for f in flows:
 				if isinstance(d, types.Flow):
-					data = data + json.dumps(d.to_dict())
+					tmp.append(d.to_dict())
 				else:
 					raise FlareApiError("Invalid object passed to add_datapath_flows. Expected types.Flow or a list of types.Flow")
 					break
-			data =  data + '}'
+			data = { "flows" : tmp }
 		elif isinstance(flows, types.Flow):
-			data = '{ "flow" : ' + json.dumps(flows.to_dict()) + ' }'
+			data = { "flow" : flows.to_dict() }
 		else:
 			raise FlareApiError("Invalid object passed to add_datapath_flows. Expected types.Flow or a list of types.Flow")
-
 		try:
-			rest.post(url, self.auth_token, json.dumps(data))
+			r = rest.post(url, self.auth_token, json.dumps(data))
 		except Exception, e:
 			print data
-			raise FlareApiError('Something went wrong')
+			raise FlareApiError("Something went wrong with your request. {0}".format(e))
 
 	def update_flows(self, dpid, flow):
 		""" update_flows()
@@ -295,7 +359,11 @@ class Of(object):
 		"""
 
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/flows'.format(self.controller, urllib.quote(dpid))
-		r = rest.put(url, self.auth_token, flow, 'json')
+		try:
+			r = rest.put(url, self.auth_token, flow, 'json')
+		except Exception, e:
+			raise FlareApiError("Something went wrong with your request. {0}".format(e))
+
 		return types.JsonObject.factory(r)
 
 	def delete_flows(self, dpid, flows):
@@ -306,7 +374,11 @@ class Of(object):
 		"""
 
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/flows'.format(self.controller, urllib.quote(dpid))
-		r = rest.delete(url, self.auth_token, flow, 'json')
+		try:
+			r = rest.delete(url, self.auth_token, flow, 'json')
+		except Exception, e:
+			raise FlareApiError("Something went wrong with your request. {0}".format(e))
+
 		return types.JsonObject.factory(r)
 
 	def get_groups(self, dpid):
@@ -316,7 +388,11 @@ class Of(object):
 
 		"""
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/groups'.format(self.controller, urllib.quote(dpid))
-		r = rest.get(url, self.auth_token, 'json')
+		try:
+			r = rest.get(url, self.auth_token, 'json')
+		except Exception, e:
+			raise FlareApiError('Something went wrong... {0}'.format(e))
+
 		return types.JsonObject.factory(r)
 
 	def add_groups(self, dpid, groups):
@@ -327,9 +403,9 @@ class Of(object):
 		"""
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/groups'.format(self.controller, urllib.quote(dpid))
 		try:
-			rest.post(url, self.auth_token, json.dummps(groups.to_dict()))
-		except Exception, FlareApiError:
-			raise FlareApiError('Something went wrong')
+			rest.post(url, self.auth_token, json.dumps(groups.to_dict()))
+		except Exception, e:
+			raise FlareApiError('Something went wrong... {0}'.format(e))
 
 	def get_group_details(self, dpid, groupid):
 		""" get_groups ()
@@ -338,7 +414,12 @@ class Of(object):
 
 		"""
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/groups/{2}'.format(self.controller, urllib.quote(dpid), groupid)
-		r = rest.get(url, self.auth_token, 'json')
+		
+		try:
+			r = rest.get(url, self.auth_token, 'json')
+		except Exception, e:
+			raise FlareApiError('Something went wrong... {0}'.format(e))
+
 		return types.JsonObject.factory(r)
 
 	def update_groups(self, dpid, groupid, groups):
@@ -350,8 +431,8 @@ class Of(object):
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/groups/{2}'.format(self.controller, urllib.quote(dpid))
 		try:
 			rest.post(url, self.auth_token, json.dumps(groups.to_dict()))
-		except Exception, FlareApiError:
-			raise FlareApiError('Something went wrong')
+		except Exception, e:
+			raise FlareApiError('Something went wrong... {0}'.format(e))
 
 	def delete_groups(self, dpid, groupid):
 		""" delete_groups ()
@@ -360,6 +441,10 @@ class Of(object):
 
 		"""
 		url = 'https://{0}:8443/sdn/v2.0/of/datapaths/{1}/groups/{2}'.format(self.controller, urllib.quote(dpid), groupid)
-		r = rest.delete(url, self.auth_token, 'json')
+		try:
+			r = rest.delete(url, self.auth_token, 'json')
+		except Exception, e:
+			raise FlareApiError("Something went wrong with your request. {0}".format(e))
+
 		return types.JsonObject.factory(r)
 
