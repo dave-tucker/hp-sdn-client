@@ -2,25 +2,25 @@
 #
 # Copyright (c)  2013 Hewlett-Packard Development Company, L.P.
 #
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software  and associated documentation files (the "Software"), to deal
-# in the Software without restriction,  including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
+# Permission is hereby granted, fpenrlowee of charge, to any person
+# obtaining a copy of this software  and associated documentation files
+# (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge,
+# publish, distribute, sublicense, and/or sell copies of the Software,
+# and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
 #
-# The above copyright notice and this permission notice shall be included in all
-# copies or  substantial portions of the Software.#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
 #
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED,  INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR  PURPOSE AND NONINFRINGEMENT.
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 #
-# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-# DAMAGES OR  OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-# OTHERWISE, ARISING FROM, OUT OF  OR IN CONNECTION WITH THE SOFTWARE OR THE USE
-# OR OTHER DEALINGS IN THE SOFTWARE.
-#
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR  OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 """ This fle implements the Flare Core REST API
 /support GET
@@ -77,20 +77,23 @@
 """
 
 __author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 
+import json
 import time
-import urllib
 
 import requests
 
-from error import FlareApiError
-        
-class Core(object):
+from hpsdnclient.api import ApiBase
+import hpsdnclient.rest as rest
+import hpsdnclient.datatypes as datatypes
+from hpsdnclient.error import FlareApiError
+
+class CoreMixin(ApiBase):
     """ Flare REST API Core Methods. i.e, those in sdn/v2.0/ """
-    	
-    def __init__(self):
-		pass
+
+    def __init__(self, controller, user, password):
+        super(CoreMixin, self).__init__(controller, user, password)
 
     def get_support(self):
         """ get_support ()
@@ -148,42 +151,27 @@ class Core(object):
         pass
 
     def get_auth(self):
-        """ get_auth ()
-
-            Get Authentication Token 
-
-            This method returns a dictionary with the token and expiration time. 
-
-        """
-        #ToDo: Rework to return just a token
+        """Get Authentication Token. This method returns a dictionary
+        with the token and expiration time"""
         url = 'https://{0}:8443/sdn/v2.0/auth'.format(self.controller)
-        payload = {'login':{ 'user': self.user, 'password': self.password}}
-        r = requests.post(url, data=json.dumps(payload))
+        data = {'login':{ 'user': self.user, 'password': self.password}}
+        r = requests.post(url, data=json.dumps(data))
         t = []
-        if r.status_code == requests.codes.ok:
+        if r.status_code == 200:
             data = r.json()
             t['token'] = data[u'record'][u'token']
-            t['token_expiration'] = time.gmtime(data[u'record'][u'expiration']/1000)
+            exptime = data[u'record'][u'expiration']/1000
+            t['token_expiration'] = time.gmtime(exptime)
             return t
         else:
-            raise FlareApiError("Oh no! Something went wrong")
             r.raise_for_status()
 
-    def delete_auth(self):
-        #ToDo: Rework 
-        """ delete_auth ()
-
-            Delete Authentication Token, AKA, Logout
-
-            This method logs the current user out 
-
-        """
+    def delete_auth(self, token):
+        """ Delete Authentication Token, AKA, Logout. This method logs
+        out the owner of the supplied token."""
         url = 'https://{0}:8443/sdn/v2.0/auth'.format(self.controller)
-        headers = {"X-Auth-Token":self.token}
+        headers = {"X-Auth-Token":token[u'token']}
         r = requests.delete(url, headers=headers)
-        if r.status_code == requests.codes.ok:
-            return
-        else:
-            raise FlareApiError("Oh no! Something went wrong")
+        if not r.status_code == 200:
             r.raise_for_status()
 

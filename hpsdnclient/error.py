@@ -2,25 +2,25 @@
 #
 # Copyright (c)  2013 Hewlett-Packard Development Company, L.P.
 #
-# Permission is hereby granted, fpenrlowee of charge, to any person obtaining a copy
-# of this software  and associated documentation files (the "Software"), to deal
-# in the Software without restriction,  including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
+# Permission is hereby granted, fpenrlowee of charge, to any person
+# obtaining a copy of this software  and associated documentation files
+# (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge,
+# publish, distribute, sublicense, and/or sell copies of the Software,
+# and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
 #
-# The above copyright notice and this permission notice shall be included in all
-# copies or  substantial portions of the Software.#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
 #
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED,  INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR  PURPOSE AND NONINFRINGEMENT.
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 #
-# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-# DAMAGES OR  OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-# OTHERWISE, ARISING FROM, OUT OF  OR IN CONNECTION WITH THE SOFTWARE OR THE USE
-# OR OTHER DEALINGS IN THE SOFTWARE.
-#
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR  OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 """ Error handling for the HP SDN Client """
 
@@ -41,7 +41,7 @@ class HttpError(FlareApiError):
         elif res_code == 404:
             msg = "Looks like the Api isn't responding. Check access to the SDN Controller"
         elif res_code == 409:
-            msg = """Holy Grail you say? We've already got one! 
+            msg = """Holy Grail you say? We've already got one!
                      On a more serious note we already have one of these objects you requested"""
         else:
             msg = "You were in great peril back there! HTTP threw a {}".format(res_code)

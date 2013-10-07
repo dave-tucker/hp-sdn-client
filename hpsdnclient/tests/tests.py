@@ -22,17 +22,14 @@
 # OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-"""
-    Here lies the unit tests for the hpsdnclient library
+"""Here lies the unit tests for the hpsdnclient library
 
     In order to run these tests you must:
         - have the HP SDN Controller running
         - have a physical or MiniNet topology running
         - have traffic running across the network topology
 
-    Before running these tests, update SDNCTL, USER and PASS
-
-"""
+    Before running these tests, update SDNCTL, USER and PASS"""
 
 import unittest
 
@@ -86,6 +83,7 @@ class ApiBaseTest(unittest.TestCase):
     def tearDown(self):
         self.api = None
 
+
 class TestOfApi(ApiBaseTest):
 
     def setUp(self):
@@ -103,15 +101,17 @@ class TestOfApi(ApiBaseTest):
         self.assertTrue(data)
 
     def test_get_group_stats(self):
-        self.assertRaises(hp.error.FlareApiError, self.api.get_group_stats, DPID, 1)
+        self.assertRaises(hp.error.FlareApiError, self.api.get_group_stats,
+                          DPID, 1)
 
     def test_get_meter_stats(self):
-        self.assertRaises(hp.error.FlareApiError, self.api.get_meter_stats, DPID, 1)
+        self.assertRaises(hp.error.FlareApiError, self.api.get_meter_stats,
+                          DPID, 1)
 
     def test_get_datapaths(self):
         data = self.api.get_datapaths()
         self.assertTrue(data)
-        
+
     def test_get_datapath_detail(self):
         data = self.api.get_datapath_detail(DPID)
         self.assertTrue(data)
@@ -129,38 +129,47 @@ class TestOfApi(ApiBaseTest):
     def test_get_port_detail(self):
         data = self.api.get_port_detail(DPID, 1)
         self.assertTrue(data)
-        
+
     def test_get_meters(self):
         self.assertRaises(hp.error.FlareApiError, self.api.get_meters, DPID)
 
     def test_get_meter_details(self):
-        self.assertRaises(hp.error.FlareApiError, self.api.get_meter_details, DPID, 1)
-    
+        self.assertRaises(hp.error.FlareApiError, self.api.get_meter_details,
+                          DPID, 1)
+
     def test_get_flows(self):
         data = self.api.get_flows(DPID)
         self.assertTrue(data)
 
     def test_get_groups(self):
         self.assertRaises(hp.error.FlareApiError, self.api.get_groups, DPID)
-    
+
     def test_get_group_details(self):
-        self.assertRaises(hp.error.FlareApiError, self.api.get_group_details, DPID, 1)
+        self.assertRaises(hp.error.FlareApiError, self.api.get_group_details,
+                          DPID, 1)
 
     def test_add_groups(self):
-        group = hp.types.Group()
-        self.assertRaises(hp.error.FlareApiError,self.api.add_groups, DPID, group)
+        group = hp.datatypes.Group()
+        self.assertRaises(hp.error.FlareApiError, self.api.add_groups,
+                          DPID, group)
 
     def test_add_flows(self):
-        match = hp.types.Match(eth_type="ipv4",ipv4_src="10.0.0.1",ipv4_dst="10.0.0.22",ip_proto="tcp", tcp_dst="80")
-        output6 = hp.types.Action(output=6)
-        flow = hp.types.Flow(priority=30000, idle_timeout=30, match=match, actions=output6)
+        match = hp.datatypes.Match(eth_type="ipv4", ipv4_src="10.0.0.1",
+                               ipv4_dst="10.0.0.22", ip_proto="tcp",
+                               tcp_dst="80")
+        output6 = hp.datatypes.Action(output=6)
+        flow = hp.datatypes.Flow(priority=30000, idle_timeout=30,
+                             match=match, actions=output6)
         self.api.add_flows(DPID, flow)
+        #ToDo: Flow gets default values added when submitted to
+        #controller, therefore the flow object will not appear in
+        #get_flows.
         self.assertTrue(flow in self.api.get_flows(DPID))
 
     def test_add_meters(self):
-        meter = hp.types.Meter()
-        self.assertRaises(hp.error.FlareApiError, self.api.add_meters, DPID, meter)
-
+        meter = hp.datatypes.Meter()
+        self.assertRaises(hp.error.FlareApiError, self.api.add_meters,
+                          DPID, meter)
 
 
 class TestNetApi(ApiBaseTest):

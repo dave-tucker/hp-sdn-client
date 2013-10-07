@@ -18,3 +18,5 @@
 #venv
 .venv/
 
+#DS Store files
+.DS_Store
