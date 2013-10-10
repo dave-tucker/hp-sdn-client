@@ -25,6 +25,5 @@
 class ApiBase(object):
     """Base class for the Api object"""
     def __init__(self, controller, auth):
-
         self.controller = controller
         self.auth = auth

@@ -22,46 +22,28 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-""" Here is the implementation for the REST verbs using the Requests API """
+""" These are wrapper functions around the pyhton-requests HTTP verbs """
 
 __author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
 __version__ = '0.2.0'
 
 import requests
 
-from hpsdnclient.error import FlareApiError
+HEADERS = {
+            'content-type': 'application/json',
+            'user-agent': 'hpsdnclient/{0} '.format(__version__)  +
+                          'python-requests/{0}'.format(requests.__version__)
+            }
 
-DATA_TYPES = set(['json', 'zip'])
-SUCCESS_CODES = ( 200, 201, 204 )
-
-def get(url, token, data_type):
+def get(url, token):
     """ get()
 
-        Implements the REST GET verb using the Requests API.
+        Implements the HTTP GET verb using the Requests API.
 
     """
-    try:
-        r = requests.get(url, auth=token, verify=False, timeout=0.5)
-    except Exception as e:
-        data = r.json()
-        if "message" in data:
-            raise FlareApiError(data["message"])
-        else:
-            r.raise_for_status()
-    if not r.status_code in SUCCESS_CODES:
-        if data_type == 'json':
-            data = r.json()
-            if "message" in data:
-                raise FlareApiError(data["message"])
-            else:
-                r.raise_for_status()
-    else:
-        data = r.json()
-        if data == [] or data == None:
-            raise FlareApiError("There is nothing to see here....")
-        else:
-            return data
-
+    r = requests.get(url, auth=token, verify=False,
+                     headers=HEADERS, timeout=0.5)
+    return r
 
 def put(url, token, data):
     """ put()
@@ -69,23 +51,9 @@ def put(url, token, data):
         Implements the REST PUT verb using the Requests API.
 
     """
-    headers = {'content-type': 'application/json'}
-    try:
-        r = requests.put(url, auth=token, data=data,
-                         headers=headers, verify=False, timeout=0.5)
-    except Exception as e:
-        data = r.json()
-        if "message" in data:
-            raise FlareApiError(data["message"])
-        else:
-            r.raise_for_status()
-
-    if not r.status_code in SUCCESS_CODES:
-        data = r.json()
-        if "message" in data:
-            raise FlareApiError(data["message"])
-        else:
-            r.raise_for_status()
+    r = requests.put(url, auth=token, data=data,
+                     headers=HEADERS, verify=False, timeout=0.5)
+    return r
 
 def post(url, token, data):
     """ post()
@@ -93,23 +61,9 @@ def post(url, token, data):
         Implements the REST POST verb using the Requests API.
 
     """
-    headers = {'content-type': 'application/json'}
-    try:
-        r = requests.post(url, auth=token, data=data,
-                          headers=headers, verify=False, timeout=0.5)
-    except Exception as e:
-        data = r.json()
-        if "message" in data:
-            raise FlareApiError(data["message"])
-        else:
-            r.raise_for_status()
-
-    if not r.status_code in SUCCESS_CODES:
-        data = r.json()
-        if "message" in data:
-            raise FlareApiError(data["message"])
-        else:
-            r.raise_for_status()
+    r = requests.post(url, auth=token, data=data,
+                      headers=HEADERS, verify=False, timeout=0.5)
+    return r
 
 def delete(url, token, data=None):
     """ delete()
@@ -117,34 +71,14 @@ def delete(url, token, data=None):
         Implements the REST DELETE verb using the Requests API.
 
     """
-    headers = {'content-type': 'application/json'}
 
     if not data == None:
-        try:
-            r = requests.delete(url, auth=token, headers=headers,
-                                data=data, verify=False, timeout=0.5)
-        except Exception as e:
-            data = r.json()
-            if "message" in data:
-                raise FlareApiError(data["message"])
-            else:
-                r.raise_for_status()
+        r = requests.delete(url, auth=token, headers=HEADERS,
+                            data=data, verify=False, timeout=0.5)
     else:
-        try:
-            r = requests.delete(url, auth=token, headers=headers,
-                                verify=False, timeout=0.5)
-        except Exception as e:
-            data = r.json()
-            if "message" in data:
-                raise FlareApiError(data["message"])
-            else:
-                r.raise_for_status()
-    if not r.status_code in SUCCESS_CODES:
-        data = r.json()
-        if "message" in data:
-            raise FlareApiError(data["message"])
-        else:
-            r.raise_for_status()
+        r = requests.delete(url, auth=token, headers=HEADERS,
+                            verify=False, timeout=0.5)
+    return r
 
 def head(url, token):
     """ head()
@@ -152,20 +86,7 @@ def head(url, token):
         Implements the REST HEAD verb using the Requests API.
 
     """
-    headers = {'content-type': 'application/json'}
-    try:
-        r = requests.head(url, auth=token, headers=headers,
-                          verify=False, timeout=0.5)
-    except Exception as e:
-        data = r.json()
-        if "message" in data:
-            raise FlareApiError(data["message"])
-        else:
-            r.raise_for_status()
 
-    if not r.status_code in SUCCESS_CODES:
-        data = r.json()
-        if "message" in data:
-            raise FlareApiError(data["message"])
-        else:
-            r.raise_for_status()
+    r = requests.head(url, auth=token, headers=HEADERS,
+                          verify=False, timeout=0.5)
+    return r

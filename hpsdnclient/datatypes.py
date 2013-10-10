@@ -29,7 +29,10 @@ __version__ = '0.2.0'
 
 import json
 
-ETHERNET = ['ipv4','arp','rarp','snmp','ipv6','mpls_u', 'mpls_m', 'lldp', 'pbb', 'bddp']
+from hpsdnclient.error import FlareApiError
+
+ETHERNET = ['ipv4', 'arp', 'rarp', 'snmp', 'ipv6',
+            'mpls_u', 'mpls_m', 'lldp', 'pbb', 'bddp']
 
 VERSION = ['1.0.0', '1.1.0', '1.2.0', '1.3.0)']
 
@@ -56,7 +59,7 @@ CAPABILITIES = ['flow_stats',
                 'queue_stats',
                 'arp_match_ip',
                 'port_blocked'
-                ]
+               ]
 
 PORT_CONFIG = ["port_down",
                "no_stp",
@@ -120,19 +123,19 @@ ICMP_V6_TYPE = ["nbr_sol", "nbr_adv"]
 MATCH_MODE = ["none", "present", "exact"]
 
 IPV6_EXTHDR = ["no_next",
-                   "esp",
-                   "auth",
-                   "dest",
-                   "frag",
-                   "router",
-                   "hop",
-                   "un_rep",
-                   "un_seq"]
+               "esp",
+               "auth",
+               "dest",
+               "frag",
+               "router",
+               "hop",
+               "un_rep",
+               "un_seq"]
 
 METER_FLAGS = ["kbps",
-                   "pktps",
-                   "burst",
-                   "stats"]
+               "pktps",
+               "burst",
+               "stats"]
 
 METER_TYPE = ["drop", "dscp_remark","experimenter"]
 
@@ -148,6 +151,7 @@ LINK_STATE = ["link_down",
               "stp_forward",
               "stp_block"
               ]
+
 OPERATION = ["ADD", "CHANGE", "DELETE", "MOVE"]
 
 ENUMS = [ ETHERNET,
@@ -169,24 +173,23 @@ ENUMS = [ ETHERNET,
           METER_TYPE,
           GROUP_TYPE,
           COMMANDS,
-          LINK_STATE
+          LINK_STATE,
+          OPERATION
         ]
 
 def _find_class(data):
 
     """ _find_class (data)
 
-        Finds a matching class from some JSON.
+        Finds a matching class from the supplied JSON in data.
         Checks the values in the JSON dict against the class member variables.
         Returns the an instance of the matching class.
-
     """
 
     keys = [d for d in data]
-    for c in JsonObject.__subclasses__():
-        cls = c()
-        if all(k in dir(cls) for k in keys):
-            return cls
+    for c in CLASS_LIST:
+        if all(k in dir(c) for k in keys):
+            return c.__name__()
 
 class JsonObject(object):
 
@@ -222,7 +225,8 @@ class JsonObject(object):
 
         """
         tmp = self.to_dict()
-        return json.dumps(tmp,sort_keys=True, indent=4, separators=(',', ': '))
+        return json.dumps(tmp, sort_keys=True,
+                          indent=4, separators=(',', ': '))
 
     def to_dict(self):
         """
@@ -234,10 +238,12 @@ class JsonObject(object):
         """
 
         data = {}
-        attributes = [attr for attr in dir(self) if not callable(getattr(self,attr)) and not attr.startswith("__")]
+        attributes = [attr for attr in dir(self)
+                      if not callable(getattr(self,attr))
+                      and not attr.startswith("__")]
         for attr in attributes:
-            if getattr(self,attr):
-                value = getattr(self,attr)
+            if getattr(self, attr):
+                value = getattr(self, attr)
                 if isinstance(value, list):
                     for item in value:
                         tmp = []
@@ -247,7 +253,7 @@ class JsonObject(object):
                             tmp.append(value)
                         data[attr.__str__()] = tmp
                 elif isinstance(value, JsonObject):
-                            data[attr.__str__()] = value.to_dict()
+                    data[attr.__str__()] = value.to_dict()
                 elif type(value):
                     data[attr.__str__()] = value
         return data
@@ -258,19 +264,24 @@ class JsonObject(object):
 
            factory (self)
 
-           Static method that creates a new instance of a class based on some JSON.
-           Finds the matching class, extracts the data in the JSON and maps it to the appropriate data types (default is string).
+           Static method that creates a new instance of a class based
+           on some JSON. Finds the matching class, extracts the data in
+           the JSON and maps it to the appropriate data types
 
         """
         tmp = _find_class(data)
-        attributes = [attr for attr in dir(tmp) if not callable(getattr(tmp,attr)) and not attr.startswith("__")]
+        attributes = [attr for attr in dir(tmp)
+                      if not callable(getattr(tmp,attr)) and
+                      not attr.startswith("__")]
         for attr in attributes:
-            if attr in class_bindings:
-                cls = class_bindings[attr].factory(data.get(attr))
+            #TODO:Rewrite CLASS_BINDINGS to "Class:Attribute" format
+            #This should resolve issues where Attribute doesn't = Class Name
+            if attr in CLASS_BINDINGS:
+                cls = CLASS_BINDINGS[attr].factory(data.get(attr))
                 setattr(tmp, attr, cls)
-            elif isinstance(data.get(attr),list):
+            elif isinstance(data.get(attr), list):
                 #Could be an enum or a class
-                for e in enums:
+                for e in ENUMS:
                     if all(k in e for k in data.get(attr)):
                         setattr(tmp, attr, data.get(attr))
                         break
@@ -297,9 +308,9 @@ class Datapath(JsonObject):
         self.ready = kwargs.get('ready', None)
         self.last_message = kwargs.get('last_message', None)
         self.num_buffers = kwargs.get('num_buffers', None)
-        self.num_tables = kwargs.get('num_tables',None)
-        self.supported_actions = kwargs.get('supported_action',[])
-        self.capabilities = kwargs.get('capabilities',[])
+        self.num_tables = kwargs.get('num_tables', None)
+        self.supported_actions = kwargs.get('supported_action', [])
+        self.capabilities = kwargs.get('capabilities', [])
         self.num_ports = kwargs.get('num_ports', None)
         self.device_ip = kwargs.get('device_ip', None)
         self.device_port = kwargs.get('device_port', None)
@@ -401,15 +412,18 @@ class Match(JsonObject):
         """ to_dict (self)
 
             Creates a representation of the class as a dictionary
-            Overrides the parent method as all members variables of this class are strings
+            Overrides the parent method as all members variables of
+            this class are strings
 
         """
         data = []
-        attributes = [attr for attr in dir(self) if not callable(getattr(self,attr)) and not attr.startswith("__")]
+        attributes = [attr for attr in dir(self)
+                      if not callable(getattr(self,attr))
+                      and not attr.startswith("__")]
         for attr in attributes:
-            if getattr(self,attr):
+            if getattr(self, attr):
                 tmp = {}
-                tmp[attr.__str__()] = getattr(self,attr)
+                tmp[attr.__str__()] = getattr(self, attr)
                 data.append(tmp)
         return data
 
@@ -417,18 +431,20 @@ class Match(JsonObject):
     def factory(data):
         """ factory (data)
 
-            Creates an instance of the class from some JSON.
-            Overrides the parent method as in this case, JSON will be a list dictionaries
+            Creates an instance of the class from some JSON. Overrides
+            the parent method as in this case, JSON will be a list of
+            dictionaries
 
         """
         tmp = Match()
-        attributes = [attr for attr in dir(tmp) if not callable(getattr(tmp,attr)) and not attr.startswith("__")]
         for d in data:
             if isinstance(d, dict):
                 for key in d:
                     setattr(tmp, key, d[key])
             else:
-                raise FlareApiError("Invalid data type. Expected list of dicts, got {0}".format(type(data.get(d))))
+                msg = ("Invalid data type. Expected list" +
+                      "of dicts, got {0}".format(type(data.get(d))))
+                raise FlareApiError(msg)
         return tmp
 
 class Action(JsonObject):
@@ -461,15 +477,18 @@ class Action(JsonObject):
         """ to_dict (self)
 
             Creates a representation of the class as a dictionary
-            Overrides the parent method as all members variables of this class are strings
+            Overrides the parent method as all members variables of
+            this class are strings
 
         """
         data = []
-        attributes = [attr for attr in dir(self) if not callable(getattr(self,attr)) and not attr.startswith("__")]
+        attributes = [attr for attr in dir(self)
+                      if not callable(getattr(self,attr))
+                      and not attr.startswith("__")]
         for attr in attributes:
-            if getattr(self,attr):
+            if getattr(self, attr):
                 tmp = {}
-                tmp[attr.__str__()] = getattr(self,attr)
+                tmp[attr.__str__()] = getattr(self, attr)
                 data.append(tmp)
         return data
 
@@ -478,17 +497,19 @@ class Action(JsonObject):
         """ factory (data)
 
             Creates an instance of the class from some JSON.
-            Overides the parent method as in this case, JSON will be a list dictionaries
+            Overides the parent method as in this case, JSON will be a
+            list of dictionaries
 
         """
         tmp = Action()
-        attributes = [attr for attr in dir(tmp) if not callable(getattr(tmp,attr)) and not attr.startswith("__")]
         for d in data:
             if isinstance(d, dict):
                 for key in d:
                     setattr(tmp, key, d[key])
             else:
-                raise FlareApiError("Invalid data type. Expected list of dicts, got {0}".format(type(data.get(d))))
+                msg = ("Invalid data type. Expected list" +
+                      "of dicts, got {0}".format(type(data.get(d))))
+                raise FlareApiError(msg)
         return tmp
 
 class Instruction(JsonObject,):
@@ -540,8 +561,8 @@ class Meter(JsonObject):
     def __init__(self, **kwargs):
         self.id = kwargs.get('id', None)
         self.command = kwargs.get('command', None)
-        self.flags = kwargs.get('flags',[])
-        self.bands = kwargs.get('bands',[])
+        self.flags = kwargs.get('flags', [])
+        self.bands = kwargs.get('bands', [])
 
 class MeterBand(JsonObject):
     """ MeterBand (JsonObject)
@@ -564,7 +585,7 @@ class Group(JsonObject):
     """
     def __init__(self, **kwargs):
         self.id = kwargs.get('id',None)
-        self.properties = kwargs.get('properties',None)
+        self.properties = kwargs.get('properties', None)
         self.ref_count = kwargs.get('ref_count', None)
         self.packet_count = kwargs.get('packet_count', None)
         self.byte_count = kwargs.get('byte_count', None)
@@ -595,7 +616,7 @@ class Stats(JsonObject):
     def __init__(self, **kwargs):
         self.dpid = kwargs.get('dpid', None)
         self.version = kwargs.get('version', None)
-        self.port_stats= kwargs.get('port_stats', [])
+        self.port_stats = kwargs.get('port_stats', [])
         self.group_stats = kwargs.get('group_stats', [])
 
 class PortStats(JsonObject):
@@ -645,7 +666,7 @@ class Cluster(JsonObject):
     """
     def __init__(self, **kwargs):
         self.uid = kwargs.get('uid', None)
-        self.links = kwargs.get('links',[])
+        self.links = kwargs.get('links', [])
 
 class Link(JsonObject):
     """ Link (JsonObject)
@@ -654,7 +675,7 @@ class Link(JsonObject):
 
     """
     def __init__(self, **kwargs):
-        self.src_dpid = kwargs.get('src_dpid',None)
+        self.src_dpid = kwargs.get('src_dpid', None)
         self.src_port = kwargs.get('src_port', None)
         self.dst_dpid = kwargs.get('dst_dpid', None)
         self.dst_port = kwargs.get('dst_port', None)
@@ -1198,7 +1219,9 @@ class DhcpOptions(JsonObject):
         self.type = kwargs.get("type", None)
         self.parameter_request_list = kwargs.get("parameter_request_list", None)
 
-class_bindings = {'match' : Match,
+CLASS_LIST = [s() for s in JsonObject.__subclasses__()]
+
+CLASS_BINDINGS = {'match' : Match,
                   'actions' : Action,
                   #'links' : Link,
                   #'links' : TreeLink
