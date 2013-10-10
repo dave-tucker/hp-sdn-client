@@ -37,8 +37,10 @@ from hpsdnclient.error import FlareApiError
 
 class NetMixin(ApiBase):
 
-    def __init__(self, controller, user, password):
-        super(NetMixin, self).__init__(controller, user, password)
+    def __init__(self, controller, auth):
+        super(NetMixin, self).__init__(controller, auth)
+        self._net_base_url = ("https://{0}:8443" +
+                              "/sdn/v2.0/net/".format(self.controller))
 
     def get_clusters(self):
         """ get_clusters()
@@ -49,7 +51,7 @@ class NetMixin(ApiBase):
 
         url = 'https://{0}:8443/sdn/v2.0/net/clusters'.format(self.controller)
         r = []
-        data = rest.get(url, self.auth_token, 'json')
+        data = rest.get(url, self.auth, 'json')
         for d in data['clusters']:
             r.append(datatypes.JsonObject.factory(d))
         return r
@@ -62,7 +64,7 @@ class NetMixin(ApiBase):
         """
         url = 'https://{0}:8443/sdn/v2.0/net/clusters/{1}/tree'.format(self.controller, clusterid)
         r = []
-        data = rest.get(url, self.auth_token, 'json')
+        data = rest.get(url, self.auth, 'json')
         for d in data['cluster']:
             r.append(datatypes.JsonObject.factory(d))
         return r
@@ -75,7 +77,7 @@ class NetMixin(ApiBase):
         """
         url = 'https://{0}:8443/sdn/v2.0/net/links'.format(self.controller)
         r = []
-        data = rest.get(url, self.auth_token, 'json')
+        data = rest.get(url, self.auth, 'json')
         for d in data['links']:
             r.append(datatypes.JsonObject.factory(d))
         return r
@@ -88,7 +90,7 @@ class NetMixin(ApiBase):
         """
         url = 'https://{0}:8443/sdn/v2.0/paths/forward?src_dpid={1}&dst_dpid={2}'.format(self.controller, urllib.quote(src_dpid), urllib.quote(dst_dpid))
         r = []
-        data = rest.get(url, self.auth_token, 'json')
+        data = rest.get(url, self.auth, 'json')
         for d in data['path']:
             r.append(datatypes.JsonObject.factory(d))
         return r
@@ -106,7 +108,7 @@ class NetMixin(ApiBase):
         elif vid and ip:
             url = url + "?vid={0}&ip={1}".format(vid, ip)
 
-        data = rest.get(url, self.auth_token, 'json')
+        data = rest.get(url, self.auth, 'json')
         r = []
 
         for d in data['nodes']:
@@ -133,7 +135,7 @@ class NetMixin(ApiBase):
         elif dpid and port:
             url = url + "?dpid={0}&port={1}".format(urllib.quote(dpid),port)
 
-        data = rest.get(url, self.auth_token, 'json')
+        data = rest.get(url, self.auth, 'json')
         r = []
 
         for d in data['nodes']:
@@ -148,7 +150,7 @@ class NetMixin(ApiBase):
         """
         url = 'https://{0}:8443/sdn/v2.0/lldp'.format(self.controller)
         r = []
-        data = rest.get(url, self.auth_token, 'json')
+        data = rest.get(url, self.auth, 'json')
         for d in data['path']:
             r.append(datatypes.JsonObject.factory(d))
         return r
@@ -160,7 +162,7 @@ class NetMixin(ApiBase):
 
         """
         url = 'https://{0}:8443/sdn/v2.0/lldp'.format(self.controller)
-        r = rest.post(url, self.auth_token, json.dumps(ports))
+        r = rest.post(url, self.auth, json.dumps(ports))
 
     def delete_lldp(self, ports):
         """ delete_lldp()
@@ -169,7 +171,7 @@ class NetMixin(ApiBase):
 
         """
         url = 'https://{0}:8443/sdn/v2.0/lldp'.format(self.controller)
-        r = rest.delete(url, self.auth_token, json.dumps(ports))
+        r = rest.delete(url, self.auth, json.dumps(ports))
 
     def get_diag_observations(self):
         """ get_diag_observations()

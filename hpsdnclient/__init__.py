@@ -23,3 +23,4 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 from hpsdnclient.client import Api
+from hpsdnclient.auth import XAuthToken

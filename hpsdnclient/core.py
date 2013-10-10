@@ -92,8 +92,8 @@ from hpsdnclient.error import FlareApiError
 class CoreMixin(ApiBase):
     """ Flare REST API Core Methods. i.e, those in sdn/v2.0/ """
 
-    def __init__(self, controller, user, password):
-        super(CoreMixin, self).__init__(controller, user, password)
+    def __init__(self, controller, auth):
+        super(CoreMixin, self).__init__(controller, auth)
 
     def get_support(self):
         """ get_support ()
@@ -150,11 +150,11 @@ class CoreMixin(ApiBase):
 
         pass
 
-    def get_auth(self):
+    def get_auth(self, user, password):
         """Get Authentication Token. This method returns a dictionary
         with the token and expiration time"""
         url = 'https://{0}:8443/sdn/v2.0/auth'.format(self.controller)
-        data = {'login':{ 'user': self.user, 'password': self.password}}
+        data = {'login':{ 'user': user, 'password': password}}
         r = requests.post(url, data=json.dumps(data))
         t = []
         if r.status_code == 200:
@@ -170,7 +170,7 @@ class CoreMixin(ApiBase):
         """ Delete Authentication Token, AKA, Logout. This method logs
         out the owner of the supplied token."""
         url = 'https://{0}:8443/sdn/v2.0/auth'.format(self.controller)
-        headers = {"X-Auth-Token":token[u'token']}
+        headers = {"X-Auth-Token":token}
         r = requests.delete(url, headers=headers)
         if not r.status_code == 200:
             r.raise_for_status()

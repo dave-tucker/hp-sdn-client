@@ -22,15 +22,9 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import hpsdnclient.auth as auth
-
 class ApiBase(object):
     """Base class for the Api object"""
-    def __init__(self, controller, user, password):
+    def __init__(self, controller, auth):
 
         self.controller = controller
-        self.user = user
-        self.password = password
-        self.auth_token = auth.XAuthToken(controller = self.controller,
-                                          user = self.user,
-                                          password = self.password)
+        self.auth = auth

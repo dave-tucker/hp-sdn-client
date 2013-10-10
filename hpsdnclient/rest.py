@@ -41,8 +41,8 @@ def get(url, token, data_type):
 
     """
     try:
-        r = requests.get(url, auth=token, verify=False)
-    except Exception, e:
+        r = requests.get(url, auth=token, verify=False, timeout=0.5)
+    except Exception as e:
         data = r.json()
         if "message" in data:
             raise FlareApiError(data["message"])
@@ -72,8 +72,8 @@ def put(url, token, data):
     headers = {'content-type': 'application/json'}
     try:
         r = requests.put(url, auth=token, data=data,
-                         headers=headers, verify=False)
-    except Exception, e:
+                         headers=headers, verify=False, timeout=0.5)
+    except Exception as e:
         data = r.json()
         if "message" in data:
             raise FlareApiError(data["message"])
@@ -96,8 +96,8 @@ def post(url, token, data):
     headers = {'content-type': 'application/json'}
     try:
         r = requests.post(url, auth=token, data=data,
-                          headers=headers, verify=False)
-    except Exception, e:
+                          headers=headers, verify=False, timeout=0.5)
+    except Exception as e:
         data = r.json()
         if "message" in data:
             raise FlareApiError(data["message"])
@@ -122,8 +122,8 @@ def delete(url, token, data=None):
     if not data == None:
         try:
             r = requests.delete(url, auth=token, headers=headers,
-                                data=data, verify=False)
-        except Exception, e:
+                                data=data, verify=False, timeout=0.5)
+        except Exception as e:
             data = r.json()
             if "message" in data:
                 raise FlareApiError(data["message"])
@@ -131,8 +131,9 @@ def delete(url, token, data=None):
                 r.raise_for_status()
     else:
         try:
-            r = requests.delete(url, auth=token, headers=headers, erify=False)
-        except Exception, e:
+            r = requests.delete(url, auth=token, headers=headers,
+                                verify=False, timeout=0.5)
+        except Exception as e:
             data = r.json()
             if "message" in data:
                 raise FlareApiError(data["message"])
@@ -153,8 +154,9 @@ def head(url, token):
     """
     headers = {'content-type': 'application/json'}
     try:
-        r = requests.head(url, auth=token, headers=headers, verify=False)
-    except Exception, e:
+        r = requests.head(url, auth=token, headers=headers,
+                          verify=False, timeout=0.5)
+    except Exception as e:
         data = r.json()
         if "message" in data:
             raise FlareApiError(data["message"])

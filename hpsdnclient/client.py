@@ -22,8 +22,8 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-"""This library provides a Python interface to the HP SDN Controller
-API"""
+"""This library provides a Python interface to the HP SDN
+Controller API"""
 
 __author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
 __version__ = '0.2.0'
@@ -35,5 +35,5 @@ from hpsdnclient.of import OfMixin
 
 class Api(CoreMixin, OfMixin, NetMixin, ApiBase):
     """ The container class for the HP SDN Controller Api """
-    def __init__(self, controller, user, password):
-        super(Api, self).__init__(controller, user, password)
+    def __init__(self, controller, auth):
+        super(Api, self).__init__(controller, auth)

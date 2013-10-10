@@ -58,7 +58,8 @@ class XAuthToken(requests.auth.AuthBase):
         expiration time."""
         url = 'https://{0}:8443/sdn/v2.0/auth'.format(self.controller)
         payload = {'login':{ 'user': self.user, 'password': self.password}}
-        r = requests.post(url, data=json.dumps(payload), verify=False)
+        r = requests.post(url, data=json.dumps(payload),
+                          verify=False, timeout=0.5)
         if r.status_code == 200:
             data = r.json()
             self.token = data[u'record'][u'token']
@@ -72,7 +73,8 @@ class XAuthToken(requests.auth.AuthBase):
         the current user out"""
         url = 'https://{0}:8443/sdn/v2.0/auth'.format(self.controller)
         headers = {"X-Auth-Token":self.token}
-        r = requests.delete(url, headers=headers, verify=False)
+        r = requests.delete(url, headers=headers,
+                            verify=False, timeout=0.5)
         if r.status_code == 200:
             self.token = None
             self.token_expiration = None

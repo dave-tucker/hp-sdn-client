@@ -24,8 +24,6 @@
 
 """Here lies the setup script for the hp-flare module"""
 
-import os
-import sys
 import setuptools
 
 def readme():
@@ -33,7 +31,7 @@ def readme():
         return f.read()
 
 setuptools.setup(name='hp-sdn-client',
-      version='0.0.1',
+      version='0.2.0',
       description="A python library for the HP SDN Controller REST API",
       long_description=readme(),
       classifiers=[
