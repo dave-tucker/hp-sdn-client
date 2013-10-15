@@ -39,24 +39,24 @@ class OfMixin(ApiBase):
 
     def __init__(self, controller, auth):
         super(OfMixin, self).__init__(controller, auth)
-        self._of_base_url = ("https://{0}:8443" +
-                             "/sdn/v2.0/of/".format(self.controller))
+        self._of_base_url = ("https://{0}:8443".format(self.controller) +
+                             "/sdn/v2.0/of/")
 
     # STATS #
     def get_stats(self):
         """List controller statistics for all controllers that are
         part of this controller's team."""
         url = self._of_base_url + 'stats'
-        r = []
+        result = []
         try:
-            data = rest.get(url, self.auth, 'json')
+            r = rest.get(url, self.auth)
+            data = r.json()
         except Exception as e:
             raise FlareApiError('Something went wrong with your request. '
                                 '{0}'.format(e))
-
         for d in data['controller_stats']:
-            r.append(datatypes.JsonObject.factory(d))
-        return r
+            result.append(datatypes.JsonObject.factory(d))
+        return result
 
     def get_port_stats(self, dpid, port_id=None):
         """List all port statistics for a given datapath or for a
@@ -65,17 +65,17 @@ class OfMixin(ApiBase):
                'dpid={0}'.format(urllib.quote(dpid)))
         if port_id:
             url = url + '&port_id={0}'.format(port_id)
-        r = []
-
+        result = []
         try:
-            data = rest.get(url, self.auth, 'json')
+            r = rest.get(url, self.auth)
+            data = r.json()
         except Exception as e:
             raise FlareApiError('Something went wrong with your request. '
                                 '{0}'.format(e))
 
         for d in data['stats']:
-            r.append(datatypes.JsonObject.factory(d))
-        return r
+            result.append(datatypes.JsonObject.factory(d))
+        return result
 
     def get_group_stats(self, dpid, group_id=None):
         """List group statistics"""
@@ -85,109 +85,125 @@ class OfMixin(ApiBase):
             url = url + '&port_id={0}'.format(group_id)
 
         try:
-            r = rest.get(url, self.auth, 'json')
+            r = rest.get(url, self.auth)
+            data = r.json()
         except Exception as e:
             raise FlareApiError("Something went wrong with your request. "
                                 "{0}".format(e))
-        return datatypes.JsonObject.factory(r)
+        return datatypes.JsonObject.factory(data)
 
     def get_meter_stats(self, dpid, meter_id):
         """List meter statistics"""
         url = (self._of_base_url + 'stats/meters?' +
-               'dpid={0}&meter={1}'.format(urllib.quote(dpid),
-                                           meter_id))
+               'dpid={0}&meter={1}'.format(urllib.quote(dpid), meter_id))
         try:
-            r = rest.get(url, self.auth, 'json')
+            r = rest.get(url, self.auth)
+            data = r.json()
         except Exception as e:
             raise FlareApiError("Something went wrong with your request. "
                                 "{0}".format(e))
-        return r
+        return datatypes.JsonObject.factory(data)
 
     def get_datapaths(self):
         """List all datapaths that are managed by this controller."""
         url = self._of_base_url + 'datapaths'
         try:
-            data = rest.get(url, self.auth, 'json')
+            r = rest.get(url, self.auth)
+            data = r.json()
         except Exception as e:
             raise FlareApiError("Something went wrong with your request. "
                                 "{0}".format(e))
 
-        r = []
+        result = []
         for d in data['datapaths']:
-            r.append(datatypes.JsonObject.factory(d))
-        return r
+            result.append(datatypes.JsonObject.factory(d))
+        return result
 
     def get_datapath_detail(self, dpid):
         """Get detail information on a datapath."""
         url = (self._of_base_url + 'datapaths/{0}'.format(urllib.quote(dpid)))
         try:
-            r = rest.get(url, self.auth, 'json')
+            r = rest.get(url, self.auth)
+            data = r.json()
         except Exception as e:
             raise FlareApiError("Something went wrong with your request. "
                                 "{0}".format(e))
-        return datatypes.JsonObject.factory(r['datapath'])
+        return datatypes.JsonObject.factory(data['datapath'])
 
     def get_datapath_meter_features(self, dpid):
         """Get datapath meter features"""
 
-        url = (self._of_base_url + 'datapaths/{0}/features/' +
-               'meter'.format(urllib.quote(dpid)))
+        url = (self._of_base_url +
+               'datapaths/{0}/'.format(urllib.quote(dpid)) +
+               'features/meter')
         try:
-            r = rest.get(url, self.auth, 'json')
+            r = rest.get(url, self.auth)
+            data = r.json()
         except Exception as e:
             raise FlareApiError("Something went wrong with your request. "
                                 "{0}".format(e))
-        return datatypes.JsonObject.factory(r['meter_features'])
+        return datatypes.JsonObject.factory(data['meter_features'])
 
     def get_datapath_group_features(self, dpid):
         """Get datapath group features"""
-        url = (self._of_base_url + 'datapaths/{0}/features/' +
-               'groups'.format(urllib.quote(dpid)))
+        url = (self._of_base_url +
+               'datapaths/{0}/'.format(urllib.quote(dpid)) +
+               '/features/groups')
         try:
-            r = rest.get(url, self.auth, 'json')
+            r = rest.get(url, self.auth)
+            data = r.json()
         except Exception as e:
             raise FlareApiError("Something went wrong with your request. "
                                 "{0}".format(e))
-        return datatypes.JsonObject.factory(r['group_features'])
+        return datatypes.JsonObject.factory(data['group_features'])
 
     def get_ports(self, dpid):
         """ Gets a list of ports from the specified DPID"""
-        url = (self._of_base_url + 'datapaths/{0}/' +
-               'ports'.format(urllib.quote(dpid)))
+        url = (self._of_base_url +
+               'datapaths/{0}/'.format(urllib.quote(dpid)) +
+               'ports')
         try:
-            data = rest.get(url, self.auth, 'json')
+            r = rest.get(url, self.auth)
+            data = r.json()
         except Exception as e:
             raise FlareApiError("Something went wrong with your request. "
                                 "{0}".format(e))
-        r = []
+        result = []
         for d in data['ports']:
-            r.append(datatypes.JsonObject.factory(d))
-        return r
+            result.append(datatypes.JsonObject.factory(d))
+        return result
 
     def get_port_detail(self, dpid, port_id):
         """Gets detailed port information for the specified port"""
-        url = (self._of_base_url + 'datapaths/{0}/' +
-               'ports/{1}'.format(urllib.quote(dpid), port_id))
+        url = (self._of_base_url +
+               'datapaths/{0}/'.format(urllib.quote(dpid)) +
+               'ports/{0}'.format(port_id))
         try:
-            r = rest.get(url, self.auth, 'json')
+            r = rest.get(url, self.auth)
+            data = r.json()
         except Exception as e:
             raise FlareApiError("Something went wrong with your request. "
                                 "{0}".format(e))
-        return datatypes.JsonObject.factory(r['port'])
+        return datatypes.JsonObject.factory(data['port'])
 
     def get_meters(self, dpid):
         """List all meters configured on the supplied DPID"""
-        url = self._of_base_url + 'datapaths/{0}/meters'.format(urllib.quote(dpid))
+        url = (self._of_base_url +
+               'datapaths/{0}/'.format(urllib.quote(dpid)) +
+               'meters')
         try:
-            r = rest.get(url, self.auth, 'json')
+            r = rest.get(url, self.auth)
+            data = r.json()
         except Exception as e:
             raise FlareApiError("Something went wrong with your request. "
                                 "{0}".format(e))
-        return datatypes.JsonObject.factory(r)
+        return datatypes.JsonObject.factory(data)
 
     def add_meters(self, dpid, meters):
         """Add a new meter to the supplied DPID"""
-        url = self._of_base_url + 'datapaths/{0}/meters'.format(urllib.quote(dpid))
+        url = (self._of_base_url +
+               'datapaths/{0}/'.format(urllib.quote(dpid)) +
+               'meters')
         try:
             rest.post(url, self.auth, json.dumps(meters.to_dict()))
         except Exception as e:
@@ -196,19 +212,22 @@ class OfMixin(ApiBase):
 
     def get_meter_details(self, dpid, meter_id):
         """Get detailed meter information"""
-        url = (self._of_base_url + 'datapaths/{0}/' +
-               'meters/{1}'.format(urllib.quote(dpid), meter_id))
+        url = (self._of_base_url +
+               'datapaths/{0}/'.format(urllib.quote(dpid)) +
+               'meters/{0}'.format(meter_id))
         try:
-            r = rest.get(url, self.auth, 'json')
+            r = rest.get(url, self.auth)
+            data = r.json()
         except Exception as e:
             raise FlareApiError("Something went wrong with your request. "
                                 "{0}".format(e))
-        return datatypes.JsonObject.factory(r)
+        return datatypes.JsonObject.factory(data)
 
     def update_meter(self, dpid, meter_id, meter):
         """ Update the specified meter"""
-        url = (self._of_base_url + 'datapaths/{0}/' +
-               'meters/{1}'.format(urllib.quote(dpid), meter_id))
+        url = (self._of_base_url +
+               'datapaths/{0}/'.format(urllib.quote(dpid)) +
+               'meters/{0}'.format(meter_id))
         try:
             rest.put(url, self.auth, meter)
         except Exception as e:
@@ -217,8 +236,9 @@ class OfMixin(ApiBase):
 
     def delete_meter(self, dpid, meter_id):
         """Delete a meter corresponding to the supplied meter_id"""
-        url = (self._of_base_url + 'datapaths/{0}/' +
-               'meters/{2}'.format(urllib.quote(dpid), meter_id))
+        url = (self._of_base_url +
+               'datapaths/{0}/'.format(urllib.quote(dpid)) +
+               'meters/{0}'.format(meter_id))
         try:
             rest.delete(url, self.auth)
         except Exception as e:
@@ -227,20 +247,25 @@ class OfMixin(ApiBase):
 
     def get_flows(self, dpid):
         """Gets a list of flows on the supplied DPID"""
-        url = self._of_base_url + 'datapaths/{0}/flows'.format(urllib.quote(dpid))
+        url = (self._of_base_url +
+               'datapaths/{0}/'.format(urllib.quote(dpid)) +
+               'flows')
         try:
-            data = rest.get(url, self.auth, 'json')
+            r = rest.get(url, self.auth)
+            data = r.json()
         except Exception as e:
             raise FlareApiError("Something went wrong with your request. "
                                 "{0}".format(e))
-        r = []
+        result = []
         for d in data['flows']:
-            r.append(datatypes.JsonObject.factory(d))
-        return r
+            result.append(datatypes.JsonObject.factory(d))
+        return result
 
     def add_flows(self, dpid, flows):
         """Add a flow, or flows to the selected DPID"""
-        url = self._of_base_url + 'datapaths/{0}/flows'.format(urllib.quote(dpid))
+        url = (self._of_base_url +
+               'datapaths/{0}/'.format(urllib.quote(dpid)) +
+               'flows')
         if isinstance(flows, list):
             tmp = []
             for f in flows:
@@ -265,7 +290,9 @@ class OfMixin(ApiBase):
 
     def update_flows(self, dpid, flows):
         """Update a flow, or flows at the selected DPID"""
-        url = self._of_base_url + 'datapaths/{0}/flows'.format(urllib.quote(dpid))
+        url = (self._of_base_url +
+               'datapaths/{0}/'.format(urllib.quote(dpid)) +
+               'flows')
         if isinstance(flows, list):
             tmp = []
             for f in flows:
@@ -291,7 +318,9 @@ class OfMixin(ApiBase):
     def delete_flows(self, dpid, flows):
         """ Delete flow, or flows from the specified DPID"""
 
-        url = self._of_base_url + 'datapaths/{0}/flows'.format(urllib.quote(dpid))
+        url = (self._of_base_url +
+               'datapaths/{0}/'.format(urllib.quote(dpid)) +
+               'flows')
         if isinstance(flows, list):
             tmp = []
             for f in flows:
@@ -316,17 +345,22 @@ class OfMixin(ApiBase):
 
     def get_groups(self, dpid):
         """Get a list of groups created on the DPID"""
-        url = self._of_base_url + 'datapaths/{0}/groups'.format(urllib.quote(dpid))
+        url = (self._of_base_url +
+               'datapaths/{0}/'.format(urllib.quote(dpid)) +
+               'groups')
         try:
-            r = rest.get(url, self.auth, 'json')
+            r = rest.get(url, self.auth)
+            data = r.json()
         except Exception as e:
             raise FlareApiError("Something went wrong with your request. "
                                 "{0}".format(e))
-        return datatypes.JsonObject.factory(r)
+        return datatypes.JsonObject.factory(data)
 
     def add_groups(self, dpid, groups):
         """Create a group, or groups"""
-        url = self._of_base_url + 'datapaths/{0}/groups'.format(urllib.quote(dpid))
+        url = (self._of_base_url +
+               'datapaths/{0}/'.format(urllib.quote(dpid)) +
+               'groups')
         try:
             rest.post(url, self.auth, json.dumps(groups.to_dict()))
         except Exception as e:
@@ -335,20 +369,23 @@ class OfMixin(ApiBase):
 
     def get_group_details(self, dpid, group_id):
         """Get group details"""
-        url = (self._of_base_url + 'datapaths/{0}/' +
-               'groups/{1}'.format(urllib.quote(dpid), group_id))
+        url = (self._of_base_url +
+               'datapaths/{0}/'.format(urllib.quote(dpid)) +
+               'groups/{0}'.format(group_id))
         try:
-            r = rest.get(url, self.auth, 'json')
+            r = rest.get(url, self.auth)
+            data = r.json()
         except Exception as e:
             raise FlareApiError("Something went wrong with your request. "
                                 "{0}".format(e))
 
-        return datatypes.JsonObject.factory(r)
+        return datatypes.JsonObject.factory(data)
 
     def update_groups(self, dpid, group_id, groups):
-        """Update a group, or groups"""
-        url = (self._of_base_url + 'datapaths/{0}/' +
-               'groups/{1}'.format(urllib.quote(dpid), group_id))
+        """Update a group"""
+        url = (self._of_base_url +
+               'datapaths/{0}/'.format(urllib.quote(dpid)) +
+               'groups/{0}'.format(group_id))
         try:
             rest.post(url, self.auth, json.dumps(groups.to_dict()))
         except Exception as e:
@@ -357,8 +394,9 @@ class OfMixin(ApiBase):
 
     def delete_groups(self, dpid, group_id):
         """Delete a group or groups"""
-        url = (self._of_base_url + 'datapaths/{0}/' +
-               'groups/{1}'.format(urllib.quote(dpid), group_id))
+        url = (self._of_base_url +
+               'datapaths/{0}/'.format(urllib.quote(dpid)) +
+               'groups/{0}'.format(group_id))
         try:
             rest.delete(url, self.auth)
         except Exception as e:

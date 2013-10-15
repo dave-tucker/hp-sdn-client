@@ -50,8 +50,8 @@ class NetMixin(ApiBase):
         """
 
         url = 'https://{0}:8443/sdn/v2.0/net/clusters'.format(self.controller)
-        r = []
-        data = rest.get(url, self.auth, 'json')
+        result = []
+        data = rest.get(url, self.auth)
         for d in data['clusters']:
             r.append(datatypes.JsonObject.factory(d))
         return r
@@ -63,8 +63,8 @@ class NetMixin(ApiBase):
 
         """
         url = 'https://{0}:8443/sdn/v2.0/net/clusters/{1}/tree'.format(self.controller, clusterid)
-        r = []
-        data = rest.get(url, self.auth, 'json')
+        result = []
+        data = rest.get(url, self.auth)
         for d in data['cluster']:
             r.append(datatypes.JsonObject.factory(d))
         return r
@@ -76,8 +76,8 @@ class NetMixin(ApiBase):
 
         """
         url = 'https://{0}:8443/sdn/v2.0/net/links'.format(self.controller)
-        r = []
-        data = rest.get(url, self.auth, 'json')
+        result = []
+        data = rest.get(url, self.auth)
         for d in data['links']:
             r.append(datatypes.JsonObject.factory(d))
         return r
@@ -89,8 +89,8 @@ class NetMixin(ApiBase):
 
         """
         url = 'https://{0}:8443/sdn/v2.0/paths/forward?src_dpid={1}&dst_dpid={2}'.format(self.controller, urllib.quote(src_dpid), urllib.quote(dst_dpid))
-        r = []
-        data = rest.get(url, self.auth, 'json')
+        result = []
+        data = rest.get(url, self.auth)
         for d in data['path']:
             r.append(datatypes.JsonObject.factory(d))
         return r
@@ -108,8 +108,8 @@ class NetMixin(ApiBase):
         elif vid and ip:
             url = url + "?vid={0}&ip={1}".format(vid, ip)
 
-        data = rest.get(url, self.auth, 'json')
-        r = []
+        data = rest.get(url, self.auth)
+        result = []
 
         for d in data['nodes']:
             r.append(datatypes.JsonObject.factory(d))
@@ -135,8 +135,8 @@ class NetMixin(ApiBase):
         elif dpid and port:
             url = url + "?dpid={0}&port={1}".format(urllib.quote(dpid),port)
 
-        data = rest.get(url, self.auth, 'json')
-        r = []
+        data = rest.get(url, self.auth)
+        result = []
 
         for d in data['nodes']:
             r.append(datatypes.JsonObject.factory(d))
@@ -149,8 +149,8 @@ class NetMixin(ApiBase):
 
         """
         url = 'https://{0}:8443/sdn/v2.0/lldp'.format(self.controller)
-        r = []
-        data = rest.get(url, self.auth, 'json')
+        result = []
+        data = rest.get(url, self.auth)
         for d in data['path']:
             r.append(datatypes.JsonObject.factory(d))
         return r
