@@ -78,7 +78,8 @@ class TestUtilityFunctions(unittest.TestCase):
 class ApiBaseTest(unittest.TestCase):
 
     def setUp(self):
-        self.api = hp.Api(controller=SDNCTL, user=USER, password=PASS)
+        auth = hp.XAuthToken(controller=SDNCTL, user=USER, password=PASS)
+        self.api = hp.Api(controller=SDNCTL, auth=auth)
 
     def tearDown(self):
         self.api = None
