@@ -187,10 +187,16 @@ def _find_class(data):
     """
 
     keys = [d for d in data]
+    for c in JsonObject.__subclasses__(): #pylint: disable=E1101
+        cls = c()
+        if all(k in dir(cls) for k in keys):
+            return cls
+
+    """
+    keys = [d for d in data]
     for c in CLASS_LIST:
         if all(k in dir(c) for k in keys):
-            return c.__name__()
-
+            return c """
 class JsonObject(object):
 
     """ JsonObject (object):
