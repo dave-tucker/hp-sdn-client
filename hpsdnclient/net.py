@@ -33,7 +33,7 @@ import urllib
 from hpsdnclient.api import ApiBase
 import hpsdnclient.rest as rest
 import hpsdnclient.datatypes as datatypes
-from hpsdnclient.error import FlareApiError
+from hpsdnclient.error import HpsdnclientError
 
 class NetMixin(ApiBase):
 

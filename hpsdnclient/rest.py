@@ -31,7 +31,7 @@ import requests
 
 HEADERS = {
             'content-type': 'application/json',
-            'user-agent': 'hpsdnclient/{0} '.format(__version__)  +
+            'user-agent': 'hpsdnclient/{0} '.format(__version__) +
                           'python-requests/{0}'.format(requests.__version__)
             }
 

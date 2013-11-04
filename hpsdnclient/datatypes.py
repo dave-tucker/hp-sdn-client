@@ -29,7 +29,7 @@ __version__ = '0.2.0'
 
 import json
 
-from hpsdnclient.error import FlareApiError
+from hpsdnclient.error import HpsdnclientError
 
 ETHERNET = ['ipv4', 'arp', 'rarp', 'snmp', 'ipv6',
             'mpls_u', 'mpls_m', 'lldp', 'pbb', 'bddp']
@@ -192,11 +192,6 @@ def _find_class(data):
         if all(k in dir(cls) for k in keys):
             return cls
 
-    """
-    keys = [d for d in data]
-    for c in CLASS_LIST:
-        if all(k in dir(c) for k in keys):
-            return c """
 class JsonObject(object):
 
     """ JsonObject (object):
@@ -281,7 +276,7 @@ class JsonObject(object):
                       not attr.startswith("__")]
         for attr in attributes:
             #TODO:Rewrite CLASS_BINDINGS to "Class:Attribute" format
-            #This should resolve issues where Attribute doesn't = Class Name
+            #This should resolve issues where Attribute doesn't == Class Name
             if attr in CLASS_BINDINGS:
                 cls = CLASS_BINDINGS[attr].factory(data.get(attr))
                 setattr(tmp, attr, cls)
@@ -450,7 +445,7 @@ class Match(JsonObject):
             else:
                 msg = ("Invalid data type. Expected list" +
                       "of dicts, got {0}".format(type(data.get(d))))
-                raise FlareApiError(msg)
+                raise HpsdnclientError(msg)
         return tmp
 
 class Action(JsonObject):
@@ -515,7 +510,7 @@ class Action(JsonObject):
             else:
                 msg = ("Invalid data type. Expected list" +
                       "of dicts, got {0}".format(type(data.get(d))))
-                raise FlareApiError(msg)
+                raise HpsdnclientError(msg)
         return tmp
 
 class Instruction(JsonObject,):
@@ -1225,7 +1220,7 @@ class DhcpOptions(JsonObject):
         self.type = kwargs.get("type", None)
         self.parameter_request_list = kwargs.get("parameter_request_list", None)
 
-CLASS_LIST = [s() for s in JsonObject.__subclasses__()]
+CLASS_LIST = [s() for s in JsonObject.__subclasses__()] #pylint: disable E1101
 
 CLASS_BINDINGS = {'match' : Match,
                   'actions' : Action,

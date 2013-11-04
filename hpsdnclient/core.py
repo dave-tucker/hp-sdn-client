@@ -87,7 +87,7 @@ import requests
 from hpsdnclient.api import ApiBase
 import hpsdnclient.rest as rest
 import hpsdnclient.datatypes as datatypes
-from hpsdnclient.error import FlareApiError
+from hpsdnclient.error import HpsdnclientError
 
 class CoreMixin(ApiBase):
     """ Flare REST API Core Methods. i.e, those in sdn/v2.0/ """
