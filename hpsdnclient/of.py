@@ -77,7 +77,7 @@ class OfMixin(ApiBase):
         url = (self._of_base_url +
                'stats/groups?dpid={0}'.format(urllib.quote(dpid)))
         if group_id:
-            url = url + '&port_id={0}'.format(group_id)
+            url = url + '&group_id={0}'.format(group_id)
 
         r = rest.get(url, self.auth)
         data = r.json()
@@ -172,7 +172,7 @@ class OfMixin(ApiBase):
     def get_meter_details(self, dpid, meter_id):
         """Get detailed meter information"""
         url = (self._of_base_url +
-               'datapaths/{0}/meters/{0}'.format(urllib.quote(dpid), meter_id))
+               'datapaths/{0}/meters/{1}'.format(urllib.quote(dpid), meter_id))
         r = rest.get(url, self.auth)
         data = r.json()
         raise_errors(r)
@@ -181,14 +181,14 @@ class OfMixin(ApiBase):
     def update_meter(self, dpid, meter_id, meter):
         """ Update the specified meter"""
         url = (self._of_base_url +
-               'datapaths/{0}/meters/{0}'.format(urllib.quote(dpid), meter_id))
+               'datapaths/{0}/meters/{1}'.format(urllib.quote(dpid), meter_id))
         r = rest.put(url, self.auth, meter)
         raise_errors(r)
 
     def delete_meter(self, dpid, meter_id):
         """Delete a meter corresponding to the supplied meter_id"""
         url = (self._of_base_url +
-               'datapaths/{0}/meters/{0}'.format(urllib.quote(dpid), meter_id))
+               'datapaths/{0}/meters/{1}'.format(urllib.quote(dpid), meter_id))
         r = rest.delete(url, self.auth)
         raise_errors(r)
 

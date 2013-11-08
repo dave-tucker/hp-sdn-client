@@ -70,7 +70,7 @@ def raise_404(response):
 def raise_500(response):
     data = response.json()
     if "IllegalStateException" in data['error']:
-        raise IllegalState(data["message"])
+        raise OpenflowProtocolError()
     else:
         response.raise_for_status()
 
@@ -89,9 +89,9 @@ class VersionMismatch(HpsdnclientError):
     def __init__(self, dpid, required_version):
         self.dpid = dpid
         self.required_version = required_version
-        message = """This feature is not supported on DPID {0}.
-                     It requires OpenFlow version {1}
-                  """.format(dpid, required_version)
+        message = ("This feature is not supported on DPID {0}." +
+                  "It requires OpenFlow version {1}".format(dpid,
+                                                            required_version))
         super(VersionMismatch, self).__init__(message)
 
 class IllegalArgument(HpsdnclientError):
@@ -102,8 +102,12 @@ class IllegalArgument(HpsdnclientError):
 class NotFound(HpsdnclientError):
     pass
 
-class IllegalState(HpsdnclientError):
-    pass
+class OpenflowProtocolError(HpsdnclientError):
+    def __init__(self):
+        message = ("Something bad happened at the OpenFlow protocol layer." +
+                   " This could be because this feature is not implemented" +
+                   "on this device ")
+        super(OpenflowProtocolError, self).__init__(message)
 
 class DatatypeError(HpsdnclientError):
     def __init__(self, received, expected):
