@@ -22,21 +22,18 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-""" Useful utilities """
+"""This library provides a Python interface to the HP SDN
+Controller API"""
 
 __author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 
-MAC = 12
-DPID = 16
+from hpsdnclient.api import ApiBase
+from hpsdnclient.core import CoreMixin
+from hpsdnclient.net import NetMixin
+from hpsdnclient.of import OfMixin
 
-def string_to_hex(s, length):
-    """ Convert a string like 00:00 in to hex 0x0000 format"""
-    tmp = '{0:#x}'.format(int(s.replace(':', '').lstrip('0'),length))
-    return tmp
-
-def hex_to_string(h, length):
-    """Convert a hex number from 0x0000 to 00:00 format"""
-    tmp = h.lstrip('0x').zfill(length)
-    tmp = ':'.join(a+b for a,b in zip(tmp[::2], tmp[1::2]))
-    return tmp
+class Api(CoreMixin, OfMixin, NetMixin, ApiBase):
+    """ The container class for the HP SDN Controller Api """
+    def __init__(self, controller, auth):
+        super(Api, self).__init__(controller, auth)

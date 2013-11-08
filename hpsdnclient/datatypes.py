@@ -2,38 +2,41 @@
 #
 # Copyright (c)  2013 Hewlett-Packard Development Company, L.P.
 #
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software  and associated documentation files (the "Software"), to deal
-# in the Software without restriction,  including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
+# Permission is hereby granted, fpenrlowee of charge, to any person
+# obtaining a copy of this software  and associated documentation files
+# (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge,
+# publish, distribute, sublicense, and/or sell copies of the Software,
+# and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
 #
-# The above copyright notice and this permission notice shall be included in all
-# copies or  substantial portions of the Software.#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
 #
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED,  INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR  PURPOSE AND NONINFRINGEMENT.
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 #
-# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-# DAMAGES OR  OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-# OTHERWISE, ARISING FROM, OUT OF  OR IN CONNECTION WITH THE SOFTWARE OR THE USE
-# OR OTHER DEALINGS IN THE SOFTWARE.
-#
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR  OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 """ Data Types used for the REST objects """
 
 __author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 
 import json
 
-ETHERNET = ['ipv4','arp','rarp','snmp','ipv6','mpls_u', 'mpls_m', 'lldp', 'pbb', 'bddp']
+from hpsdnclient.error import HpsdnclientError
+
+ETHERNET = ['ipv4', 'arp', 'rarp', 'snmp', 'ipv6',
+            'mpls_u', 'mpls_m', 'lldp', 'pbb', 'bddp']
 
 VERSION = ['1.0.0', '1.1.0', '1.2.0', '1.3.0)']
 
-ACTIONS = ['output', 
+ACTIONS = ['output',
            'set_vlan_vid',
            'set_vlan_pcp',
            'strip_vlan',
@@ -56,7 +59,7 @@ CAPABILITIES = ['flow_stats',
                 'queue_stats',
                 'arp_match_ip',
                 'port_blocked'
-                ]
+               ]
 
 PORT_CONFIG = ["port_down",
                "no_stp",
@@ -120,19 +123,19 @@ ICMP_V6_TYPE = ["nbr_sol", "nbr_adv"]
 MATCH_MODE = ["none", "present", "exact"]
 
 IPV6_EXTHDR = ["no_next",
-                   "esp",
-                   "auth",
-                   "dest",
-                   "frag",
-                   "router",
-                   "hop",
-                   "un_rep",
-                   "un_seq"]
+               "esp",
+               "auth",
+               "dest",
+               "frag",
+               "router",
+               "hop",
+               "un_rep",
+               "un_seq"]
 
 METER_FLAGS = ["kbps",
-                   "pktps",
-                   "burst",
-                   "stats"]
+               "pktps",
+               "burst",
+               "stats"]
 
 METER_TYPE = ["drop", "dscp_remark","experimenter"]
 
@@ -148,10 +151,11 @@ LINK_STATE = ["link_down",
               "stp_forward",
               "stp_block"
               ]
+
 OPERATION = ["ADD", "CHANGE", "DELETE", "MOVE"]
 
-enums = [ ETHERNET,
-          VERSION, 
+ENUMS = [ ETHERNET,
+          VERSION,
           ACTIONS,
           CAPABILITIES,
           PORT_CONFIG,
@@ -169,26 +173,24 @@ enums = [ ETHERNET,
           METER_TYPE,
           GROUP_TYPE,
           COMMANDS,
-          LINK_STATE
+          LINK_STATE,
+          OPERATION
         ]
-
 
 def _find_class(data):
 
     """ _find_class (data)
 
-        Finds a matching class from some JSON.
+        Finds a matching class from the supplied JSON in data.
         Checks the values in the JSON dict against the class member variables.
         Returns the an instance of the matching class.
-
     """
 
     keys = [d for d in data]
-    for c in JsonObject.__subclasses__():
+    for c in JsonObject.__subclasses__(): #pylint: disable=E1101
         cls = c()
         if all(k in dir(cls) for k in keys):
             return cls
-            break
 
 class JsonObject(object):
 
@@ -197,7 +199,7 @@ class JsonObject(object):
         This is the base class for all HP SDN Client data types.
 
     """
-    
+
     def __init__(self):
         """ __init__ (self)
 
@@ -224,8 +226,9 @@ class JsonObject(object):
 
         """
         tmp = self.to_dict()
-        return json.dumps(tmp,sort_keys=True, indent=4, separators=(',', ': '))
-    
+        return json.dumps(tmp, sort_keys=True,
+                          indent=4, separators=(',', ': '))
+
     def to_dict(self):
         """
 
@@ -236,10 +239,12 @@ class JsonObject(object):
         """
 
         data = {}
-        attributes = [attr for attr in dir(self) if not callable(getattr(self,attr)) and not attr.startswith("__")]
+        attributes = [attr for attr in dir(self)
+                      if not callable(getattr(self,attr))
+                      and not attr.startswith("__")]
         for attr in attributes:
-            if getattr(self,attr):
-                value = getattr(self,attr) 
+            if getattr(self, attr):
+                value = getattr(self, attr)
                 if isinstance(value, list):
                     for item in value:
                         tmp = []
@@ -249,7 +254,7 @@ class JsonObject(object):
                             tmp.append(value)
                         data[attr.__str__()] = tmp
                 elif isinstance(value, JsonObject):
-                            data[attr.__str__()] = value.to_dict()
+                    data[attr.__str__()] = value.to_dict()
                 elif type(value):
                     data[attr.__str__()] = value
         return data
@@ -260,19 +265,24 @@ class JsonObject(object):
 
            factory (self)
 
-           Static method that creates a new instance of a class based on some JSON.
-           Finds the matching class, extracts the data in the JSON and maps it to the appropriate data types (default is string).
+           Static method that creates a new instance of a class based
+           on some JSON. Finds the matching class, extracts the data in
+           the JSON and maps it to the appropriate data types
 
         """
         tmp = _find_class(data)
-        attributes = [attr for attr in dir(tmp) if not callable(getattr(tmp,attr)) and not attr.startswith("__")]
+        attributes = [attr for attr in dir(tmp)
+                      if not callable(getattr(tmp,attr)) and
+                      not attr.startswith("__")]
         for attr in attributes:
-            if attr in class_bindings:
-                cls = class_bindings[attr].factory(data.get(attr))
+            #TODO:Rewrite CLASS_BINDINGS to "Class:Attribute" format
+            #This should resolve issues where Attribute doesn't == Class Name
+            if attr in CLASS_BINDINGS:
+                cls = CLASS_BINDINGS[attr].factory(data.get(attr))
                 setattr(tmp, attr, cls)
-            elif isinstance(data.get(attr),list):
+            elif isinstance(data.get(attr), list):
                 #Could be an enum or a class
-                for e in enums:
+                for e in ENUMS:
                     if all(k in e for k in data.get(attr)):
                         setattr(tmp, attr, data.get(attr))
                         break
@@ -299,9 +309,9 @@ class Datapath(JsonObject):
         self.ready = kwargs.get('ready', None)
         self.last_message = kwargs.get('last_message', None)
         self.num_buffers = kwargs.get('num_buffers', None)
-        self.num_tables = kwargs.get('num_tables',None)
-        self.supported_actions = kwargs.get('supported_action',[])
-        self.capabilities = kwargs.get('capabilities',[])
+        self.num_tables = kwargs.get('num_tables', None)
+        self.supported_actions = kwargs.get('supported_action', [])
+        self.capabilities = kwargs.get('capabilities', [])
         self.num_ports = kwargs.get('num_ports', None)
         self.device_ip = kwargs.get('device_ip', None)
         self.device_port = kwargs.get('device_port', None)
@@ -363,7 +373,7 @@ class Match(JsonObject):
         self.in_phy_port = kwargs.get('in_phy_port', None)
         self.metadata = kwargs.get('metadata', None)
         self.tunnel_id = kwargs.get('tunnel_id', None)
-        self.eth_dst = kwargs.get('eth_dst', None) 
+        self.eth_dst = kwargs.get('eth_dst', None)
         self.eth_src = kwargs.get('eth_src', None)
         self.eth_type = kwargs.get('eth_type', None)
         self.ip_proto = kwargs.get('ip_proto', None)
@@ -403,15 +413,18 @@ class Match(JsonObject):
         """ to_dict (self)
 
             Creates a representation of the class as a dictionary
-            Overrides the parent method as all members variables of this class are strings
+            Overrides the parent method as all members variables of
+            this class are strings
 
         """
         data = []
-        attributes = [attr for attr in dir(self) if not callable(getattr(self,attr)) and not attr.startswith("__")]
+        attributes = [attr for attr in dir(self)
+                      if not callable(getattr(self,attr))
+                      and not attr.startswith("__")]
         for attr in attributes:
-            if getattr(self,attr):
+            if getattr(self, attr):
                 tmp = {}
-                tmp[attr.__str__()] = getattr(self,attr) 
+                tmp[attr.__str__()] = getattr(self, attr)
                 data.append(tmp)
         return data
 
@@ -419,18 +432,20 @@ class Match(JsonObject):
     def factory(data):
         """ factory (data)
 
-            Creates an instance of the class from some JSON.
-            Overrides the parent method as in this case, JSON will be a list dictionaries
+            Creates an instance of the class from some JSON. Overrides
+            the parent method as in this case, JSON will be a list of
+            dictionaries
 
         """
         tmp = Match()
-        attributes = [attr for attr in dir(tmp) if not callable(getattr(tmp,attr)) and not attr.startswith("__")]
         for d in data:
             if isinstance(d, dict):
                 for key in d:
                     setattr(tmp, key, d[key])
             else:
-                raise FlareApiError("Invalid data type. Expected list of dicts, got {0}".format(type(data.get(d))))
+                msg = ("Invalid data type. Expected list" +
+                      "of dicts, got {0}".format(type(data.get(d))))
+                raise HpsdnclientError(msg)
         return tmp
 
 class Action(JsonObject):
@@ -463,15 +478,18 @@ class Action(JsonObject):
         """ to_dict (self)
 
             Creates a representation of the class as a dictionary
-            Overrides the parent method as all members variables of this class are strings
+            Overrides the parent method as all members variables of
+            this class are strings
 
         """
         data = []
-        attributes = [attr for attr in dir(self) if not callable(getattr(self,attr)) and not attr.startswith("__")]
+        attributes = [attr for attr in dir(self)
+                      if not callable(getattr(self,attr))
+                      and not attr.startswith("__")]
         for attr in attributes:
-            if getattr(self,attr):
+            if getattr(self, attr):
                 tmp = {}
-                tmp[attr.__str__()] = getattr(self,attr) 
+                tmp[attr.__str__()] = getattr(self, attr)
                 data.append(tmp)
         return data
 
@@ -480,17 +498,19 @@ class Action(JsonObject):
         """ factory (data)
 
             Creates an instance of the class from some JSON.
-            Overides the parent method as in this case, JSON will be a list dictionaries
+            Overides the parent method as in this case, JSON will be a
+            list of dictionaries
 
         """
         tmp = Action()
-        attributes = [attr for attr in dir(tmp) if not callable(getattr(tmp,attr)) and not attr.startswith("__")]
         for d in data:
             if isinstance(d, dict):
                 for key in d:
                     setattr(tmp, key, d[key])
             else:
-                raise FlareApiError("Invalid data type. Expected list of dicts, got {0}".format(type(data.get(d))))
+                msg = ("Invalid data type. Expected list" +
+                      "of dicts, got {0}".format(type(data.get(d))))
+                raise HpsdnclientError(msg)
         return tmp
 
 class Instruction(JsonObject,):
@@ -542,8 +562,8 @@ class Meter(JsonObject):
     def __init__(self, **kwargs):
         self.id = kwargs.get('id', None)
         self.command = kwargs.get('command', None)
-        self.flags = kwargs.get('flags',[])
-        self.bands = kwargs.get('bands',[])
+        self.flags = kwargs.get('flags', [])
+        self.bands = kwargs.get('bands', [])
 
 class MeterBand(JsonObject):
     """ MeterBand (JsonObject)
@@ -556,7 +576,7 @@ class MeterBand(JsonObject):
         self.rate = kwargs.get('rate', None)
         self.mtype = kwargs.get('mtype', None)
         self.prec_level = kwargs.get('prec_level', None)
-        self.experimenter = kwargs.get('experimenter', None)    
+        self.experimenter = kwargs.get('experimenter', None)
 
 class Group(JsonObject):
     """ Group (JsonObject)
@@ -566,7 +586,7 @@ class Group(JsonObject):
     """
     def __init__(self, **kwargs):
         self.id = kwargs.get('id',None)
-        self.properties = kwargs.get('properties',None)
+        self.properties = kwargs.get('properties', None)
         self.ref_count = kwargs.get('ref_count', None)
         self.packet_count = kwargs.get('packet_count', None)
         self.byte_count = kwargs.get('byte_count', None)
@@ -597,7 +617,7 @@ class Stats(JsonObject):
     def __init__(self, **kwargs):
         self.dpid = kwargs.get('dpid', None)
         self.version = kwargs.get('version', None)
-        self.port_stats= kwargs.get('port_stats', [])
+        self.port_stats = kwargs.get('port_stats', [])
         self.group_stats = kwargs.get('group_stats', [])
 
 class PortStats(JsonObject):
@@ -647,7 +667,7 @@ class Cluster(JsonObject):
     """
     def __init__(self, **kwargs):
         self.uid = kwargs.get('uid', None)
-        self.links = kwargs.get('links',[])
+        self.links = kwargs.get('links', [])
 
 class Link(JsonObject):
     """ Link (JsonObject)
@@ -656,7 +676,7 @@ class Link(JsonObject):
 
     """
     def __init__(self, **kwargs):
-        self.src_dpid = kwargs.get('src_dpid',None)
+        self.src_dpid = kwargs.get('src_dpid', None)
         self.src_port = kwargs.get('src_port', None)
         self.dst_dpid = kwargs.get('dst_dpid', None)
         self.dst_port = kwargs.get('dst_port', None)
@@ -1193,14 +1213,16 @@ class Dhcp(JsonObject):
 class DhcpOptions(JsonObject):
     """ DhcpOptions()
 
-        A Python representation of DHCP Options 
+        A Python representation of DHCP Options
 
     """
     def __init__(self, **kwargs):
         self.type = kwargs.get("type", None)
         self.parameter_request_list = kwargs.get("parameter_request_list", None)
 
-class_bindings = {'match' : Match,
+CLASS_LIST = [s() for s in JsonObject.__subclasses__()] #pylint: disable E1101
+
+CLASS_BINDINGS = {'match' : Match,
                   'actions' : Action,
                   #'links' : Link,
                   #'links' : TreeLink

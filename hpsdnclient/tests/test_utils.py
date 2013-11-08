@@ -22,21 +22,34 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-""" Useful utilities """
+import unittest
+from hpsdnclient import utils as utils
 
-__author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
-__version__ = '0.1.0'
+class TestUtils(unittest.TestCase):
 
-MAC = 12
-DPID = 16
+    def setUp(self):
+        self.mac_string = '00:00:00:00:00:01'
+        self.mac_hex = '0x1'
+        self.dpid_string = '00:00:00:00:00:00:00:02'
+        self.dpid_hex = '0x2'
 
-def string_to_hex(s, length):
-    """ Convert a string like 00:00 in to hex 0x0000 format"""
-    tmp = '{0:#x}'.format(int(s.replace(':', '').lstrip('0'),length))
-    return tmp
+    def tearDown(self):
+        pass
 
-def hex_to_string(h, length):
-    """Convert a hex number from 0x0000 to 00:00 format"""
-    tmp = h.lstrip('0x').zfill(length)
-    tmp = ':'.join(a+b for a,b in zip(tmp[::2], tmp[1::2]))
-    return tmp
+    def test_mac_string_to_hex(self):
+        tmp = utils.string_to_hex(self.mac_string, utils.MAC)
+        self.assertEqual(tmp, self.mac_hex)
+
+    def test_dpid_string_to_hex(self):
+        tmp = utils.string_to_hex(self.dpid_string, utils.DPID)
+        self.assertEqual(tmp, self.dpid_hex)
+
+    def test_mac_hex_to_string(self):
+        tmp = utils.hex_to_string(self.mac_hex, utils.MAC)
+        self.assertEqual(tmp, self.mac_string)
+
+    def test_dpid_hex_to_string(self):
+        tmp = utils.hex_to_string(self.dpid_hex, utils.DPID)
+        self.assertEqual(tmp, self.dpid_string)
+
+

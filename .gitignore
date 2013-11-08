@@ -18,3 +18,8 @@
 #venv
 .venv/
 
+#DS Store files
+.DS_Store
+
+#Nosetests XML report
+nosetests.xml
