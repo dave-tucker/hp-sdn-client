@@ -53,4 +53,3 @@ setuptools.setup(name='hp-sdn-client',
       tests_require=['nose'],
       zip_safe=False,
       )
-
