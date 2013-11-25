@@ -2,7 +2,7 @@
 #
 # Copyright (c)  2013 Hewlett-Packard Development Company, L.P.
 #
-# Permission is hereby granted, fpenrlowee of charge, to any person
+# Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software  and associated documentation files
 # (the "Software"), to deal in the Software without restriction,
 # including without limitation the rights to use, copy, modify, merge,
@@ -29,20 +29,29 @@ __version__ = '0.2.0'
 
 import requests
 
-HEADERS = {
+DEFAULT = {
             'content-type': 'application/json',
             'user-agent': 'hpsdnclient/{0} '.format(__version__) +
                           'python-requests/{0}'.format(requests.__version__)
             }
 
-def get(url, token):
+UA = {
+       'user-agent': 'hpsdnclient/{0} '.format(__version__) +
+                     'python-requests/{0}'.format(requests.__version__)
+     }
+
+def get(url, token, is_file=None):
     """ get()
 
         Implements the HTTP GET verb using the Requests API.
 
     """
-    r = requests.get(url, auth=token, verify=False,
-                     headers=HEADERS, timeout=0.5)
+    if is_file:
+        r = requests.get(url, auth=token, verify=False,
+                         headers=DEFAULT, timeout=0.5, stream=True)
+    else:
+        r = requests.get(url, auth=token, verify=False,
+                         headers=DEFAULT, timeout=0.5)
     return r
 
 def put(url, token, data):
@@ -52,17 +61,21 @@ def put(url, token, data):
 
     """
     r = requests.put(url, auth=token, data=data,
-                     headers=HEADERS, verify=False, timeout=0.5)
+                     headers=DEFAULT, verify=False, timeout=0.5)
     return r
 
-def post(url, token, data):
+def post(url, token, data, is_file=False):
     """ post()
 
         Implements the REST POST verb using the Requests API.
 
     """
-    r = requests.post(url, auth=token, data=data,
-                      headers=HEADERS, verify=False, timeout=0.5)
+    if is_file:
+        r = requests.post(url, auth=token, files=data,
+                          headers=UA, verify=False, timeout=0.5)
+    else:
+        r = requests.post(url, auth=token, data=data,
+                          headers=DEFAULT, verify=False, timeout=0.5)
     return r
 
 def delete(url, token, data=None):
@@ -73,10 +86,10 @@ def delete(url, token, data=None):
     """
 
     if not data == None:
-        r = requests.delete(url, auth=token, headers=HEADERS,
+        r = requests.delete(url, auth=token, headers=DEFAULT,
                             data=data, verify=False, timeout=0.5)
     else:
-        r = requests.delete(url, auth=token, headers=HEADERS,
+        r = requests.delete(url, auth=token, headers=DEFAULT,
                             verify=False, timeout=0.5)
     return r
 
@@ -87,6 +100,6 @@ def head(url, token):
 
     """
 
-    r = requests.head(url, auth=token, headers=HEADERS,
+    r = requests.head(url, auth=token, headers=DEFAULT,
                           verify=False, timeout=0.5)
     return r

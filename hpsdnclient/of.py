@@ -2,7 +2,7 @@
 #
 # Copyright (c)  2013 Hewlett-Packard Development Company, L.P.
 #
-# Permission is hereby granted, fpenrlowee of charge, to any person
+# Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software  and associated documentation files
 # (the "Software"), to deal in the Software without restriction,
 # including without limitation the rights to use, copy, modify, merge,
@@ -47,13 +47,7 @@ class OfMixin(ApiBase):
         """List controller statistics for all controllers that are
         part of this controller's team."""
         url = self._of_base_url + 'stats'
-        result = []
-        r = rest.get(url, self.auth)
-        data = r.json()
-        raise_errors(r)
-        for d in data['controller_stats']:
-            result.append(datatypes.JsonObject.factory(d))
-        return result
+        return self._get(url, 'controller_stats')
 
     def get_port_stats(self, dpid, port_id=None):
         """List all port statistics for a given datapath or for a
@@ -63,14 +57,7 @@ class OfMixin(ApiBase):
         if port_id:
             url = url + '&port_id={0}'.format(port_id)
 
-        result = []
-        r = rest.get(url, self.auth)
-        data = r.json()
-        raise_errors(r)
-
-        for d in data['stats']:
-            result.append(datatypes.JsonObject.factory(d))
-        return result
+        return self._get(url, 'stats')
 
     def get_group_stats(self, dpid, group_id=None):
         """List group statistics"""
@@ -79,88 +66,55 @@ class OfMixin(ApiBase):
         if group_id:
             url = url + '&group_id={0}'.format(group_id)
 
-        r = rest.get(url, self.auth)
-        data = r.json()
-        raise_errors(r)
-        return datatypes.JsonObject.factory(data)
+        return self._get(url, 'group_stats')
 
     def get_meter_stats(self, dpid, meter_id):
         """List meter statistics"""
         url = (self._of_base_url +
                'stats/meters?dpid={0}&meter={1}'.format(urllib.quote(dpid),
                                                         meter_id))
-        r = rest.get(url, self.auth)
-        data = r.json()
-        raise_errors(r)
-        return datatypes.JsonObject.factory(data)
+        return self._get(url, 'meter_stats')
 
     def get_datapaths(self):
         """List all datapaths that are managed by this controller."""
         url = self._of_base_url + 'datapaths'
-        r = rest.get(url, self.auth)
-        raise_errors(r)
-        data = r.json()
-        result = []
-        for d in data['datapaths']:
-            result.append(datatypes.JsonObject.factory(d))
-        return result
+        return self._get(url, 'datapaths')
 
     def get_datapath_detail(self, dpid):
         """Get detail information on a datapath."""
         url = (self._of_base_url + 'datapaths/{0}'.format(urllib.quote(dpid)))
-        r = rest.get(url, self.auth)
-        data = r.json()
-        raise_errors(r)
-        return datatypes.JsonObject.factory(data['datapath'])
+        return self._get(url, 'datapath')
 
     def get_datapath_meter_features(self, dpid):
         """Get datapath meter features"""
 
         url = (self._of_base_url +
                'datapaths/{0}/features/meter'.format(urllib.quote(dpid)))
-        r = rest.get(url, self.auth)
-        data = r.json()
-        raise_errors(r)
-        return datatypes.JsonObject.factory(data['meter_features'])
+        return self._get(url, 'meter_features')
 
     def get_datapath_group_features(self, dpid):
         """Get datapath group features"""
         url = (self._of_base_url +
                'datapaths/{0}/features/group'.format(urllib.quote(dpid)))
-        r = rest.get(url, self.auth)
-        data = r.json()
-        raise_errors(r)
-        return datatypes.JsonObject.factory(data['group_features'])
+        return self._get(url, 'group_features')
 
     def get_ports(self, dpid):
         """ Gets a list of ports from the specified DPID"""
         url = (self._of_base_url +
                'datapaths/{0}/ports'.format(urllib.quote(dpid)))
-        r = rest.get(url, self.auth)
-        data = r.json()
-        raise_errors(r)
-        result = []
-        for d in data['ports']:
-            result.append(datatypes.JsonObject.factory(d))
-        return result
+        return self._get(url, 'ports')
 
     def get_port_detail(self, dpid, port_id):
         """Gets detailed port information for the specified port"""
         url = (self._of_base_url +
                'datapaths/{0}/ports/{1}'.format(urllib.quote(dpid), port_id))
-        r = rest.get(url, self.auth)
-        data = r.json()
-        raise_errors(r)
-        return datatypes.JsonObject.factory(data['port'])
+        return self._get(url, 'port')
 
     def get_meters(self, dpid):
         """List all meters configured on the supplied DPID"""
         url = (self._of_base_url +
                'datapaths/{0}/meters'.format(urllib.quote(dpid)))
-        r = rest.get(url, self.auth)
-        data = r.json()
-        raise_errors(r)
-        return datatypes.JsonObject.factory(data)
+        return self._get(url, 'meters')
 
     def add_meters(self, dpid, meters):
         """Add a new meter to the supplied DPID"""
@@ -173,10 +127,7 @@ class OfMixin(ApiBase):
         """Get detailed meter information"""
         url = (self._of_base_url +
                'datapaths/{0}/meters/{1}'.format(urllib.quote(dpid), meter_id))
-        r = rest.get(url, self.auth)
-        data = r.json()
-        raise_errors(r)
-        return datatypes.JsonObject.factory(data)
+        return self._get(url, 'meter')
 
     def update_meter(self, dpid, meter_id, meter):
         """ Update the specified meter"""
@@ -196,18 +147,10 @@ class OfMixin(ApiBase):
         """Gets a list of flows on the supplied DPID"""
         url = (self._of_base_url +
                'datapaths/{0}/flows'.format(urllib.quote(dpid)))
-        r = rest.get(url, self.auth)
-        data = r.json()
-        raise_errors(r)
-        result = []
-        for d in data['flows']:
-            result.append(datatypes.JsonObject.factory(d))
-        return result
+        return self._get(url, 'flows')
 
-    def add_flows(self, dpid, flows):
-        """Add a flow, or flows to the selected DPID"""
-        url = (self._of_base_url +
-               'datapaths/{0}/flows'.format(urllib.quote(dpid)))
+    def _assemble_flows(self, flows):
+        data = None
         if isinstance(flows, list):
             tmp = []
             for f in flows:
@@ -220,7 +163,13 @@ class OfMixin(ApiBase):
             data = { "flow" : flows.to_dict() }
         else:
             raise DatatypeError([datatypes.Flow, list], f.__class__())
+        return data
 
+    def add_flows(self, dpid, flows):
+        """Add a flow, or flows to the selected DPID"""
+        url = (self._of_base_url +
+               'datapaths/{0}/flows'.format(urllib.quote(dpid)))
+        data = self._assemble_flows(flows)
         r = rest.post(url, self.auth, json.dumps(data))
         raise_errors(r)
 
@@ -228,40 +177,15 @@ class OfMixin(ApiBase):
         """Update a flow, or flows at the selected DPID"""
         url = (self._of_base_url +
                'datapaths/{0}/flows'.format(urllib.quote(dpid)))
-        if isinstance(flows, list):
-            tmp = []
-            for f in flows:
-                if isinstance(f, datatypes.Flow):
-                    tmp.append(f.to_dict())
-                else:
-                    raise DatatypeError(datatypes.Flow, f.__class__())
-            data = { "flows" : tmp }
-        elif isinstance(flows, datatypes.Flow):
-            data = { "flow" : flows.to_dict() }
-        else:
-            raise DatatypeError([datatypes.Flow, list], f.__class__())
-
+        data = self._assemble_flows(flows)
         r = rest.put(url, self.auth, json.dumps(data))
         raise_errors(r)
 
     def delete_flows(self, dpid, flows):
         """ Delete flow, or flows from the specified DPID"""
-
         url = (self._of_base_url +
                'datapaths/{0}/flows'.format(urllib.quote(dpid)))
-        if isinstance(flows, list):
-            tmp = []
-            for f in flows:
-                if isinstance(f, datatypes.Flow):
-                    tmp.append(f.to_dict())
-                else:
-                    raise DatatypeError(datatypes.Flow, f.__class__())
-            data = { "flows" : tmp }
-        elif isinstance(flows, datatypes.Flow):
-            data = { "flow" : flows.to_dict() }
-        else:
-            raise DatatypeError([datatypes.Flow, list], f.__class__())
-
+        data = self._assemble_flows(flows)
         r = rest.delete(url, self.auth, data)
         raise_errors(r)
 
@@ -270,10 +194,7 @@ class OfMixin(ApiBase):
         url = (self._of_base_url +
                'datapaths/{0}/groups'.format(urllib.quote(dpid)))
 
-        r = rest.get(url, self.auth)
-        data = r.json()
-        raise_errors(r)
-        return datatypes.JsonObject.factory(data)
+        return self._get(url, 'groups')
 
     def add_groups(self, dpid, groups):
         """Create a group, or groups"""
@@ -286,10 +207,7 @@ class OfMixin(ApiBase):
         """Get group details"""
         url = (self._of_base_url +
                'datapaths/{0}/groups/{1}'.format(urllib.quote(dpid), group_id))
-        r = rest.get(url, self.auth)
-        data = r.json()
-        raise_errors(r)
-        return datatypes.JsonObject.factory(data)
+        return self._get(url, 'group')
 
     def update_groups(self, dpid, group_id, groups):
         """Update a group"""

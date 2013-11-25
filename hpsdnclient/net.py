@@ -2,7 +2,7 @@
 #
 # Copyright (c)  2013 Hewlett-Packard Development Company, L.P.
 #
-# Permission is hereby granted, fpenrlowee of charge, to any person
+# Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software  and associated documentation files
 # (the "Software"), to deal in the Software without restriction,
 # including without limitation the rights to use, copy, modify, merge,
@@ -32,115 +32,69 @@ import urllib
 
 from hpsdnclient.api import ApiBase
 import hpsdnclient.rest as rest
-import hpsdnclient.datatypes as datatypes
-from hpsdnclient.error import HpsdnclientError
+from hpsdnclient.error import raise_errors
 
 class NetMixin(ApiBase):
 
     def __init__(self, controller, auth):
         super(NetMixin, self).__init__(controller, auth)
-        self._net_base_url = ("https://{0}:8443" +
-                              "/sdn/v2.0/net/".format(self.controller))
+        self._net_base_url = ("https://{0}:8443".format(self.controller) +
+                             "/sdn/v2.0/net/")
 
     def get_clusters(self):
-        """ get_clusters()
+        """ Gets a list of clusters """
+        url = self._net_base_url + 'clusters'
+        return self._get(url, 'clusters')
 
-            Gets a list of clusters
+    def get_cluster_tree(self, cluster_id):
+        """ Gets the broadcast tree for a specific cluster """
+        url = self._net_base_url + 'clusters/{0}/tree'.format(cluster_id)
+        return self._get(url, 'cluster', False)
 
-        """
-
-        url = 'https://{0}:8443/sdn/v2.0/net/clusters'.format(self.controller)
-        result = []
-        data = rest.get(url, self.auth)
-        for d in data['clusters']:
-            r.append(datatypes.JsonObject.factory(d))
-        return r
-
-    def get_cluster_tree(self, clusterid):
-        """ get_cluster_tree( clusterid)
-
-            Gets the broadcast tree for a specific cluster
-
-        """
-        url = 'https://{0}:8443/sdn/v2.0/net/clusters/{1}/tree'.format(self.controller, clusterid)
-        result = []
-        data = rest.get(url, self.auth)
-        for d in data['cluster']:
-            r.append(datatypes.JsonObject.factory(d))
-        return r
-
-    def get_links(self):
-        """ get_links()
-
-            Returns a list of all links discovered by the SDN controller
-
-        """
-        url = 'https://{0}:8443/sdn/v2.0/net/links'.format(self.controller)
-        result = []
-        data = rest.get(url, self.auth)
-        for d in data['links']:
-            r.append(datatypes.JsonObject.factory(d))
-        return r
+    def get_links(self, dpid=None):
+        """ Returns a list of all links discovered by the SDN controller """
+        url = self._net_base_url + 'links'
+        if dpid:
+            url = url + '?dpid={0}'.format(urllib.quote(dpid))
+        return self._get(url, 'links')
 
     def get_forward_path(self, src_dpid, dst_dpid):
-        """ get_forward_path()
+        """ Gets the shortest computed path between src_dpid and dst_dpid """
+        url = (self._net_base_url +
+               'paths/forward' +
+               '?src_dpid={0}&dst_dpid={1}'.format(urllib.quote(src_dpid),
+                                                   urllib.quote(dst_dpid)))
+        return self._get(url, 'path', False)
 
-            Gets the shortest computed path between src_dpid and dst_dpid
-
-        """
-        url = 'https://{0}:8443/sdn/v2.0/paths/forward?src_dpid={1}&dst_dpid={2}'.format(self.controller, urllib.quote(src_dpid), urllib.quote(dst_dpid))
-        result = []
-        data = rest.get(url, self.auth)
-        for d in data['path']:
-            r.append(datatypes.JsonObject.factory(d))
-        return r
-
-    def get_arps(self, vid, ip):
-        """ get_arps()
-
-            Provides ARP details for the given IP address and VLAN ID
-
-        """
-        url = 'https://{0}:8443/sdn/v2.0/net/arps'.format(self.controller)
+    def get_arps(self, vid=None, ip=None):
+        """ Provides ARP details for the given IP address and VLAN ID """
+        url = self._net_base_url + 'arps'
 
         if vid and not ip:
             url = url + "?vid={0}".format(vid, ip)
         elif vid and ip:
             url = url + "?vid={0}&ip={1}".format(vid, ip)
 
-        data = rest.get(url, self.auth)
-        result = []
-
-        for d in data['nodes']:
-            r.append(datatypes.JsonObject.factory(d))
-        return r
+        return self._get(url, 'arps')
 
     def get_nodes(self, ip=None, vid=None, dpid=None, port=None):
-        """ get_nodes()
-
-            Provides the end node detail for the given IP address and VID
+        """ Provides the end node detail for the given IP address and VID
             Provides the end node list for a given VID
             Provides the end node list for a given datapath ID
             Provides the end node list for a given datapath ID and port
-
         """
-        url = 'https://{0}:8443/sdn/v2.0/net/nodes'.format(self.controller)
+        url = self._net_base_url + 'nodes'
 
         if vid and not ip:
-            url = url + "?vid={0}".format(vid, ip)
+            url += "?vid={0}".format(vid, ip)
         elif vid and ip:
-            url = url + "?vid={0}&ip={1}".format(vid, ip)
+            url += "?vid={0}&ip={1}".format(vid, ip)
         elif dpid and not port:
-            url = url + "?dpid={0}".format(urllib.quote(dpid))
+            url += "?dpid={0}".format(urllib.quote(dpid))
         elif dpid and port:
-            url = url + "?dpid={0}&port={1}".format(urllib.quote(dpid),port)
+            url += "?dpid={0}&port={1}".format(urllib.quote(dpid), port)
 
-        data = rest.get(url, self.auth)
-        result = []
-
-        for d in data['nodes']:
-            r.append(datatypes.JsonObject.factory(d))
-        return r
+        return self._get(url, 'nodes')
 
     def get_lldp(self):
         """ get_lldp()
@@ -148,107 +102,79 @@ class NetMixin(ApiBase):
             Gets a list of LLDP supressed ports from the SDN Controller
 
         """
-        url = 'https://{0}:8443/sdn/v2.0/lldp'.format(self.controller)
-        result = []
-        data = rest.get(url, self.auth)
-        for d in data['path']:
-            r.append(datatypes.JsonObject.factory(d))
-        return r
+        url = self._net_base_url + 'lldp'
+        return self._get(url, 'lldp_suppressed')
 
     def set_lldp(self, ports):
-        """ set_lldp()
-
-            Puts selected ports in to LLDP suppressed state
-
-        """
-        url = 'https://{0}:8443/sdn/v2.0/lldp'.format(self.controller)
+        """ Puts selected ports in to LLDP suppressed state """
+        url = self._net_base_url + 'lldp'
         r = rest.post(url, self.auth, json.dumps(ports))
+        raise_errors(r)
 
     def delete_lldp(self, ports):
-        """ delete_lldp()
-
-            Removes ports from LLDP suppressed state
-
-        """
-        url = 'https://{0}:8443/sdn/v2.0/lldp'.format(self.controller)
+        """ Removes ports from LLDP suppressed state """
+        url = self._net_base_url + 'lldp'
         r = rest.delete(url, self.auth, json.dumps(ports))
+        raise_errors(r)
 
-    def get_diag_observations(self):
-        """ get_diag_observations()
+    def get_diag_observations(self, packet_uid, packet_type):
+        """ Gets a list of diagnostic observation posts"""
+        url = self._net_base_url + 'diag/observations'
+        if packet_uid:
+            url += '?packet_uid={}'.format(packet_uid)
+        if packet_type:
+            url += '?packet_type={}'.format(packet_type)
+        return self._get(url, 'observations')
 
-            Not yet implemented
+    def set_diag_observations(self, observation):
+        """ Creates a diagnostic observation post """
+        url = self._net_base_url + 'diag/observations'
+        r = rest.post(url, self.auth, json.dumps(observation))
+        raise_errors(r)
 
-        """
-        pass
+    def delete_diag_observations(self, observation):
+        """ Delete a diagnostic observation post """
+        url = self._net_base_url + 'diag/observations'
+        r = rest.delete(url, self.auth, json.dumps(observation))
+        raise_errors(r)
 
-    def set_diag_observations(self):
-        """ set_diag_observations()
+    def get_diag_packets(self, packet_type=None):
+        """ Get a list of all diagnostic packets in the system """
+        url = self._net_base_url + 'diag/packets'
+        if packet_type:
+            url += '?type{}'.format(packet_type)
+        return self._get(url, 'packets')
 
-            Not yet implemented
+    def set_diag_packet(self, packet):
+        """ Crate a diagnositc packet """
+        url = self._net_base_url + 'diag/packets'
+        r = rest.post(url, self.auth, json.dumps(packet))
+        raise_errors(r)
 
-        """
-        pass
+    def delete_diag_packet(self, packet):
+        """ Remove a diagnostic packet """
+        url = self._net_base_url + 'diag/packets'
+        r = rest.delete(url, self.auth, json.dumps(packet))
+        raise_errors(r)
 
-    def delete_diag_observations(self):
-        """ delete_diag_observations()
+    def get_diag_packet(self, packet_uid):
+        """ Get a specific diagnostic packet """
+        url = self._net_base_url + 'diag/packets/{}'.format(packet_uid)
+        return self._get(url, 'packet', False)
 
-            Not yet implemented
+    def get_diag_packet_path(self, packet_uid):
+        """ Get expected paths for diagnostic packet """
+        url = self._net_base_url + 'diag/packets/{}/path'.format(packet_uid)
+        return self._get(url, 'path')
 
-        """
-        pass
+    def get_diag_packet_nexthop(self, packet_uid, dpid):
+        """ Show next hop information for packet at a given dpid """
+        url = self._net_base_url + 'diag/packets/{}/nexthop'.format(packet_uid)
+        url += '?src_dpid={}'.format(dpid)
+        return self._get(url, 'path')
 
-    def get_diag_packets(self):
-        """ get_diag_packets()
-
-            Not yet implemented
-
-        """
-        pass
-
-    def set_diag_packets(self):
-        """ set_diag_packets()
-
-            Not yet implemented
-
-        """
-        pass
-
-    def get_diag_packet_detail(self):
-        """ get_diag_packet_detail()
-
-            Not yet implemented
-
-        """
-        pass
-
-    def delete_diag_packet(self):
-        """ delete_diag_packet()
-
-            Not yet implemented
-
-        """
-        pass
-
-    def get_diag_packet_path(self):
-        """ get_diag_packet_path()
-
-            Not yet implemented
-
-        """
-        pass
-
-    def get_diag_packet_nexthop(self):
-        """ get_diag_packet_nexthop()
-
-            Not yet implemented
-
-        """
-        pass
-
-    def set_diag_packet_action(self):
-        """ set_diag_packet_action()
-
-            Not yet implemented
-
-        """
-        pass
+    def set_diag_packet_action(self, packet_uid, action):
+        """ Create a copy of the packet on the network """
+        url = self._net_base_url + 'diag/packets/{}/action'.format(packet_uid)
+        r = rest.post(url, self.auth, json.dumps(action))
+        raise_errors(r)

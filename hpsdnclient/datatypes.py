@@ -2,7 +2,7 @@
 #
 # Copyright (c)  2013 Hewlett-Packard Development Company, L.P.
 #
-# Permission is hereby granted, fpenrlowee of charge, to any person
+# Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software  and associated documentation files
 # (the "Software"), to deal in the Software without restriction,
 # including without limitation the rights to use, copy, modify, merge,
@@ -29,7 +29,7 @@ __version__ = '0.2.0'
 
 import json
 
-from hpsdnclient.error import HpsdnclientError
+from hpsdnclient.error import DatatypeError, NotFound
 
 ETHERNET = ['ipv4', 'arp', 'rarp', 'snmp', 'ipv6',
             'mpls_u', 'mpls_m', 'lldp', 'pbb', 'bddp']
@@ -183,7 +183,7 @@ def _find_class(data):
 
         Finds a matching class from the supplied JSON in data.
         Checks the values in the JSON dict against the class member variables.
-        Returns the an instance of the matching class.
+        Returns the an instance of the matching class or raises an error
     """
 
     keys = [d for d in data]
@@ -191,6 +191,8 @@ def _find_class(data):
         cls = c()
         if all(k in dir(cls) for k in keys):
             return cls
+        else:
+            raise NotFound()
 
 class JsonObject(object):
 
@@ -443,9 +445,8 @@ class Match(JsonObject):
                 for key in d:
                     setattr(tmp, key, d[key])
             else:
-                msg = ("Invalid data type. Expected list" +
-                      "of dicts, got {0}".format(type(data.get(d))))
-                raise HpsdnclientError(msg)
+                raise DatatypeError(dict,
+                                    format(type(data.get(d))))
         return tmp
 
 class Action(JsonObject):
@@ -508,9 +509,8 @@ class Action(JsonObject):
                 for key in d:
                     setattr(tmp, key, d[key])
             else:
-                msg = ("Invalid data type. Expected list" +
-                      "of dicts, got {0}".format(type(data.get(d))))
-                raise HpsdnclientError(msg)
+                raise DatatypeError(dict,
+                                    format(type(data.get(d))))
         return tmp
 
 class Instruction(JsonObject,):
@@ -680,6 +680,7 @@ class Link(JsonObject):
         self.src_port = kwargs.get('src_port', None)
         self.dst_dpid = kwargs.get('dst_dpid', None)
         self.dst_port = kwargs.get('dst_port', None)
+        self.info = kwargs.get('info', [])
 
 class LinkInfo(JsonObject):
     """ LinkInfo (JsonObject)
@@ -690,8 +691,9 @@ class LinkInfo(JsonObject):
     def __init__(self, **kwargs):
         self.m_time = kwargs.get('m_time', None)
         self.u_time = kwargs.get('s_time', None)
-        self.s_pt_state = kwargs.get('s_pt_state', [])
-        self.d_pt_state = kwargs.get('d_pt_state', [])
+        self.src_port_state = kwargs.get('s_pt_state', [])
+        self.dst_port_state = kwargs.get('d_pt_state', [])
+        self.link_type = kwargs.get('link_type', None)
 
 #lldp_suppressed == list of LldpProperties
 
@@ -1218,7 +1220,44 @@ class DhcpOptions(JsonObject):
     """
     def __init__(self, **kwargs):
         self.type = kwargs.get("type", None)
-        self.parameter_request_list = kwargs.get("parameter_request_list", None)
+        self.parameter_request_list = kwargs.get("parameter_request_list",
+                                                 None)
+
+class License(JsonObject):
+    """ A License """
+    def __init__(self, **kwargs):
+        self.install_id = kwargs.get("install_id", None)
+        self.serial_no = kwargs.get("serial_no", None)
+        self.product = kwargs.get("product", None)
+        self.license_metric = kwargs.get("license_metric", None)
+        self.metric_qty = kwargs.get("metric_qty", None)
+        self.license_type = kwargs.get("license_type", None)
+        self.base_license = kwargs.get("base_license", None)
+        self.creation_date = kwargs.get("creation_date", None)
+        self.activated_date = kwargs.get("activated_date", None)
+        self.expiry_date = kwargs.get("expiry_date", None)
+        self.license_status = kwargs.get("license_status", None)
+        self.deactivated_string = kwargs.get("deactivated_string", None)
+
+class App(JsonObject):
+    """ An app """
+    def __init__(self, **kwargs):
+        self.deployed = kwargs.get("deployed", None)
+        self.desc = kwargs.get("desc", None)
+        self.name = kwargs.get("name", None)
+        self.state = kwargs.get("state", None)
+        self.uid = kwargs.get("uid", None)
+        self.vendor = kwargs.get("vendor", None)
+        self.version = kwargs.get("version", None)
+
+class AppHealth(JsonObject):
+    """ An app health object """
+    def __init__(self, **kwargs):
+        self.uid = kwargs.get("uid", None)
+        self.deployed = kwargs.get("deployed", None)
+        self.name = kwargs.get("name", None)
+        self.state = kwargs.get("state", None)
+        self.status = kwargs.get("status", None)
 
 CLASS_LIST = [s() for s in JsonObject.__subclasses__()] #pylint: disable E1101
 
