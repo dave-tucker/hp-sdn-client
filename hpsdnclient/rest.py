@@ -48,7 +48,7 @@ def get(url, token, is_file=None):
     """
     if is_file:
         r = requests.get(url, auth=token, verify=False,
-                         headers=DEFAULT, timeout=0.5, stream=True)
+                         headers=UA, timeout=0.5, stream=True)
     else:
         r = requests.get(url, auth=token, verify=False,
                          headers=DEFAULT, timeout=0.5)

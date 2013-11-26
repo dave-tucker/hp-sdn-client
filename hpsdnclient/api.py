@@ -35,10 +35,10 @@ class ApiBase(object):
         self.controller = controller
         self.auth = auth
 
-    def _get(self, url, key=None, plural=True, is_file=True):
+    def _get(self, url, key=None, plural=True, is_file=False):
         result = []
         if is_file:
-            pass
+            r = rest.get(url, self.auth, is_file=True)
         else:
             r = rest.get(url, self.auth)
             raise_errors(r)
