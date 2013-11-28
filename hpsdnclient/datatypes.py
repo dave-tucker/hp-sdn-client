@@ -284,11 +284,23 @@ class JsonObject(object):
 
     @classmethod
     def factory(cls, data):
-        binding = CLASS_BINDINGS[cls.__name__]
-        for key in data:
-            if key in binding:
-                data[key] = JsonObjectFactory.create(binding[key], data[key])
+        try:
+            binding = CLASS_BINDINGS[cls.__name__]
+
+            for key in data:
+                if key in binding and isinstance(data[key], list):
+                    l = []
+                    for d in data[key]:
+                        l.append(JsonObjectFactory.create(binding[key], d))
+                    data[key] = l
+                elif key in binding:
+                    data[key] = JsonObjectFactory.create(binding[key],
+                                                         data[key])
+        except KeyError:
+            pass
+
         return cls(**data)
+
 
 ### OpenFlow ###
 
@@ -1284,7 +1296,7 @@ class NextHop(JsonObject):
 class ControllerStats(JsonObject):
     def __init__(self, **kwargs):
         self.uid = kwargs.get("uid", None)
-        self.duration_msec = kwargs.get("duration_msec", None)
+        self.duration_ms = kwargs.get("duration_ms", None)
         self.lost = kwargs.get("lost", None)
         self.msg_in = kwargs.get("msg_in", None)
         self.msg_out = kwargs.get("msg_out", None)
@@ -1305,7 +1317,10 @@ class Observation(JsonObject):
 
 CLASS_LIST = [s() for s in JsonObject.__subclasses__()] #pylint: disable E1101
 
-CLASS_BINDINGS = { 'Team': { 'systems' : 'TeamSystem' },
+CLASS_BINDINGS = { 'ControllerStats': {'lost': 'Counter',
+                                       'packet_in' : 'Counter',
+                                       'packet_out' : 'Counter'},
+                   'Team': { 'systems' : 'TeamSystem' },
                    'Flow': {'match' : 'Match', 'actions' : 'Action' }
                   #'links' : Link,
                   #'links' : TreeLink
