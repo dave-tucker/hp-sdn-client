@@ -3,24 +3,26 @@ HP SDN Client
 
 **A Python library that makes interaction with the HP SDN Controller REST API easy**
 
-Author: Dave Tucker, Hewlett Packard 
+Author: Dave Tucker, Hewlett Packard
 
 This library is currently developed against the HP SDN Controller v2.0 API
 
 Usage Example
 -------------
 
-	import hpsdnclient as hp
+    import hpsdnclient as hp
 
-	f = hp.api(controller='10.10.10.10',user='sdn',password='skyline')
+    controller = '10.44.254.129'
 
-	f.get_datapaths()
+    auth = hp.XAuthToken(user='sdn', password='skyline', server=controller)
+
+    api = hp.Api(controller=controller, auth=auth)
 
 
 Sample Application
 ------------------
 
-Please see short_detour.py
+Please see examples/short_detour.py
 
 Running the Tests
 -----------------

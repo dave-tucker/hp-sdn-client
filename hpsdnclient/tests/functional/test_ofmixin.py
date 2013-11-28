@@ -22,13 +22,13 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from hpsdnclient.tests.base import ApiBaseTest
+from hpsdnclient.tests.base import ApiTestCase
 from hpsdnclient.error import OpenflowProtocolError, VersionMismatch, NotFound
 import hpsdnclient.datatypes
 
 OF10_DPID = '00:00:00:00:00:00:00:0b'
 
-class TestOfMixin10(ApiBaseTest):
+class TestOfMixin10(ApiTestCase):
 
     def setUp(self):
         super(TestOfMixin10, self).setUp()

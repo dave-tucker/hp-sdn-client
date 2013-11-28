@@ -2,7 +2,7 @@
 #
 # Copyright (c)  2013 Hewlett-Packard Development Company, L.P.
 #
-# Permission is hereby granted, fpenrlowee of charge, to any person
+# Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software  and associated documentation files
 # (the "Software"), to deal in the Software without restriction,
 # including without limitation the rights to use, copy, modify, merge,
@@ -22,12 +22,13 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from hpsdnclient.tests.base import ApiBaseTest
+from hpsdnclient.tests.base import ApiTestCase
 
-class TestCoreMixin(ApiBaseTest):
+class TestNetMixin(ApiTestCase):
 
     def setUp(self):
-        super(TestCoreMixin, self).setUp()
+        super(TestNetMixin, self).setUp()
 
     def tearDown(self):
-        super(TestCoreMixin, self).tearDown()
+        super(TestNetMixin, self).tearDown()
+

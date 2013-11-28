@@ -43,7 +43,9 @@ class ApiBase(object):
             r = rest.get(url, self.auth)
             raise_errors(r)
 
-        if r.headers['Content-Type'] == 'application/json':
+        content = r.headers['Content-Type']
+
+        if content == 'application/json':
             data = r.json()
             if not plural:
                 result = JsonObject.factory(data[key])
@@ -53,7 +55,8 @@ class ApiBase(object):
                         result.append(JsonObject.factory(d))
                     except NotFound:
                         result.append(json.loads(d))
-
+        elif content == 'text/plain':
+            result = r.text()
         elif r.headers['Content-Type'] == 'application/zip':
             data = r.content()
             # Strip the 'attachment; filename='' from Content-Disposition
@@ -64,4 +67,6 @@ class ApiBase(object):
             f.close()
             # Return the filename
             result = filename
+        else:
+            result = None
         return result

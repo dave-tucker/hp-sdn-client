@@ -32,12 +32,12 @@ class XAuthToken(requests.auth.AuthBase):
     uses the Requests API. XAuthToken derives from
     requests.auth.AuthBase and hpsdnclient.ApiBase."""
 
-    def __init__(self, controller, user, password):
-        """Initializes the class. Set the controller, user and password
+    def __init__(self, server, user, password):
+        """Initializes the class. Set the server, user and password
         member variables. Sets the token and expiration values to
         None"""
         super(XAuthToken, self).__init__()
-        self.controller = controller
+        self.server = server
         self.user = user
         self.password = password
         self.token = None
@@ -56,27 +56,24 @@ class XAuthToken(requests.auth.AuthBase):
         """This method requests an authentication token from the SDN
         controller and returns a dictionary with the token and
         expiration time."""
-        url = 'https://{0}:8443/sdn/v2.0/auth'.format(self.controller)
+        url = 'https://{0}:8443/sdn/v2.0/auth'.format(self.server)
         payload = {'login':{ 'user': self.user, 'password': self.password}}
         r = requests.post(url, data=json.dumps(payload),
                           verify=False, timeout=0.5)
-        if r.status_code == 200:
-            data = r.json()
-            self.token = data[u'record'][u'token']
-            exptime = data[u'record'][u'expiration']/1000
-            self.token_expiration = time.gmtime(exptime)
-        else:
-            r.raise_for_status()
+        r.raise_for_status()
+        data = r.json()
+        self.token = data[u'record'][u'token']
+        exptime = data[u'record'][u'expiration']/1000
+        self.token_expiration = time.gmtime(exptime)
 
     def delete_auth(self):
         """Delete Authentication Token, AKA, Logout. This method logs
         the current user out"""
-        url = 'https://{0}:8443/sdn/v2.0/auth'.format(self.controller)
+        url = 'https://{0}:8443/sdn/v2.0/auth'.format(self.server)
         headers = {"X-Auth-Token":self.token}
         r = requests.delete(url, headers=headers,
                             verify=False, timeout=0.5)
-        if r.status_code == 200:
-            self.token = None
-            self.token_expiration = None
-        else:
-            r.raise_for_status()
+        r.raise_for_status()
+        self.token = None
+        self.token_expiration = None
+

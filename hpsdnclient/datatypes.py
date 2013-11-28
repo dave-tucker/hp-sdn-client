@@ -137,7 +137,7 @@ METER_FLAGS = ["kbps",
                "burst",
                "stats"]
 
-METER_TYPE = ["drop", "dscp_remark","experimenter"]
+METER_TYPE = ["drop", "dscp_remark", "experimenter"]
 
 GROUP_TYPE = ["all", "select", "indirect", "ff"]
 
@@ -177,6 +177,8 @@ ENUMS = [ ETHERNET,
           OPERATION
         ]
 
+METHODS = [ "factory", "to_json_string", "to_dict"]
+
 def _find_class(data):
 
     """ _find_class (data)
@@ -185,14 +187,33 @@ def _find_class(data):
         Checks the values in the JSON dict against the class member variables.
         Returns the an instance of the matching class or raises an error
     """
-
     keys = [d for d in data]
-    for c in JsonObject.__subclasses__(): #pylint: disable=E1101
-        cls = c()
-        if all(k in dir(cls) for k in keys):
-            return cls
-        else:
-            raise NotFound()
+    keys.sort()
+    for c in CLASS_LIST:
+        class_keys = [k for k in dir(c) if not k.startswith("__")
+                      and not k in METHODS]
+        class_keys.sort()
+        if keys == class_keys:
+            return c.__class__.__name__
+    raise NotFound()
+
+
+class JsonObjectFactory:
+    factories = {}
+    @staticmethod
+    def add_factory(id, factory):
+        JsonObjectFactory.factories[id] = factory
+
+    @staticmethod
+    def find_and_create(data):
+        cls = _find_class(data)
+        return JsonObjectFactory.create(cls, data)
+
+    @staticmethod
+    def create(id, data): #pylint: disable W0613
+        if not JsonObjectFactory.factories.has_key(id):
+            JsonObjectFactory.factories[id] = eval(id + '.factory(data)')
+        return JsonObjectFactory.factories[id]
 
 class JsonObject(object):
 
@@ -261,41 +282,13 @@ class JsonObject(object):
                     data[attr.__str__()] = value
         return data
 
-    @staticmethod
-    def factory(data):
-        """
-
-           factory (self)
-
-           Static method that creates a new instance of a class based
-           on some JSON. Finds the matching class, extracts the data in
-           the JSON and maps it to the appropriate data types
-
-        """
-        tmp = _find_class(data)
-        attributes = [attr for attr in dir(tmp)
-                      if not callable(getattr(tmp,attr)) and
-                      not attr.startswith("__")]
-        for attr in attributes:
-            #TODO:Rewrite CLASS_BINDINGS to "Class:Attribute" format
-            #This should resolve issues where Attribute doesn't == Class Name
-            if attr in CLASS_BINDINGS:
-                cls = CLASS_BINDINGS[attr].factory(data.get(attr))
-                setattr(tmp, attr, cls)
-            elif isinstance(data.get(attr), list):
-                #Could be an enum or a class
-                for e in ENUMS:
-                    if all(k in e for k in data.get(attr)):
-                        setattr(tmp, attr, data.get(attr))
-                        break
-                else:
-                    lst = []
-                    for item in data.get(attr):
-                        lst.append(JsonObject.factory(item))
-                        setattr(tmp, attr, lst)
-            else:
-                setattr(tmp, attr, data.get(attr))
-        return tmp
+    @classmethod
+    def factory(cls, data):
+        binding = CLASS_BINDINGS[cls.__name__]
+        for key in data:
+            if key in binding:
+                data[key] = JsonObjectFactory.create(binding[key], data[key])
+        return cls(**data)
 
 ### OpenFlow ###
 
@@ -312,13 +305,31 @@ class Datapath(JsonObject):
         self.last_message = kwargs.get('last_message', None)
         self.num_buffers = kwargs.get('num_buffers', None)
         self.num_tables = kwargs.get('num_tables', None)
-        self.supported_actions = kwargs.get('supported_action', [])
         self.capabilities = kwargs.get('capabilities', [])
-        self.num_ports = kwargs.get('num_ports', None)
         self.device_ip = kwargs.get('device_ip', None)
         self.device_port = kwargs.get('device_port', None)
-        self.masters = kwargs.get('masters', [])
-        self.slaves = kwargs.get('num_slaves', [])
+
+class DatapathControllers(JsonObject):
+    """ A controller, from a datapath point of view """
+    def __init__(self, **kwargs):
+        self.master = kwargs.get('master', None)
+        self.slaves = kwargs.get('slaves', [])
+
+class MeterFeatures(JsonObject):
+    def __init__(self, **kwargs):
+        self.flags = kwargs.get("flags", None)
+        self.max_bands_per_meter = kwargs.get("max_bands_per_meter", None)
+        self.max_color_value = kwargs.get("max_color_value", None)
+        self.max_meters = kwargs.get("max_meters", None)
+        self.types = kwargs.get("types", None)
+
+class GroupFeatures(JsonObject):
+    """ Docstirg here"""
+    def __init__(self, **kwargs):
+        self.actions = kwargs.get("actions", None)
+        self.capabilities = kwargs.get("capabilities", None)
+        self.max_groups = kwargs.get("max_groups", None)
+        self.types = kwargs.get("types", None)
 
 class Port(JsonObject):
     """ Port (JsonObject)
@@ -856,6 +867,21 @@ class Cost(JsonObject):
 
 ### Core ###
 
+class AuditLogEntry(JsonObject):
+    """ AuditLogEntry()
+
+        A Python representation of the AuditLogEnrty object
+
+    """
+
+    def __init__(self, **kwargs):
+        self.uid = kwargs.get("uid", [])
+        self.system_uid = kwargs.get("system_uid", None)
+        self.user = kwargs.get("user", None)
+        self.ts = kwargs.get("ts", None)
+        self.activity = kwargs.get("activity", None)
+        self.description = kwargs.get("description", None)
+
 class Alert(JsonObject):
     """ Alert()
 
@@ -899,6 +925,7 @@ class AlertTopicListener(JsonObject):
         self.name = kwargs.get("desc", None)
         self.callbacks = kwargs.get("desc", [])
 
+
 class Callback(JsonObject):
     """ Callback()
 
@@ -910,20 +937,6 @@ class Callback(JsonObject):
         self.topics = kwargs.get("topics", [])
         self.uri = kwargs.get("uri", None)
 
-class AuditLogEntry(JsonObject):
-    """ AuditLogEntry()
-
-        A Python representation of the AuditLogEnrty object
-
-    """
-
-    def __init__(self, **kwargs):
-        self.uid = kwargs.get("uid", [])
-        self.system_uid = kwargs.get("system_uid", None)
-        self.user = kwargs.get("user", None)
-        self.ts = kwargs.get("ts", None)
-        self.activity = kwargs.get("activity", None)
-        self.description = kwargs.get("description", None)
 
 class Config(JsonObject):
     """ Config()
@@ -980,28 +993,19 @@ class System(JsonObject):
         self.priority = kwargs.get("priority", None)
 
 class ControllerNode(JsonObject):
-    """ ControllerNode()
-
-        A Python representation of the ControllerNode class
-
-    """
+    """ A Controller Node """
 
     def __init__(self, **kwargs):
         self.ip = kwargs.get("ip", None)
         self.name = kwargs.get("name", None)
 
 class Region(JsonObject):
-    """ Region()
-
-        A Python representation of the Region class
-
-    """
-
+    """ A Region """
     def __init__(self, **kwargs):
-        self.id = kwargs.get("id", None)
+        self.uid = kwargs.get("uid", None)
         self.master = kwargs.get("master", None)
         self.slaves = kwargs.get("slaves", [])
-        self.networkElements = kwargs.get("networkElements",[])
+        self.devices = kwargs.get("devices",[])
 
 class Team(JsonObject):
     """ Team()
@@ -1016,7 +1020,7 @@ class Team(JsonObject):
         self.version = kwargs.get("version")
         self.systems = kwargs.get("systems")
 
-class TeamSystems(JsonObject):
+class TeamSystem(JsonObject):
     """ TeamSystems()
 
         A Python object to represent the systems that belong to a team.
@@ -1027,8 +1031,7 @@ class TeamSystems(JsonObject):
         self.name = kwargs.get("name", None)
         self.ip = kwargs.get("name", None)
         self.priority = kwargs.get("name", None)
-        self.id = kwargs.get("id", None)
-        self.status = kwargs.get("status", None)
+
 
 class Metric(JsonObject):
     """ Metric()
@@ -1069,17 +1072,12 @@ class MetricUpdate(JsonObject):
         self.type = kwargs.get("type", None)
 
 class License(JsonObject):
-    """ License()
-
-        A Python object to represent the License object
-
-    """
-
+    """ A License """
     def __init__(self, **kwargs):
         self.install_id = kwargs.get("install_id", None)
         self.serial_no = kwargs.get("serial_no", None)
-        self.license_metric = kwargs.get("license_metric", None)
         self.product = kwargs.get("product", None)
+        self.license_metric = kwargs.get("license_metric", None)
         self.metric_qty = kwargs.get("metric_qty", None)
         self.license_type = kwargs.get("license_type", None)
         self.base_license = kwargs.get("base_license", None)
@@ -1223,22 +1221,6 @@ class DhcpOptions(JsonObject):
         self.parameter_request_list = kwargs.get("parameter_request_list",
                                                  None)
 
-class License(JsonObject):
-    """ A License """
-    def __init__(self, **kwargs):
-        self.install_id = kwargs.get("install_id", None)
-        self.serial_no = kwargs.get("serial_no", None)
-        self.product = kwargs.get("product", None)
-        self.license_metric = kwargs.get("license_metric", None)
-        self.metric_qty = kwargs.get("metric_qty", None)
-        self.license_type = kwargs.get("license_type", None)
-        self.base_license = kwargs.get("base_license", None)
-        self.creation_date = kwargs.get("creation_date", None)
-        self.activated_date = kwargs.get("activated_date", None)
-        self.expiry_date = kwargs.get("expiry_date", None)
-        self.license_status = kwargs.get("license_status", None)
-        self.deactivated_string = kwargs.get("deactivated_string", None)
-
 class App(JsonObject):
     """ An app """
     def __init__(self, **kwargs):
@@ -1259,10 +1241,72 @@ class AppHealth(JsonObject):
         self.state = kwargs.get("state", None)
         self.status = kwargs.get("status", None)
 
+
+class System(JsonObject):
+    """ A system """
+    def __init__(self, **kwargs):
+        self.uid = kwargs.get("uid", None)
+        self.version = kwargs.get("version", None)
+        self.role = kwargs.get("role", None)
+        self.core_data_version = kwargs.get("core_data_version", None)
+        self.core_data_version_timestamp = kwargs.get( \
+            "core_data_version_timestamp", None)
+        self.time = kwargs.get("time", None)
+        self.self = kwargs.get("self", None)
+        self.status = kwargs.get("status", None)
+
+class MetricApp(JsonObject):
+    """ An application with metering data on disk """
+    def __init__(self, **kwargs):
+        self.app_id = kwargs.get("app_id", None)
+        self.app_name = kwargs.get("app_name", None)
+
+class MetricValues(JsonObject):
+    """ The metric values """
+    def __init__(self, **kwargs):
+        self.type = kwargs.get("type", None)
+        self.uid = kwargs.get("uid", None)
+        self.datapoint_count = kwargs.get("datapoint_count", None)
+        self.datapoints = kwargs.get("datapoints", [])
+
+class DataPoint(JsonObject):
+    """ A datapoint """
+    def __init__(self, **kwargs):
+        self.count = kwargs.get("count", None)
+        self.milliseconds_span = kwargs.get("milliseconds_span", None)
+        self.update_time = kwargs.get("upate_time", None)
+
+class NextHop(JsonObject):
+    def __init__(self, **kwargs):
+        self.dpid = kwargs.get("dpid", None)
+        self.out_port = kwargs.get("out_port", None)
+
+class ControllerStats(JsonObject):
+    def __init__(self, **kwargs):
+        self.uid = kwargs.get("uid", None)
+        self.duration_msec = kwargs.get("duration_msec", None)
+        self.lost = kwargs.get("lost", None)
+        self.msg_in = kwargs.get("msg_in", None)
+        self.msg_out = kwargs.get("msg_out", None)
+        self.packet_in = kwargs.get("packet_in", None)
+        self.packet_out = kwargs.get("packet_out", None)
+
+class Counter(JsonObject):
+    def __init__(self, **kwargs):
+        self.packets = kwargs.get("packets", None)
+        self.bytes = kwargs.get("bytes", None)
+
+class Observation(JsonObject):
+    def __init__(self, **kwargs):
+        self.dpid = kwargs.get("dpid", None)
+        self.type = kwargs.get("type", None)
+        self.packet_uid = kwargs.get("packet_uid", None)
+        self.status = kwargs.get("status", None)
+
 CLASS_LIST = [s() for s in JsonObject.__subclasses__()] #pylint: disable E1101
 
-CLASS_BINDINGS = {'match' : Match,
-                  'actions' : Action,
+CLASS_BINDINGS = { 'Team': { 'systems' : 'TeamSystem' },
+                   'Flow': {'match' : 'Match', 'actions' : 'Action' }
                   #'links' : Link,
                   #'links' : TreeLink
                   }

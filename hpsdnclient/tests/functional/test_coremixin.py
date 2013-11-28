@@ -22,13 +22,12 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from hpsdnclient.tests.base import ApiBaseTest
+from hpsdnclient.tests.base import ApiTestCase
 
-class TestNetMixin(ApiBaseTest):
+class TestCoreMixin(ApiTestCase):
 
     def setUp(self):
-        super(TestNetMixin, self).setUp()
+        super(TestCoreMixin, self).setUp()
 
     def tearDown(self):
-        super(TestNetMixin, self).tearDown()
-
+        super(TestCoreMixin, self).tearDown()
