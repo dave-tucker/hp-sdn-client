@@ -66,14 +66,14 @@ class OfMixin(ApiBase):
         if group_id:
             url = url + '&group_id={0}'.format(group_id)
 
-        return self._get(url, 'group_stats')
+        return self._get(url, 'stats')
 
     def get_meter_stats(self, dpid, meter_id):
         """List meter statistics"""
         url = (self._of_base_url +
                'stats/meters?dpid={0}&meter={1}'.format(urllib.quote(dpid),
                                                         meter_id))
-        return self._get(url, 'meter_stats')
+        return self._get(url, 'stats')
 
     def get_datapaths(self):
         """List all datapaths that are managed by this controller."""

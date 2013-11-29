@@ -66,7 +66,7 @@ AUDIT_LOG = {
               "description": "geewiz-apps-1.0.0.jar has been staged"
             }
 
-SYSTEMS = {
+SYSTEM = {
             "uid": "adc5e492-957c-4f8c-aa0a-97fa2dac5f23",
             "version": "01.11.00.0000",
             "role": "leader",

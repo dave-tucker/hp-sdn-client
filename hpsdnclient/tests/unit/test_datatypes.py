@@ -29,8 +29,24 @@ import hpsdnclient.datatypes as datatypes
 class DatatypeTestCase(unittest.TestCase):
 
     def _test_type(self, data, datatype):
-        obj = datatypes.JsonObjectFactory.find_and_create(data)
+        type_name = datatype.__name__
+        obj = datatypes.JsonObjectFactory.create(type_name, data)
         self.assertTrue(isinstance(obj, datatype))
+
+        try:
+            cm = datatypes.CLASS_MAP[type_name]
+
+            for k in cm:
+                o = eval('obj.%s' % k)
+                if type(o) == list:
+                    for item in o:
+                        self.assertTrue(isinstance(item, eval('datatypes.%s' %
+                                                                       cm[k])))
+                else:
+                    self.assertTrue(isinstance(o, eval('datatypes.%s' %
+                                                                       cm[k])))
+        except KeyError:
+            pass
 
     def test_create_license(self):
         self._test_type(test_data.LICENSE, datatypes.License)
@@ -45,7 +61,7 @@ class DatatypeTestCase(unittest.TestCase):
         self._test_type(test_data.AUDIT_LOG, datatypes.AuditLogEntry)
 
     def test_create_system(self):
-        self._test_type(test_data.SYSTEMS, datatypes.System)
+        self._test_type(test_data.SYSTEM, datatypes.System)
 
     def test_create_region(self):
         self._test_type(test_data.REGION, datatypes.Region)

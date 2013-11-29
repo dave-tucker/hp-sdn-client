@@ -29,7 +29,7 @@ __version__ = '0.2.0'
 
 import json
 
-from hpsdnclient.error import DatatypeError, NotFound
+from hpsdnclient.error import NotFound
 
 ETHERNET = ['ipv4', 'arp', 'rarp', 'snmp', 'ipv6',
             'mpls_u', 'mpls_m', 'lldp', 'pbb', 'bddp']
@@ -178,89 +178,67 @@ ENUMS = [ ETHERNET,
         ]
 
 METHODS = [ "factory", "to_json_string", "to_dict"]
-
-def _find_class(data):
-
-    """ _find_class (data)
-
-        Finds a matching class from the supplied JSON in data.
-        Checks the values in the JSON dict against the class member variables.
-        Returns the an instance of the matching class or raises an error
-    """
-    keys = [d for d in data]
-    keys.sort()
-    for c in CLASS_LIST:
-        class_keys = [k for k in dir(c) if not k.startswith("__")
-                      and not k in METHODS]
-        class_keys.sort()
-        if keys == class_keys:
-            return c.__class__.__name__
-    raise NotFound()
+KEYWORDS = ["self"]
 
 
 class JsonObjectFactory:
+
+    def __init__(self):
+        pass
+
     factories = {}
+
+    @staticmethod
+    def _find_class(data):
+        """ Finds a matching class from the supplied JSON in data.
+            Checks the values in the JSON dict against the class attributes.
+              Returns the an instance of the matching class or raises an error
+        """
+        keys = [d for d in data]
+        keys.sort()
+        for c in CLASS_LIST:
+            class_keys = [k for k in dir(c) if not k.startswith("__")
+                          and not k in METHODS]
+            class_keys.sort()
+            if keys == class_keys:
+                return c.__class__.__name__
+        raise NotFound()
+
     @staticmethod
     def add_factory(id, factory):
         JsonObjectFactory.factories[id] = factory
 
     @staticmethod
     def find_and_create(data):
-        cls = _find_class(data)
+        cls = JsonObjectFactory._find_class(data)
         return JsonObjectFactory.create(cls, data)
 
     @staticmethod
-    def create(id, data): #pylint: disable W0613
+    def create(id, data): #pylint: disable=W0613
+        for key in data:
+            if key in KEYWORDS:
+                new_key = key + "_"
+                data[new_key] = data.pop(key)
         if not JsonObjectFactory.factories.has_key(id):
             JsonObjectFactory.factories[id] = eval(id + '.factory(data)')
         return JsonObjectFactory.factories[id]
 
 class JsonObject(object):
 
-    """ JsonObject (object):
-
-        This is the base class for all HP SDN Client data types.
-
-    """
+    """ This is the base class for all HP SDN Client data types."""
 
     def __init__(self):
-        """ __init__ (self)
-
-            Initialize the class
-
-        """
         pass
 
     def __str__(self):
-        """
-          __str__ (self)
-
-          Allows the object to be converted to a string.
-          Returns a string.
-
-        """
         return self.to_json_string()
 
     def to_json_string(self):
-        """
-          __str__ (self)
-
-          Serializes the class to a pretty-printed JSON string.
-
-        """
         tmp = self.to_dict()
         return json.dumps(tmp, sort_keys=True,
                           indent=4, separators=(',', ': '))
 
     def to_dict(self):
-        """
-
-          to_dict (self)
-
-          Creates a representation of the class as a dictionary.
-
-        """
-
         data = {}
         attributes = [attr for attr in dir(self)
                       if not callable(getattr(self,attr))
@@ -285,21 +263,19 @@ class JsonObject(object):
     @classmethod
     def factory(cls, data):
         try:
-            binding = CLASS_BINDINGS[cls.__name__]
-
+            cm = CLASS_MAP[cls.__name__]
             for key in data:
-                if key in binding and isinstance(data[key], list):
+                if key in cm and isinstance(data[key], list):
                     l = []
                     for d in data[key]:
-                        l.append(JsonObjectFactory.create(binding[key], d))
+                        l.append(JsonObjectFactory.create(cm[key], d))
                     data[key] = l
-                elif key in binding:
-                    data[key] = JsonObjectFactory.create(binding[key],
-                                                         data[key])
+                elif key in cm:
+                    data[key] = JsonObjectFactory.create(cm[key], data[key])
         except KeyError:
             pass
 
-        return cls(**data)
+        return cls(data)
 
 
 ### OpenFlow ###
@@ -453,25 +429,6 @@ class Match(JsonObject):
                 data.append(tmp)
         return data
 
-    @staticmethod
-    def factory(data):
-        """ factory (data)
-
-            Creates an instance of the class from some JSON. Overrides
-            the parent method as in this case, JSON will be a list of
-            dictionaries
-
-        """
-        tmp = Match()
-        for d in data:
-            if isinstance(d, dict):
-                for key in d:
-                    setattr(tmp, key, d[key])
-            else:
-                raise DatatypeError(dict,
-                                    format(type(data.get(d))))
-        return tmp
-
 class Action(JsonObject):
     """ Action (JsonObject)
 
@@ -516,25 +473,6 @@ class Action(JsonObject):
                 tmp[attr.__str__()] = getattr(self, attr)
                 data.append(tmp)
         return data
-
-    @staticmethod
-    def factory(data):
-        """ factory (data)
-
-            Creates an instance of the class from some JSON.
-            Overides the parent method as in this case, JSON will be a
-            list of dictionaries
-
-        """
-        tmp = Action()
-        for d in data:
-            if isinstance(d, dict):
-                for key in d:
-                    setattr(tmp, key, d[key])
-            else:
-                raise DatatypeError(dict,
-                                    format(type(data.get(d))))
-        return tmp
 
 class Instruction(JsonObject,):
     """ Instruction (JsonObject)
@@ -650,7 +588,7 @@ class PortStats(JsonObject):
 
     """
     def __init__(self, **kwargs):
-        self.id = kwargs.get('id', None)
+        self.port_id = kwargs.get('id', None)
         self.rx_packets = kwargs.get('rx_packets', None)
         self.tx_packets = kwargs.get('tx_packets', None)
         self.rx_bytes = kwargs.get('rx_bytes', None)
@@ -661,6 +599,7 @@ class PortStats(JsonObject):
         self.tx_errors = kwargs.get('tx_errors', None)
         self.collisions = kwargs.get('collisions', None)
         self.duration_sec = kwargs.get('duration_sec', None)
+        self.duration_nsec = kwargs.get('duration_nsec', None)
         self.rx_crc_err = kwargs.get('rx_crc_err', None)
         self.rx_frame_err = kwargs.get('rx_frame_err', None)
         self.rx_over_err = kwargs.get('rx_over_err', None)
@@ -987,22 +926,17 @@ class SupportEntry(JsonObject):
         self.content = kwargs.get("content", [])
 
 class System(JsonObject):
-    """ System()
-
-        A Python representation of the System class
-
-    """
-
+    """ A system """
     def __init__(self, **kwargs):
         self.uid = kwargs.get("uid", None)
         self.version = kwargs.get("version", None)
-        self.address = kwargs.get("address", None)
-        self.port = kwargs.get("port", None)
         self.role = kwargs.get("role", None)
-        self.config_revision = kwargs.get("config_revision", None)
+        self.core_data_version = kwargs.get("core_data_version", None)
+        self.core_data_version_timestamp = kwargs.get( \
+            "core_data_version_timestamp", None)
         self.time = kwargs.get("time", None)
-        self.self = kwargs.get("self", None)
-        self.priority = kwargs.get("priority", None)
+        self.self_ = kwargs.get("self_", None)
+        self.status = kwargs.get("status", None)
 
 class ControllerNode(JsonObject):
     """ A Controller Node """
@@ -1253,20 +1187,6 @@ class AppHealth(JsonObject):
         self.state = kwargs.get("state", None)
         self.status = kwargs.get("status", None)
 
-
-class System(JsonObject):
-    """ A system """
-    def __init__(self, **kwargs):
-        self.uid = kwargs.get("uid", None)
-        self.version = kwargs.get("version", None)
-        self.role = kwargs.get("role", None)
-        self.core_data_version = kwargs.get("core_data_version", None)
-        self.core_data_version_timestamp = kwargs.get( \
-            "core_data_version_timestamp", None)
-        self.time = kwargs.get("time", None)
-        self.self = kwargs.get("self", None)
-        self.status = kwargs.get("status", None)
-
 class MetricApp(JsonObject):
     """ An application with metering data on disk """
     def __init__(self, **kwargs):
@@ -1317,11 +1237,13 @@ class Observation(JsonObject):
 
 CLASS_LIST = [s() for s in JsonObject.__subclasses__()] #pylint: disable E1101
 
-CLASS_BINDINGS = { 'ControllerStats': {'lost': 'Counter',
-                                       'packet_in' : 'Counter',
-                                       'packet_out' : 'Counter'},
-                   'Team': { 'systems' : 'TeamSystem' },
-                   'Flow': {'match' : 'Match', 'actions' : 'Action' }
-                  #'links' : Link,
-                  #'links' : TreeLink
-                  }
+CLASS_MAP = { 'ControllerStats': {'lost': 'Counter',
+                                  'packet_in' : 'Counter',
+                                  'packet_out' : 'Counter'},
+              'Team': {'systems' : 'TeamSystem' },
+              'Flow': {'match' : 'Match',
+                       'actions' : 'Action',
+                       'instructions': 'Instruction' }
+             #'links' : Link,
+             #'links' : TreeLink
+            }

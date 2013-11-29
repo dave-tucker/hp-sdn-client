@@ -24,9 +24,30 @@
 
 import json
 
-from hpsdnclient.datatypes import JsonObject
+from hpsdnclient.datatypes import JsonObjectFactory
 from hpsdnclient.error import raise_errors, NotFound
 import hpsdnclient.rest as rest
+
+JSON_MAP = {
+             'controller_stats' : 'ControllerStats',
+             'stats' : 'Stats',
+             'datapath' : 'Datapath',
+             'meter_features' : 'MeterFeatures',
+             'group_features' : 'GroupFeatures',
+             'port' : 'Port',
+             'meter' : 'Meter',
+             'flow' : 'Flow',
+             'group' : 'Group',
+             'cluster' : 'Cluster',
+           }
+
+PLURALS = [ 'datapaths',
+            'ports',
+            'meters',
+            'flows',
+            'groups',
+            'clusters'
+          ]
 
 
 class ApiBase(object):
@@ -35,7 +56,7 @@ class ApiBase(object):
         self.controller = controller
         self.auth = auth
 
-    def _get(self, url, key=None, plural=True, is_file=False):
+    def _get(self, url, key=None, is_file=False):
         result = []
         if is_file:
             r = rest.get(url, self.auth, is_file=True)
@@ -47,12 +68,11 @@ class ApiBase(object):
 
         if content == 'application/json':
             data = r.json()
-            if not plural:
-                result = JsonObject.factory(data[key])
-            else:
+                result = JsonObjectFactory.create(datatype, data[key])
+            elif data[k]:
                 for d in data[key]:
                     try:
-                        result.append(JsonObject.factory(d))
+                        result.append(JsonObjectFactory.create(datatype, d))
                     except NotFound:
                         result.append(json.loads(d))
         elif content == 'text/plain':
