@@ -47,7 +47,7 @@ class OfMixin(ApiBase):
         """List controller statistics for all controllers that are
         part of this controller's team."""
         url = self._of_base_url + 'stats'
-        return self._get(url, 'controller_stats')
+        return self._get(url)
 
     def get_port_stats(self, dpid, port_id=None):
         """List all port statistics for a given datapath or for a
@@ -57,7 +57,7 @@ class OfMixin(ApiBase):
         if port_id:
             url = url + '&port_id={0}'.format(port_id)
 
-        return self._get(url, 'stats')
+        return self._get(url)
 
     def get_group_stats(self, dpid, group_id=None):
         """List group statistics"""
@@ -66,55 +66,55 @@ class OfMixin(ApiBase):
         if group_id:
             url = url + '&group_id={0}'.format(group_id)
 
-        return self._get(url, 'stats')
+        return self._get(url)
 
     def get_meter_stats(self, dpid, meter_id):
         """List meter statistics"""
         url = (self._of_base_url +
                'stats/meters?dpid={0}&meter={1}'.format(urllib.quote(dpid),
                                                         meter_id))
-        return self._get(url, 'stats')
+        return self._get(url)
 
     def get_datapaths(self):
         """List all datapaths that are managed by this controller."""
         url = self._of_base_url + 'datapaths'
-        return self._get(url, 'datapaths')
+        return self._get(url)
 
     def get_datapath_detail(self, dpid):
         """Get detail information on a datapath."""
         url = (self._of_base_url + 'datapaths/{0}'.format(urllib.quote(dpid)))
-        return self._get(url, 'datapath')
+        return self._get(url)
 
     def get_datapath_meter_features(self, dpid):
         """Get datapath meter features"""
 
         url = (self._of_base_url +
                'datapaths/{0}/features/meter'.format(urllib.quote(dpid)))
-        return self._get(url, 'meter_features')
+        return self._get(url)
 
     def get_datapath_group_features(self, dpid):
         """Get datapath group features"""
         url = (self._of_base_url +
                'datapaths/{0}/features/group'.format(urllib.quote(dpid)))
-        return self._get(url, 'group_features')
+        return self._get(url)
 
     def get_ports(self, dpid):
         """ Gets a list of ports from the specified DPID"""
         url = (self._of_base_url +
                'datapaths/{0}/ports'.format(urllib.quote(dpid)))
-        return self._get(url, 'ports')
+        return self._get(url)
 
     def get_port_detail(self, dpid, port_id):
         """Gets detailed port information for the specified port"""
         url = (self._of_base_url +
                'datapaths/{0}/ports/{1}'.format(urllib.quote(dpid), port_id))
-        return self._get(url, 'port')
+        return self._get(url)
 
     def get_meters(self, dpid):
         """List all meters configured on the supplied DPID"""
         url = (self._of_base_url +
                'datapaths/{0}/meters'.format(urllib.quote(dpid)))
-        return self._get(url, 'meters')
+        return self._get(url)
 
     def add_meters(self, dpid, meters):
         """Add a new meter to the supplied DPID"""
@@ -127,7 +127,7 @@ class OfMixin(ApiBase):
         """Get detailed meter information"""
         url = (self._of_base_url +
                'datapaths/{0}/meters/{1}'.format(urllib.quote(dpid), meter_id))
-        return self._get(url, 'meter')
+        return self._get(url)
 
     def update_meter(self, dpid, meter_id, meter):
         """ Update the specified meter"""
@@ -147,7 +147,7 @@ class OfMixin(ApiBase):
         """Gets a list of flows on the supplied DPID"""
         url = (self._of_base_url +
                'datapaths/{0}/flows'.format(urllib.quote(dpid)))
-        return self._get(url, 'flows')
+        return self._get(url)
 
     def _assemble_flows(self, flows):
         data = None
@@ -194,7 +194,7 @@ class OfMixin(ApiBase):
         url = (self._of_base_url +
                'datapaths/{0}/groups'.format(urllib.quote(dpid)))
 
-        return self._get(url, 'groups')
+        return self._get(url)
 
     def add_groups(self, dpid, groups):
         """Create a group, or groups"""
@@ -207,7 +207,7 @@ class OfMixin(ApiBase):
         """Get group details"""
         url = (self._of_base_url +
                'datapaths/{0}/groups/{1}'.format(urllib.quote(dpid), group_id))
-        return self._get(url, 'group')
+        return self._get(url)
 
     def update_groups(self, dpid, group_id, groups):
         """Update a group"""

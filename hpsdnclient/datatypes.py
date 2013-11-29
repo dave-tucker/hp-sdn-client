@@ -275,7 +275,7 @@ class JsonObject(object):
         except KeyError:
             pass
 
-        return cls(data)
+        return cls(**data)
 
 
 ### OpenFlow ###

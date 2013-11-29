@@ -39,15 +39,23 @@ JSON_MAP = {
              'flow' : 'Flow',
              'group' : 'Group',
              'cluster' : 'Cluster',
+             'packet' : 'Packet'
            }
 
-PLURALS = [ 'datapaths',
-            'ports',
-            'meters',
-            'flows',
-            'groups',
-            'clusters'
-          ]
+PLURALS = { 'datapaths': JSON_MAP['datapath'],
+            'ports' : JSON_MAP['port'],
+            'meters': JSON_MAP['meter'],
+            'flows': JSON_MAP['flow'],
+            'groups': JSON_MAP['group'],
+            'clusters': JSON_MAP['cluster'],
+            'links': 'Link',
+            'nodes': 'Node',
+            'arps': 'Arp',
+            'lldp_suppressed' : 'LldpProperties',
+            'observations' : 'observation',
+            'packets': JSON_MAP['packet'],
+
+          }
 
 
 class ApiBase(object):
@@ -56,7 +64,7 @@ class ApiBase(object):
         self.controller = controller
         self.auth = auth
 
-    def _get(self, url, key=None, is_file=False):
+    def _get(self, url, is_file=False):
         result = []
         if is_file:
             r = rest.get(url, self.auth, is_file=True)
@@ -68,15 +76,26 @@ class ApiBase(object):
 
         if content == 'application/json':
             data = r.json()
+            key = data.keys()[0]
+            if not key in PLURALS:
+                try:
+                    datatype = JSON_MAP[key]
+                except KeyError:
+                    raise NotFound("The key {} is not mapped" +
+                                   "to a datatype".format(key))
                 result = JsonObjectFactory.create(datatype, data[key])
-            elif data[k]:
+            else:
+                try:
+                    datatype = PLURALS[key]
+                except KeyError:
+                    raise NotFound("The key {} is not mapped" +
+                                   "to a datatype".format(key))
                 for d in data[key]:
-                    try:
                         result.append(JsonObjectFactory.create(datatype, d))
-                    except NotFound:
-                        result.append(json.loads(d))
+
         elif content == 'text/plain':
             result = r.text()
+
         elif r.headers['Content-Type'] == 'application/zip':
             data = r.content()
             # Strip the 'attachment; filename='' from Content-Disposition
