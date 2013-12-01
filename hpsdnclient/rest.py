@@ -22,12 +22,11 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-""" These are wrapper functions around the pyhton-requests HTTP verbs """
-
-__author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
-__version__ = '0.2.0'
+""" These are wrapper functions around the python-requests HTTP verbs """
 
 import requests
+
+from hpsdnclient.client import __version__
 
 DEFAULT = {
             'content-type': 'application/json',

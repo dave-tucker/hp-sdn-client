@@ -22,11 +22,6 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-""" This fle implements the Flare Core REST API """
-
-__author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
-__version__ = '0.2.0'
-
 import json
 import time
 
@@ -34,7 +29,6 @@ import requests
 
 from hpsdnclient.api import ApiBase
 import hpsdnclient.rest as rest
-import hpsdnclient.datatypes as datatypes
 from hpsdnclient.error import raise_errors
 
 class CoreMixin(ApiBase):
@@ -59,7 +53,7 @@ class CoreMixin(ApiBase):
         url = self._core_base_url + 'licenses'
         if key:
             url += '?key={}'.format(key)
-        self._get(url, 'licenses')
+        self._get(url)
 
     def post_licences(self, key):
         """ Add a new license """
@@ -69,15 +63,13 @@ class CoreMixin(ApiBase):
 
     def get_install_id(self):
         """ Get install id """
-        url = self._core_base_url + 'licenses'
-        r = rest.get(url, self.auth)
-        raise_errors(r)
-        return r.text()
+        url = self._core_base_url + 'licenses/installid'
+        return self._get(url)
 
     def get_licence_detail(self, serial_no):
         """ Get a license by serial number """
         url = self._core_base_url + 'licenses/{}'.format(serial_no)
-        return self._get(url, 'license', False)
+        return self._get(url)
 
     def post_licence_action(self, serial_no, action):
         """ Perfom an action on the license """
@@ -87,7 +79,7 @@ class CoreMixin(ApiBase):
 
     def get_configs(self):
         """ Get a list of configuration paramters """
-        #Data strcuture is wild! Need to find a way to tame it
+        #Data structure is wild! Need to find a way to tame it
         pass
 
     def get_config_component(self, component):
@@ -104,20 +96,18 @@ class CoreMixin(ApiBase):
     def get_apps(self):
         """ Get a list of applications """
         url = self._core_base_url + 'apps'
-        return self._get(url, 'apps')
+        return self._get(url)
 
     def deploy_app(self, app):
         """ Deploy an app """
         url = self._core_base_url + 'apps'
         r = rest.post(url, self.auth, app, is_file=True)
         raise_errors(r)
-        data = r.json()
-        return datatypes.JsonObject.factory(data["app"])
 
     def get_app_info(self, app):
         """ Get application information """
         url = self._core_base_url + 'apps/{}'.format(app)
-        return self._get(url, 'app')
+        return self._get(url)
 
     def delete_app(self, app):
         """ Undeploy and application """
@@ -134,7 +124,7 @@ class CoreMixin(ApiBase):
     def get_app_health(self, app):
         """ Get app health information """
         url = self._core_base_url + 'apps/{}/health'.format(app)
-        return self._get(url, 'app')
+        return self._get(url)
 
     def monitor_app_health(self, app):
         """ Monitor app health """
@@ -152,14 +142,12 @@ class CoreMixin(ApiBase):
         data = {'login':{ 'user': user, 'password': password}}
         r = requests.post(url, data=json.dumps(data))
         t = []
-        if r.status_code == 200:
-            data = r.json()
-            t['token'] = data[u'record'][u'token']
-            exptime = data[u'record'][u'expiration']/1000
-            t['token_expiration'] = time.gmtime(exptime)
-            return t
-        else:
-            r.raise_for_status()
+        r.raise_for_status()
+        data = r.json()
+        t['token'] = data[u'record'][u'token']
+        exptime = data[u'record'][u'expiration']/1000
+        t['token_expiration'] = time.gmtime(exptime)
+        return t
 
     def delete_auth(self, token):
         """ Delete Authentication Token, AKA, Logout. This method logs
@@ -167,6 +155,4 @@ class CoreMixin(ApiBase):
         url = 'https://{0}:8443/sdn/v2.0/auth'.format(self.controller)
         headers = {"X-Auth-Token":token}
         r = requests.delete(url, headers=headers)
-        if not r.status_code == 200:
-            r.raise_for_status()
-
+        r.raise_for_status()

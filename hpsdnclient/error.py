@@ -22,11 +22,6 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-""" Error handling for the HP SDN Client """
-
-__author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
-__version__ = '0.2.0'
-
 import json
 import urllib
 
@@ -100,8 +95,8 @@ class IllegalArgument(HpsdnclientError):
         self.arguments = arguments
 
 class NotFound(HpsdnclientError):
-    def __init__(self):
-        message = ("A matching object for the supplied JSON string was not found")
+    def __init__(self, key):
+        message = ("The key {} is not mapped to a datatype".format(key))
         super(NotFound, self).__init__(message)
 
 class OpenflowProtocolError(HpsdnclientError):

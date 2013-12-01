@@ -22,11 +22,6 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-"""Implementation of the Flare OpenFlow REST API"""
-
-__author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
-__version__ = '0.2.0'
-
 import json
 import urllib
 

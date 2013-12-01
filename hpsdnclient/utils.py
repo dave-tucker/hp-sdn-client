@@ -24,9 +24,6 @@
 
 """ Useful utilities """
 
-__author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
-__version__ = '0.1.0'
-
 MAC = 12
 DPID = 16
 

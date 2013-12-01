@@ -24,9 +24,6 @@
 
 """ Data Types used for the REST objects """
 
-__author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
-__version__ = '0.2.0'
-
 import json
 
 from hpsdnclient.error import NotFound
@@ -180,8 +177,42 @@ ENUMS = [ ETHERNET,
 METHODS = [ "factory", "to_json_string", "to_dict"]
 KEYWORDS = ["self"]
 
+JSON_MAP = {
+             'controller_stats' : 'ControllerStats',
+             'stats' : 'Stats',
+             'datapath' : 'Datapath',
+             'meter_features' : 'MeterFeatures',
+             'group_features' : 'GroupFeatures',
+             'port' : 'Port',
+             'meter' : 'Meter',
+             'flow' : 'Flow',
+             'group' : 'Group',
+             'cluster' : 'Cluster',
+             'packet' : 'Packet',
+             'path' : 'Path',
+             'app' : 'App',
+             'license' : 'License',
+             'support_report' : None,
+           }
 
-class JsonObjectFactory:
+PLURALS = { 'datapaths': JSON_MAP['datapath'],
+            'ports' : JSON_MAP['port'],
+            'meters': JSON_MAP['meter'],
+            'flows': JSON_MAP['flow'],
+            'groups': JSON_MAP['group'],
+            'clusters': JSON_MAP['cluster'],
+            'links': 'Link',
+            'nodes': 'Node',
+            'arps': 'Arp',
+            'lldp_suppressed' : 'LldpProperties',
+            'observations' : 'observation',
+            'packets': JSON_MAP['packet'],
+            'apps' : JSON_MAP['app'],
+            'licenses' : JSON_MAP['license']
+          }
+
+
+class JsonObjectFactory(object):
 
     def __init__(self):
         pass
@@ -214,14 +245,14 @@ class JsonObjectFactory:
         return JsonObjectFactory.create(cls, data)
 
     @staticmethod
-    def create(id, data): #pylint: disable=W0613
+    def create(id, data):
         for key in data:
             if key in KEYWORDS:
                 new_key = key + "_"
                 data[new_key] = data.pop(key)
-        if not JsonObjectFactory.factories.has_key(id):
-            JsonObjectFactory.factories[id] = eval(id + '.factory(data)')
-        return JsonObjectFactory.factories[id]
+        if not id in JsonObjectFactory.factories:
+            JsonObjectFactory.factories[id] = eval(id)
+        return JsonObjectFactory.factories[id].factory(data)
 
 class JsonObject(object):
 
@@ -362,6 +393,31 @@ class Flow(JsonObject):
         self.flow_mod_flags = kwargs.get('flow_mod_flags', [])
         self.instructions = kwargs.get('instructions', [])
         self.actions = kwargs.get('actions', [])
+
+    @classmethod
+    def factory(cls, data):
+        """ Override factory in the base class to create a single instance of
+        the Match class for the 'match' key. We do this as each match field
+        may only exist once. """
+        try:
+            cm = CLASS_MAP[cls.__name__]
+            for key in data:
+                if key == 'match':
+                    new_match = {}
+                    for d in data[key]:
+                        for k in d:
+                            new_match[k] = d[k]
+                    data[key] = JsonObjectFactory.create('Match', new_match)
+                elif key in cm and isinstance(data[key], list):
+                    l = []
+                    for d in data[key]:
+                        l.append(JsonObjectFactory.create(cm[key], d))
+                    data[key] = l
+                elif key in cm:
+                    data[key] = JsonObjectFactory.create(cm[key], data[key])
+        except KeyError:
+            pass
+        return cls(**data)
 
 class Match(JsonObject):
     """ Match (JsonObject)

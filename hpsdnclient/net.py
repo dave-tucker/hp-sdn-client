@@ -22,11 +22,6 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-""" This file implements the Flare Net REST API """
-
-__author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
-__version__ = '0.2.0'
-
 import json
 import urllib
 
@@ -117,7 +112,7 @@ class NetMixin(ApiBase):
         r = rest.delete(url, self.auth, json.dumps(ports))
         raise_errors(r)
 
-    def get_diag_observations(self, packet_uid, packet_type):
+    def get_diag_observations(self, packet_uid=None, packet_type=None):
         """ Gets a list of diagnostic observation posts"""
         url = self._net_base_url + 'diag/observations'
         if packet_uid:

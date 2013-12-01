@@ -25,13 +25,14 @@
 """Here lies the setup script for the hp-flare module"""
 
 import setuptools
+from hpsdnclient import __version__
 
 def readme():
     with open('README.rst') as f:
         return f.read()
 
 setuptools.setup(name='hp-sdn-client',
-      version='0.2.1',
+      version=__version__,
       description="A python library for the HP SDN Controller REST API",
       long_description=readme(),
       classifiers=[
@@ -42,7 +43,7 @@ setuptools.setup(name='hp-sdn-client',
       ],
       keywords='hp sdn api',
       url='https://githib.com/dave-tucker/hp-sdn-client',
-      author="Dave Tucker, Hewlett-Packard",
+      author="Dave Tucker, Hewlett-Packard Development Company, L.P",
       author_email="dave.j.tucker@hp.com",
       license='MIT Licence',
       packages=['hpsdnclient'],

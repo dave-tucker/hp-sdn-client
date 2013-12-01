@@ -26,7 +26,7 @@ import unittest
 import hpsdnclient.tests.data as test_data
 import hpsdnclient.datatypes as datatypes
 
-class DatatypeTestCase(unittest.TestCase):
+class FactoryTestCase(unittest.TestCase):
 
     def _test_type(self, data, datatype):
         type_name = datatype.__name__
@@ -47,6 +47,8 @@ class DatatypeTestCase(unittest.TestCase):
                                                                        cm[k])))
         except KeyError:
             pass
+
+        return obj
 
     def test_create_license(self):
         self._test_type(test_data.LICENSE, datatypes.License)
@@ -122,7 +124,10 @@ class DatatypeTestCase(unittest.TestCase):
         self._test_type(test_data.GROUP, datatypes.Group)
 
     def test_create_flow(self):
-        self._test_type(test_data.FLOW, datatypes.Flow)
+        o = self._test_type(test_data.FLOW, datatypes.Flow)
+        for a in o.actions:
+            self.assertTrue(isinstance(a, datatypes.Action))
+        self.assertTrue(isinstance(o.match, datatypes.Match))
 
     def test_create_cluster(self):
         self._test_type(test_data.CLUSTER, datatypes.Cluster)

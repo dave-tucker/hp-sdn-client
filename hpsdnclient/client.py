@@ -25,8 +25,7 @@
 """This library provides a Python interface to the HP SDN
 Controller API"""
 
-__author__ = 'Dave Tucker, Hewlett-Packard Development Company,'
-__version__ = '0.2.0'
+__version__ = '0.3.0'
 
 from hpsdnclient.api import ApiBase
 from hpsdnclient.core import CoreMixin

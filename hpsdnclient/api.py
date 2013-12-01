@@ -22,41 +22,9 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import json
-
-from hpsdnclient.datatypes import JsonObjectFactory
+from hpsdnclient.datatypes import JsonObjectFactory, JSON_MAP, PLURALS
 from hpsdnclient.error import raise_errors, NotFound
 import hpsdnclient.rest as rest
-
-JSON_MAP = {
-             'controller_stats' : 'ControllerStats',
-             'stats' : 'Stats',
-             'datapath' : 'Datapath',
-             'meter_features' : 'MeterFeatures',
-             'group_features' : 'GroupFeatures',
-             'port' : 'Port',
-             'meter' : 'Meter',
-             'flow' : 'Flow',
-             'group' : 'Group',
-             'cluster' : 'Cluster',
-             'packet' : 'Packet'
-           }
-
-PLURALS = { 'datapaths': JSON_MAP['datapath'],
-            'ports' : JSON_MAP['port'],
-            'meters': JSON_MAP['meter'],
-            'flows': JSON_MAP['flow'],
-            'groups': JSON_MAP['group'],
-            'clusters': JSON_MAP['cluster'],
-            'links': 'Link',
-            'nodes': 'Node',
-            'arps': 'Arp',
-            'lldp_suppressed' : 'LldpProperties',
-            'observations' : 'observation',
-            'packets': JSON_MAP['packet'],
-
-          }
-
 
 class ApiBase(object):
     """Base class for the Api object"""
@@ -76,25 +44,28 @@ class ApiBase(object):
 
         if content == 'application/json':
             data = r.json()
-            key = data.keys()[0]
+
+            if data.keys()[0] == 'version':
+                key = data.keys()[1]
+            else:
+                key = data.keys()[0]
+
             if not key in PLURALS:
                 try:
                     datatype = JSON_MAP[key]
                 except KeyError:
-                    raise NotFound("The key {} is not mapped" +
-                                   "to a datatype".format(key))
+                    raise NotFound(key)
                 result = JsonObjectFactory.create(datatype, data[key])
             else:
                 try:
                     datatype = PLURALS[key]
                 except KeyError:
-                    raise NotFound("The key {} is not mapped" +
-                                   "to a datatype".format(key))
+                    raise NotFound(key)
                 for d in data[key]:
-                        result.append(JsonObjectFactory.create(datatype, d))
+                    result.append(JsonObjectFactory.create(datatype, d))
 
         elif content == 'text/plain':
-            result = r.text()
+            result = r.text
 
         elif r.headers['Content-Type'] == 'application/zip':
             data = r.content()
