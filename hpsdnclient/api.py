@@ -45,10 +45,9 @@ class ApiBase(object):
         if content == 'application/json':
             data = r.json()
 
-            if data.keys()[0] == 'version':
-                key = data.keys()[1]
-            else:
-                key = data.keys()[0]
+            for k in list(data):
+                if not k == 'version':
+                    key = k
 
             if not key in PLURALS:
                 try:

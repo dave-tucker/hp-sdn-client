@@ -23,7 +23,11 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import json
-import urllib
+#Python3 compatibility
+try:
+    import urllib.parse as urllib
+except ImportError:
+    import urllib
 
 from hpsdnclient.api import ApiBase
 import hpsdnclient.rest as rest
