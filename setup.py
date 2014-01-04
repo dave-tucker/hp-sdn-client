@@ -27,7 +27,7 @@ setuptools.setup(name='hp-sdn-client',
                  description="A python library to make interacting with the HP SDN Controller REST API easy",
                  long_description=readme(),
                  classifiers=[
-                     'Environment :: Console'
+                     'Environment :: Console',
                      'Development Status :: 4 - Beta',
                      'Intended Audience :: Developers',
                      'Intended Audience :: System Administrators',
