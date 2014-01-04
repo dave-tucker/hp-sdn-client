@@ -20,7 +20,23 @@ import urllib
 from hpsdnclient.api import ApiBase
 from hpsdnclient.error import raise_errors
 
+"""
+"""
+
 class NetMixin(ApiBase):
+
+    """Network Service REST API Methods
+
+    This class contains methods that call the Network Services
+    REST API functions in the HP VAN SDN Controller
+
+    - Topology Service
+    - Node Service
+    - Link Service
+    - Path Planner
+    - Path Diagnostics Service
+
+    """
 
     def __init__(self, controller, auth):
         super(NetMixin, self).__init__(controller, auth)
@@ -28,7 +44,12 @@ class NetMixin(ApiBase):
                              "/sdn/v2.0/net/")
 
     def get_clusters(self):
-        """ Gets a list of clusters """
+        """ Gets a list of clusters
+
+        :return: A list of clusters
+        :rtype: list
+
+        """
         url = self._net_base_url + 'clusters'
         return self.restclient.get(url)
 

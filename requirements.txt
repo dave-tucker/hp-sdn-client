@@ -1,0 +1,3 @@
+--index https://pypi.python.org/hp-sdn-client/
+
+-e .
