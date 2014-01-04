@@ -33,7 +33,6 @@ setuptools.setup(name='hp-sdn-client',
                      'Intended Audience :: System Administrators',
                      'License :: OSI Approved :: Apache Software License',
                      'Programming Language :: Python',
-                     'Programming Language :: Python : 2.7',
                      'Natural Language :: English',
                      'Operating System :: OS Independent',
                      'Topic :: Software Development :: Libraries :: Python Modules'
