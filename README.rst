@@ -1,6 +1,9 @@
 HP SDN Client
 =============
 
+.. image:: https://badge.fury.io/py/hp-sdn-client.png
+    :target: http://badge.fury.io/py/hp-sdn-client
+
 **A Python library that makes interaction with the HP SDN Controller REST API easy**
 
 Author: Dave Tucker, Hewlett Packard

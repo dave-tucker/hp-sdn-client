@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Core REST API &mdash; HP SDN Client 0.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="HP SDN Client 0.4.0 documentation" href="../index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">HP SDN Client 0.4.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-hpsdnclient.core">
+<span id="core-rest-api"></span><span id="core"></span><h1>Core REST API<a class="headerlink" href="#module-hpsdnclient.core" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="hpsdnclient.core.CoreMixin">
+<em class="property">class </em><tt class="descclassname">hpsdnclient.core.</tt><tt class="descname">CoreMixin</tt><big>(</big><em>controller</em>, <em>auth</em><big>)</big><a class="headerlink" href="#hpsdnclient.core.CoreMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flare REST API Core Methods. i.e, those in sdn/v2.0/</p>
+<dl class="method">
+<dt id="hpsdnclient.core.CoreMixin.delete_app">
+<tt class="descname">delete_app</tt><big>(</big><em>app</em><big>)</big><a class="headerlink" href="#hpsdnclient.core.CoreMixin.delete_app" title="Permalink to this definition">¶</a></dt>
+<dd><p>Undeploy and application</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hpsdnclient.core.CoreMixin.delete_auth">
+<tt class="descname">delete_auth</tt><big>(</big><em>token</em><big>)</big><a class="headerlink" href="#hpsdnclient.core.CoreMixin.delete_auth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete Authentication Token, AKA, Logout. This method logs
+out the owner of the supplied token.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hpsdnclient.core.CoreMixin.delete_config_component">
+<tt class="descname">delete_config_component</tt><big>(</big><em>component</em><big>)</big><a class="headerlink" href="#hpsdnclient.core.CoreMixin.delete_config_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Revert a configuration to default</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hpsdnclient.core.CoreMixin.deploy_app">
+<tt class="descname">deploy_app</tt><big>(</big><em>app</em><big>)</big><a class="headerlink" href="#hpsdnclient.core.CoreMixin.deploy_app" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deploy an app</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hpsdnclient.core.CoreMixin.get_app_health">
+<tt class="descname">get_app_health</tt><big>(</big><em>app</em><big>)</big><a class="headerlink" href="#hpsdnclient.core.CoreMixin.get_app_health" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get app health information</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hpsdnclient.core.CoreMixin.get_app_info">
+<tt class="descname">get_app_info</tt><big>(</big><em>app</em><big>)</big><a class="headerlink" href="#hpsdnclient.core.CoreMixin.get_app_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get application information</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hpsdnclient.core.CoreMixin.get_apps">
+<tt class="descname">get_apps</tt><big>(</big><big>)</big><a class="headerlink" href="#hpsdnclient.core.CoreMixin.get_apps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of applications</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hpsdnclient.core.CoreMixin.get_auth">
+<tt class="descname">get_auth</tt><big>(</big><em>user</em>, <em>password</em><big>)</big><a class="headerlink" href="#hpsdnclient.core.CoreMixin.get_auth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Authentication Token. This method returns a dictionary
+with the token and expiration time</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hpsdnclient.core.CoreMixin.get_configs">
+<tt class="descname">get_configs</tt><big>(</big><big>)</big><a class="headerlink" href="#hpsdnclient.core.CoreMixin.get_configs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of configuration paramters</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hpsdnclient.core.CoreMixin.get_install_id">
+<tt class="descname">get_install_id</tt><big>(</big><big>)</big><a class="headerlink" href="#hpsdnclient.core.CoreMixin.get_install_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get install id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hpsdnclient.core.CoreMixin.get_licence_detail">
+<tt class="descname">get_licence_detail</tt><big>(</big><em>serial_no</em><big>)</big><a class="headerlink" href="#hpsdnclient.core.CoreMixin.get_licence_detail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a license by serial number</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hpsdnclient.core.CoreMixin.get_licenses">
+<tt class="descname">get_licenses</tt><big>(</big><em>key=None</em><big>)</big><a class="headerlink" href="#hpsdnclient.core.CoreMixin.get_licenses" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all licenses</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hpsdnclient.core.CoreMixin.get_support">
+<tt class="descname">get_support</tt><big>(</big><em>artifact=None</em>, <em>fields=None</em><big>)</big><a class="headerlink" href="#hpsdnclient.core.CoreMixin.get_support" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a full support report</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hpsdnclient.core.CoreMixin.monitor_app_health">
+<tt class="descname">monitor_app_health</tt><big>(</big><em>app</em><big>)</big><a class="headerlink" href="#hpsdnclient.core.CoreMixin.monitor_app_health" title="Permalink to this definition">¶</a></dt>
+<dd><p>Monitor app health</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hpsdnclient.core.CoreMixin.post_app_action">
+<tt class="descname">post_app_action</tt><big>(</big><em>app</em>, <em>action</em><big>)</big><a class="headerlink" href="#hpsdnclient.core.CoreMixin.post_app_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform an action on a deployed application</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hpsdnclient.core.CoreMixin.post_licence_action">
+<tt class="descname">post_licence_action</tt><big>(</big><em>serial_no</em>, <em>action</em><big>)</big><a class="headerlink" href="#hpsdnclient.core.CoreMixin.post_licence_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perfom an action on the license</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hpsdnclient.core.CoreMixin.post_licences">
+<tt class="descname">post_licences</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#hpsdnclient.core.CoreMixin.post_licences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new license</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/api/core.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2014, Hewlett-Packard Development Company L.P.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>
