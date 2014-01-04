@@ -26,7 +26,6 @@ import json
 import urllib
 
 from hpsdnclient.api import ApiBase
-import hpsdnclient.rest as rest
 from hpsdnclient.error import raise_errors
 
 class NetMixin(ApiBase):
@@ -39,19 +38,19 @@ class NetMixin(ApiBase):
     def get_clusters(self):
         """ Gets a list of clusters """
         url = self._net_base_url + 'clusters'
-        return self._get(url)
+        return self.restclient.get(url)
 
     def get_cluster_tree(self, cluster_id):
         """ Gets the broadcast tree for a specific cluster """
         url = self._net_base_url + 'clusters/{0}/tree'.format(cluster_id)
-        return self._get(url)
+        return self.restclient.get(url)
 
     def get_links(self, dpid=None):
         """ Returns a list of all links discovered by the SDN controller """
         url = self._net_base_url + 'links'
         if dpid:
             url = url + '?dpid={0}'.format(urllib.quote(dpid))
-        return self._get(url)
+        return self.restclient.get(url)
 
     def get_forward_path(self, src_dpid, dst_dpid):
         """ Gets the shortest computed path between src_dpid and dst_dpid """
@@ -59,7 +58,7 @@ class NetMixin(ApiBase):
                'paths/forward' +
                '?src_dpid={0}&dst_dpid={1}'.format(urllib.quote(src_dpid),
                                                    urllib.quote(dst_dpid)))
-        return self._get(url)
+        return self.restclient.get(url)
 
     def get_arps(self, vid=None, ip=None):
         """ Provides ARP details for the given IP address and VLAN ID """
@@ -70,7 +69,7 @@ class NetMixin(ApiBase):
         elif vid and ip:
             url = url + "?vid={0}&ip={1}".format(vid, ip)
 
-        return self._get(url)
+        return self.restclient.get(url)
 
     def get_nodes(self, ip=None, vid=None, dpid=None, port=None):
         """ Provides the end node detail for the given IP address and VID
@@ -89,7 +88,7 @@ class NetMixin(ApiBase):
         elif dpid and port:
             url += "?dpid={0}&port={1}".format(urllib.quote(dpid), port)
 
-        return self._get(url)
+        return self.restclient.get(url)
 
     def get_lldp(self):
         """ get_lldp()
@@ -98,18 +97,18 @@ class NetMixin(ApiBase):
 
         """
         url = self._net_base_url + 'lldp'
-        return self._get(url)
+        return self.restclient.get(url)
 
     def set_lldp(self, ports):
         """ Puts selected ports in to LLDP suppressed state """
         url = self._net_base_url + 'lldp'
-        r = rest.post(url, self.auth, json.dumps(ports))
+        r = self.restclient.post(url, json.dumps(ports))
         raise_errors(r)
 
     def delete_lldp(self, ports):
         """ Removes ports from LLDP suppressed state """
         url = self._net_base_url + 'lldp'
-        r = rest.delete(url, self.auth, json.dumps(ports))
+        r = self.restclient.delete(url, json.dumps(ports))
         raise_errors(r)
 
     def get_diag_observations(self, packet_uid=None, packet_type=None):
@@ -119,18 +118,18 @@ class NetMixin(ApiBase):
             url += '?packet_uid={}'.format(packet_uid)
         if packet_type:
             url += '?packet_type={}'.format(packet_type)
-        return self._get(url)
+        return self.restclient.get(url)
 
     def set_diag_observations(self, observation):
         """ Creates a diagnostic observation post """
         url = self._net_base_url + 'diag/observations'
-        r = rest.post(url, self.auth, json.dumps(observation))
+        r = self.restclient.post(url, json.dumps(observation))
         raise_errors(r)
 
     def delete_diag_observations(self, observation):
         """ Delete a diagnostic observation post """
         url = self._net_base_url + 'diag/observations'
-        r = rest.delete(url, self.auth, json.dumps(observation))
+        r = self.restclient.delete(url, json.dumps(observation))
         raise_errors(r)
 
     def get_diag_packets(self, packet_type=None):
@@ -138,38 +137,38 @@ class NetMixin(ApiBase):
         url = self._net_base_url + 'diag/packets'
         if packet_type:
             url += '?type{}'.format(packet_type)
-        return self._get(url)
+        return self.restclient.get(url)
 
     def set_diag_packet(self, packet):
         """ Crate a diagnositc packet """
         url = self._net_base_url + 'diag/packets'
-        r = rest.post(url, self.auth, json.dumps(packet))
+        r = self.restclient.post(url, json.dumps(packet))
         raise_errors(r)
 
     def delete_diag_packet(self, packet):
         """ Remove a diagnostic packet """
         url = self._net_base_url + 'diag/packets'
-        r = rest.delete(url, self.auth, json.dumps(packet))
+        r = self.restclient.delete(url, json.dumps(packet))
         raise_errors(r)
 
     def get_diag_packet(self, packet_uid):
         """ Get a specific diagnostic packet """
         url = self._net_base_url + 'diag/packets/{}'.format(packet_uid)
-        return self._get(url)
+        return self.restclient.get(url)
 
     def get_diag_packet_path(self, packet_uid):
         """ Get expected paths for diagnostic packet """
         url = self._net_base_url + 'diag/packets/{}/path'.format(packet_uid)
-        return self._get(url)
+        return self.restclient.get(url)
 
     def get_diag_packet_nexthop(self, packet_uid, dpid):
         """ Show next hop information for packet at a given dpid """
         url = self._net_base_url + 'diag/packets/{}/nexthop'.format(packet_uid)
         url += '?src_dpid={}'.format(dpid)
-        return self._get(url)
+        return self.restclient.get(url)
 
     def set_diag_packet_action(self, packet_uid, action):
         """ Create a copy of the packet on the network """
         url = self._net_base_url + 'diag/packets/{}/action'.format(packet_uid)
-        r = rest.post(url, self.auth, json.dumps(action))
+        r = self.restclient.post(url, json.dumps(action))
         raise_errors(r)

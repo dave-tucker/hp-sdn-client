@@ -23,7 +23,7 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import json
-import time
+import datetime
 
 import requests
 
@@ -43,14 +43,15 @@ class XAuthToken(requests.auth.AuthBase):
         self.token = None
         self.token_expiration = None
 
-    def __call__(self, r):
+    def __call__(self, request):
         """This method is called when an authentication token is
         required. We first check that the token exists and has not
         expired and then return the X-Auth-Token request header."""
-        if self.token is None or self.token_expiration <= time.gmtime():
+        if (self.token is None or
+                    self.token_expiration <= datetime.datetime.now()):
             self.get_auth()
-        r.headers['X-Auth-Token'] = self.token
-        return r
+        request.headers['X-Auth-Token'] = self.token
+        return request
 
     def get_auth(self):
         """This method requests an authentication token from the SDN
@@ -63,8 +64,8 @@ class XAuthToken(requests.auth.AuthBase):
         r.raise_for_status()
         data = r.json()
         self.token = data[u'record'][u'token']
-        exptime = data[u'record'][u'expiration']/1000
-        self.token_expiration = time.gmtime(exptime)
+        timestamp = data[u'record'][u'expiration'] / 1000
+        self.token_expiration = datetime.datetime.fromtimestamp(timestamp)
 
     def delete_auth(self):
         """Delete Authentication Token, AKA, Logout. This method logs

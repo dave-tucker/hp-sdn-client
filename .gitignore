@@ -23,3 +23,9 @@
 
 #Nosetests XML report
 nosetests.xml
+
+#PyCharm project
+.idea/
+
+#Coverage
+.coverage

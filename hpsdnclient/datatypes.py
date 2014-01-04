@@ -26,8 +26,6 @@
 
 import json
 
-from hpsdnclient.error import NotFound
-
 ETHERNET = ['ipv4', 'arp', 'rarp', 'snmp', 'ipv6',
             'mpls_u', 'mpls_m', 'lldp', 'pbb', 'bddp']
 
@@ -178,8 +176,6 @@ METHODS = [ "factory", "to_json_string", "to_dict"]
 KEYWORDS = ["self"]
 
 JSON_MAP = {
-             'controller_stats' : 'ControllerStats',
-             'stats' : 'Stats',
              'datapath' : 'Datapath',
              'meter_features' : 'MeterFeatures',
              'group_features' : 'GroupFeatures',
@@ -196,6 +192,8 @@ JSON_MAP = {
            }
 
 PLURALS = { 'datapaths': JSON_MAP['datapath'],
+            'controller_stats': 'ControllerStats',
+            'stats': 'Stats',
             'ports' : JSON_MAP['port'],
             'meters': JSON_MAP['meter'],
             'flows': JSON_MAP['flow'],
@@ -214,35 +212,11 @@ PLURALS = { 'datapaths': JSON_MAP['datapath'],
 
 class JsonObjectFactory(object):
 
-    def __init__(self):
-        pass
-
     factories = {}
-
-    @staticmethod
-    def _find_class(data):
-        """ Finds a matching class from the supplied JSON in data.
-            Checks the values in the JSON dict against the class attributes.
-              Returns the an instance of the matching class or raises an error
-        """
-        keys = [d for d in data]
-        keys.sort()
-        for c in CLASS_LIST:
-            class_keys = [k for k in dir(c) if not k.startswith("__")
-                          and not k in METHODS]
-            class_keys.sort()
-            if keys == class_keys:
-                return c.__class__.__name__
-        raise NotFound()
 
     @staticmethod
     def add_factory(id, factory):
         JsonObjectFactory.factories[id] = factory
-
-    @staticmethod
-    def find_and_create(data):
-        cls = JsonObjectFactory._find_class(data)
-        return JsonObjectFactory.create(cls, data)
 
     @staticmethod
     def create(id, data):
@@ -251,15 +225,12 @@ class JsonObjectFactory(object):
                 new_key = key + "_"
                 data[new_key] = data.pop(key)
         if not id in JsonObjectFactory.factories:
-            JsonObjectFactory.factories[id] = eval(id)
+            JsonObjectFactory.add_factory(id, eval(id))
         return JsonObjectFactory.factories[id].factory(data)
 
 class JsonObject(object):
 
     """ This is the base class for all HP SDN Client data types."""
-
-    def __init__(self):
-        pass
 
     def __str__(self):
         return self.to_json_string()
@@ -278,13 +249,13 @@ class JsonObject(object):
             if getattr(self, attr):
                 value = getattr(self, attr)
                 if isinstance(value, list):
-                    for item in value:
-                        tmp = []
-                        if isinstance(item, JsonObject):
-                            tmp.append(item.to_dict())
+                    tmp = []
+                    for list_item in value:
+                        if isinstance(list_item, JsonObject):
+                            tmp.append(list_item.to_dict())
                         else:
-                            tmp.append(value)
-                        data[attr.__str__()] = tmp
+                            tmp.append(list_item)
+                    data[attr.__str__()] = tmp
                 elif isinstance(value, JsonObject):
                     data[attr.__str__()] = value.to_dict()
                 elif type(value):
@@ -408,6 +379,12 @@ class Flow(JsonObject):
                         for k in d:
                             new_match[k] = d[k]
                     data[key] = JsonObjectFactory.create('Match', new_match)
+                elif key == 'actions':
+                    new_action = {}
+                    for d in data[key]:
+                        for k in d:
+                            new_action[k] = d[k]
+                    data[key] = JsonObjectFactory.create('Action', new_action)
                 elif key in cm and isinstance(data[key], list):
                     l = []
                     for d in data[key]:
@@ -636,6 +613,8 @@ class Stats(JsonObject):
         self.version = kwargs.get('version', None)
         self.port_stats = kwargs.get('port_stats', [])
         self.group_stats = kwargs.get('group_stats', [])
+        self.meter_stats = kwargs.get('meter_stats', [])
+
 
 class PortStats(JsonObject):
     """ PortStats (JsonObject)
@@ -1299,7 +1278,10 @@ CLASS_MAP = { 'ControllerStats': {'lost': 'Counter',
               'Team': {'systems' : 'TeamSystem' },
               'Flow': {'match' : 'Match',
                        'actions' : 'Action',
-                       'instructions': 'Instruction' }
-             #'links' : Link,
+                       'instructions': 'Instruction'},
+              'Stats': {'port_stats': 'PortStats',
+                        'group_stats': 'GroupStats',
+                        'meter_stats': 'MeterStats'}
+              #'links' : Link,
              #'links' : TreeLink
-            }
+}

@@ -22,17 +22,18 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-"""This library provides a Python interface to the HP SDN
-Controller API"""
+import unittest
 
-__version__ = '0.3.1'
+from hpsdnclient.apibase import ApiBase
+from hpsdnclient.rest import RestClient
+from hpsdnclient.auth import XAuthToken
 
-from hpsdnclient.api import ApiBase
-from hpsdnclient.core import CoreMixin
-from hpsdnclient.net import NetMixin
-from hpsdnclient.of import OfMixin
 
-class Api(CoreMixin, OfMixin, NetMixin, ApiBase):
-    """ The container class for the HP SDN Controller Api """
-    def __init__(self, controller, auth):
-        super(Api, self).__init__(controller, auth)
+class ApiBaseTest(unittest.TestCase):
+    def test_apibase_instantiation(self):
+        controller = '10.10.10.10'
+        token = XAuthToken('10.10.10.10', 'sdn', 'skyline')
+        rest_client = RestClient(token)
+        apibase = ApiBase(controller, rest_client)
+        self.assertEqual(apibase.controller, controller)
+        self.assertEqual(apibase.rest_client, rest_client)

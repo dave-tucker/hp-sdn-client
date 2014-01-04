@@ -29,10 +29,11 @@ SDNCTL = '10.44.254.129'
 USER = 'sdn'
 PASS = 'skyline'
 
+
 class ApiTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        auth = hp.XAuthToken(controller=SDNCTL, user=USER, password=PASS)
+        auth = hp.XAuthToken(server=SDNCTL, user=USER, password=PASS)
         cls._api = hp.Api(controller=SDNCTL, auth=auth)
 
     @classmethod

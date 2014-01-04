@@ -26,29 +26,99 @@ import unittest
 import hpsdnclient.tests.data as test_data
 import hpsdnclient.datatypes as datatypes
 
-class FactoryTestCase(unittest.TestCase):
+
+class JsonObjectTests(unittest.TestCase):
+    """ Tests the JsonObject Class """
+
+    def setUp(self):
+        self.json_object = datatypes.JsonObject()
+        self.json_object.a = 1
+        self.json_object.b = [2, 3, 4]
+        self.json_object.c = {"d": 5, "e": "six", "f": [7, "eight", 9]}
+        metric_app = datatypes.JsonObjectFactory.create('MetricApp',
+                                                        test_data.METRIC_APP)
+        self.json_object.metric_app = metric_app
+        self.string = ('{\n'
+                       '    "a": 1,\n'
+                       '    "b": [\n'
+                       '        2,\n'
+                       '        3,\n'
+                       '        4\n'
+                       '    ],\n'
+                       '    "c": {\n'
+                       '        "d": 5,\n'
+                       '        "e": "six",\n'
+                       '        "f": [\n'
+                       '            7,\n'
+                       '            "eight",\n'
+                       '            9\n'
+                       '        ]\n'
+                       '    },\n'
+                       '    "metric_app": {\n'
+                       '        "app_id": "com.hp.sdn.cloud",\n'
+                       '        "app_name": "HP VAN SDN Cloud Controller"\n'
+                       '    }\n'
+                       '}')
+
+    def test_to_json_string(self):
+        result = self.json_object.to_json_string()
+        expected = self.string
+        self.assertEquals(result, expected)
+
+    def test_to_dict(self):
+        result = self.json_object.to_dict()
+        expected = {"a": 1,
+                    "b": [2, 3, 4],
+                    "c": {"d": 5, "e": "six", "f": [7, "eight", 9]},
+                    "metric_app": {
+                        "app_id": "com.hp.sdn.cloud",
+                        "app_name": "HP VAN SDN Cloud Controller",
+                    }
+        }
+        self.assertEquals(result, expected)
+
+#Omitted test case for test_factory....
+#factory method is tested by the child classes in the suite below
+
+class FactoryTests(unittest.TestCase):
+    """ Tests the JsonObjectFactory """
 
     def _test_type(self, data, datatype):
+        """ Tests that the provided data is cast to the correct class.
+        If attributes within the class are also mapped to Python objects,
+        these are also checked """
+
         type_name = datatype.__name__
         obj = datatypes.JsonObjectFactory.create(type_name, data)
         self.assertTrue(isinstance(obj, datatype))
 
         try:
-            cm = datatypes.CLASS_MAP[type_name]
+            class_map = datatypes.CLASS_MAP[type_name]
 
-            for k in cm:
-                o = eval('obj.%s' % k)
-                if type(o) == list:
-                    for item in o:
-                        self.assertTrue(isinstance(item, eval('datatypes.%s' %
-                                                                       cm[k])))
+            for key in class_map:
+                attribute = eval('obj.%s' % key)
+                if type(attribute) == list:
+                    for item in attribute:
+                        cls = eval('datatypes.%s' % class_map[key])
+                        self.assertTrue(isinstance(item, cls))
                 else:
-                    self.assertTrue(isinstance(o, eval('datatypes.%s' %
-                                                                       cm[k])))
+                    cls = eval('datatypes.%s' % class_map[key])
+                    self.assertTrue(isinstance(attribute, cls))
         except KeyError:
             pass
 
         return obj
+
+    def test_add_factory(self):
+        datatypes.JsonObjectFactory.add_factory('Datapath', datatypes.Datapath)
+        self.assertIn('Datapath', datatypes.JsonObjectFactory.factories)
+        self.assertEquals(datatypes.JsonObjectFactory.factories['Datapath'],
+                          datatypes.Datapath)
+
+    def test_factory_create(self):
+        obj = self._test_type(test_data.SYSTEM, datatypes.System)
+        self.assertIn('self_', dir(obj))
+        self.assertIn('System', datatypes.JsonObjectFactory.factories)
 
     def test_create_license(self):
         self._test_type(test_data.LICENSE, datatypes.License)
@@ -124,10 +194,7 @@ class FactoryTestCase(unittest.TestCase):
         self._test_type(test_data.GROUP, datatypes.Group)
 
     def test_create_flow(self):
-        o = self._test_type(test_data.FLOW, datatypes.Flow)
-        for a in o.actions:
-            self.assertTrue(isinstance(a, datatypes.Action))
-        self.assertTrue(isinstance(o.match, datatypes.Match))
+        self._test_type(test_data.FLOW, datatypes.Flow)
 
     def test_create_cluster(self):
         self._test_type(test_data.CLUSTER, datatypes.Cluster)

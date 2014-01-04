@@ -28,8 +28,8 @@ import hpsdnclient.datatypes
 
 OF10_DPID = '00:00:00:00:00:00:00:0b'
 
-class TestOfMixin10(ApiTestCase):
 
+class TestOfMixin10(ApiTestCase):
     def setUp(self):
         super(TestOfMixin10, self).setUp()
 
@@ -42,15 +42,22 @@ class TestOfMixin10(ApiTestCase):
         action_fields = ['output']
 
         for f in self._api.get_flows(OF10_DPID):
-            for m in match_fields:
-                if not (flow.match.__getattribute__(m) ==
-                        f.match.__getattribute__(m)):
-                    break
-            for a in action_fields:
-                if not (flow.actions.__getattribute__(a) ==
-                        f.actions.__getattribute__(a)):
-                    break
-            return True
+
+            if not flow.priority == f.priority:
+                continue
+            else:
+                for a in action_fields:
+                    if not (flow.actions.__getattribute__(a) ==
+                                f.actions.__getattribute__(a)):
+                        break
+                else:
+                    for m in match_fields:
+                        if not (flow.match.__getattribute__(m) ==
+                                    f.match.__getattribute__(m)):
+                            break
+                    else:
+                        return True
+        return False
 
     def test_get_stats(self):
         data = self._api.get_stats()
@@ -114,24 +121,29 @@ class TestOfMixin10(ApiTestCase):
                           self._api.get_group_details,
                           OF10_DPID, 1)
 
-    def test_add_groups(self):
-        group = hpsdnclient.datatypes.Group()
-        self.assertRaises(VersionMismatch, self._api.add_groups,
-                          OF10_DPID, group)
-
-    def test_add_flows(self):
+    def test_add_flow(self):
         match = hpsdnclient.datatypes.Match(eth_type="ipv4",
                                             ipv4_src="10.0.0.1",
                                             ipv4_dst="10.0.0.22",
                                             ip_proto="tcp",
-                                            tcp_dst="80")
+                                            tcp_dst=80)
         output6 = hpsdnclient.datatypes.Action(output=6)
-        flow = hpsdnclient.datatypes.Flow(priority=30000, idle_timeout=30,
-                             match=match, actions=output6)
+        flow = hpsdnclient.datatypes.Flow(priority=12345, idle_timeout=30,
+                                          match=match, actions=output6)
         self._api.add_flows(OF10_DPID, flow)
         self.assertTrue(self._flow_exists(flow))
 
-    def test_add_meters(self):
-        meter = hpsdnclient.datatypes.Meter()
-        self.assertRaises(VersionMismatch, self._api.add_meters,
-                          OF10_DPID, meter)
+    def test_delete_flow(self):
+        match = hpsdnclient.datatypes.Match(eth_type="ipv4",
+                                            ipv4_src="10.0.0.1",
+                                            ipv4_dst="10.0.0.22",
+                                            ip_proto="tcp",
+                                            tcp_dst=80)
+        output6 = hpsdnclient.datatypes.Action(output=6)
+        flow = hpsdnclient.datatypes.Flow(priority=12345, idle_timeout=30,
+                                          match=match, actions=output6)
+
+        self.assertTrue(self._flow_exists(flow))
+        self._api.delete_flows(OF10_DPID, flow)
+        self.assertFalse(self._flow_exists(flow))
+

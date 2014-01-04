@@ -28,7 +28,6 @@ import time
 import requests
 
 from hpsdnclient.api import ApiBase
-import hpsdnclient.rest as rest
 from hpsdnclient.error import raise_errors
 
 class CoreMixin(ApiBase):
@@ -58,23 +57,23 @@ class CoreMixin(ApiBase):
     def post_licences(self, key):
         """ Add a new license """
         url = self._core_base_url + 'licenses'
-        r = rest.post(url, self.auth, key)
+        r = self.restclient.post(url, key)
         raise_errors(r)
 
     def get_install_id(self):
         """ Get install id """
         url = self._core_base_url + 'licenses/installid'
-        return self._get(url)
+        return self.restclient.get(url)
 
     def get_licence_detail(self, serial_no):
         """ Get a license by serial number """
         url = self._core_base_url + 'licenses/{}'.format(serial_no)
-        return self._get(url)
+        return self.restclient.get(url)
 
     def post_licence_action(self, serial_no, action):
         """ Perfom an action on the license """
         url = self._core_base_url + 'licenses/{}'.format(serial_no)
-        r = rest.post(url, self.auth, action)
+        r = self.restclient.post(url, action)
         raise_errors(r)
 
     def get_configs(self):
@@ -96,35 +95,35 @@ class CoreMixin(ApiBase):
     def get_apps(self):
         """ Get a list of applications """
         url = self._core_base_url + 'apps'
-        return self._get(url)
+        return self.restclient.get(url)
 
     def deploy_app(self, app):
         """ Deploy an app """
         url = self._core_base_url + 'apps'
-        r = rest.post(url, self.auth, app, is_file=True)
+        r = self.restclient.post(url, app, is_file=True)
         raise_errors(r)
 
     def get_app_info(self, app):
         """ Get application information """
         url = self._core_base_url + 'apps/{}'.format(app)
-        return self._get(url)
+        return self.restclient.get(url)
 
     def delete_app(self, app):
         """ Undeploy and application """
         url = self._core_base_url + 'apps/{}'.format(app)
-        r = rest.delete(url, self.auth)
+        r = self.restclient.delete(url)
         raise_errors(r)
 
     def post_app_action(self, app, action):
         """ Perform an action on a deployed application """
         url = self._core_base_url + 'apps/{}/action'.format(app)
-        r = rest.post(url, self.auth, action)
+        r = self.restclient.post(url, action)
         raise_errors(r)
 
     def get_app_health(self, app):
         """ Get app health information """
         url = self._core_base_url + 'apps/{}/health'.format(app)
-        return self._get(url)
+        return self.restclient.get(url)
 
     def monitor_app_health(self, app):
         """ Monitor app health """
@@ -133,7 +132,7 @@ class CoreMixin(ApiBase):
 
     def download_logs(self):
         url = self._core_base_url + 'logs'
-        return self._get(url, is_file=True)
+        return self.restclient.get(url, is_file=True)
 
     def get_auth(self, user, password):
         """Get Authentication Token. This method returns a dictionary

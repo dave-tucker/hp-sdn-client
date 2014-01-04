@@ -23,7 +23,12 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import json
-import urllib
+#Python3 compatibility
+try:
+    import urllib.parse as urllib
+except ImportError:
+    import urllib
+
 
 def raise_errors(response):
     if response.status_code == 400:
@@ -44,10 +49,7 @@ def raise_400(response):
                           json.dumps(response.request.body),
                           data['message'])
     elif "IllegalArgumentException" in data['error']:
-        arguments = []
-        for x in response.url.split('/')[6:]:
-            arguments.append(urllib.unquote(x))
-        raise IllegalArgument(arguments)
+        raise IllegalArgument()
     elif "VersionMismatchException" in data['error']:
         dpid = urllib.unquote(response.request.url.split('/')[7])
         required_version = data['message'][-3:]
@@ -84,13 +86,13 @@ class VersionMismatch(HpsdnclientError):
     def __init__(self, dpid, required_version):
         self.dpid = dpid
         self.required_version = required_version
-        message = ("This feature is not supported on DPID {0}." +
-                  "It requires OpenFlow version {1}".format(dpid,
-                                                            required_version))
+        message = ("This feature is not supported on DPID {0}. " +
+                   "It requires OpenFlow version {1}").format(dpid,
+                                                              required_version)
         super(VersionMismatch, self).__init__(message)
 
 class IllegalArgument(HpsdnclientError):
-    def __init__(self, arguments):
+    def __init__(self, arguments=None):
         super(IllegalArgument, self).__init__()
         self.arguments = arguments
 
@@ -102,14 +104,14 @@ class NotFound(HpsdnclientError):
 class OpenflowProtocolError(HpsdnclientError):
     def __init__(self):
         message = ("Something bad happened at the OpenFlow protocol layer." +
-                   " This could be because this feature is not implemented" +
-                   "on this device ")
+                   " This could be because this feature is not implemented " +
+                   "on this device")
         super(OpenflowProtocolError, self).__init__(message)
 
 class DatatypeError(HpsdnclientError):
     def __init__(self, received, expected):
         self.received = received
         self.expected = expected
-        message = "Expected: {0} Received: {1}".format(expected, received)
+        message = "Received: {0} Expected: {1}".format(received, expected)
         super(DatatypeError, self).__init__(message)
 
