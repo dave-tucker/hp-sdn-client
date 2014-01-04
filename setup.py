@@ -24,19 +24,25 @@ def readme():
 
 setuptools.setup(name='hp-sdn-client',
                  version=__version__,
-                 description="A python library for the HP SDN Controller REST API",
+                 description="A python library to make interacting with the HP SDN Controller REST API easy",
                  long_description=readme(),
                  classifiers=[
-                     'Environment :: HP SDN Controller'
-                     'Development Status :: 3 - Alpha',
-                     'License :: OSI Approved :: MITs License',
+                     'Environment :: Console'
+                     'Development Status :: 4 - Beta',
+                     'Intended Audience :: Developers',
+                     'Intended Audience :: System Administrators',
+                     'License :: OSI Approved :: Apache Software License',
+                     'Programming Language :: Python',
                      'Programming Language :: Python : 2.7',
+                     'Natural Language :: English',
+                     'Operating System :: OS Independent',
+                     'Topic :: Software Development :: Libraries :: Python Modules'
                  ],
-                 keywords='hp sdn api',
-                 url='https://githib.com/dave-tucker/hp-sdn-client',
+                 keywords=['hp', 'sdn', 'rest', 'api'],
+                 url='https://github.com/dave-tucker/hp-sdn-client',
                  author="Dave Tucker, Hewlett-Packard Development Company, L.P",
                  author_email="dave.j.tucker@hp.com",
-                 license='MIT Licence',
+                 license='Apache License, Version 2.0',
                  packages=['hpsdnclient'],
                  include_package_data=True,
                  install_requires=[
@@ -48,9 +54,6 @@ setuptools.setup(name='hp-sdn-client',
                      'nose',
                      'mock',
                      'httpretty>=0.7.0'
-                 ],
-                 dependency_links=[
-                     'https://github.com/gabrielfalcao/HTTPretty/tarball/python-3.3-support#egg=httpretty-0.7.0'
                  ],
                  zip_safe=False,
 )
