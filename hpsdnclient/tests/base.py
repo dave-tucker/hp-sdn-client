@@ -14,13 +14,13 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+import os
 import unittest
 import hpsdnclient as hp
 
-SDNCTL = '10.44.254.129'
-USER = 'sdn'
-PASS = 'skyline'
-
+SDNCTL = os.getenv("SDNCTL")
+USER = os.getenv("SDNUSER")
+PASS = os.getenv("SDNPASS")
 
 class ApiTestCase(unittest.TestCase):
     @classmethod
