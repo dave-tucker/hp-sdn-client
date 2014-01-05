@@ -14,7 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-""" Data Types used for the REST objects """
+""" Python Data Types used for the REST objects """
 
 import json
 

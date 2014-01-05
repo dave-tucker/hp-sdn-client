@@ -2,3 +2,6 @@
 
 Datatypes
 =========
+
+.. automodule:: hpsdnclient.datatypes
+   :members:

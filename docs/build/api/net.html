@@ -61,148 +61,6 @@
             
   <div class="section" id="module-hpsdnclient.net">
 <span id="network-services-rest-api"></span><span id="net"></span><h1>Network Services REST API<a class="headerlink" href="#module-hpsdnclient.net" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="hpsdnclient.net.NetMixin">
-<em class="property">class </em><tt class="descclassname">hpsdnclient.net.</tt><tt class="descname">NetMixin</tt><big>(</big><em>controller</em>, <em>auth</em><big>)</big><a class="headerlink" href="#hpsdnclient.net.NetMixin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Network Service REST API Methods</p>
-<p>This class contains methods that call the Network Services
-REST API functions in the HP VAN SDN Controller</p>
-<ul class="simple">
-<li>Topology Service</li>
-<li>Node Service</li>
-<li>Link Service</li>
-<li>Path Planner</li>
-<li>Path Diagnostics Service</li>
-</ul>
-<dl class="method">
-<dt id="hpsdnclient.net.NetMixin.delete_diag_observations">
-<tt class="descname">delete_diag_observations</tt><big>(</big><em>observation</em><big>)</big><a class="headerlink" href="#hpsdnclient.net.NetMixin.delete_diag_observations" title="Permalink to this definition">¶</a></dt>
-<dd><p>Delete a diagnostic observation post</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hpsdnclient.net.NetMixin.delete_diag_packet">
-<tt class="descname">delete_diag_packet</tt><big>(</big><em>packet</em><big>)</big><a class="headerlink" href="#hpsdnclient.net.NetMixin.delete_diag_packet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove a diagnostic packet</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hpsdnclient.net.NetMixin.delete_lldp">
-<tt class="descname">delete_lldp</tt><big>(</big><em>ports</em><big>)</big><a class="headerlink" href="#hpsdnclient.net.NetMixin.delete_lldp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Removes ports from LLDP suppressed state</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hpsdnclient.net.NetMixin.get_arps">
-<tt class="descname">get_arps</tt><big>(</big><em>vid=None</em>, <em>ip=None</em><big>)</big><a class="headerlink" href="#hpsdnclient.net.NetMixin.get_arps" title="Permalink to this definition">¶</a></dt>
-<dd><p>Provides ARP details for the given IP address and VLAN ID</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hpsdnclient.net.NetMixin.get_cluster_tree">
-<tt class="descname">get_cluster_tree</tt><big>(</big><em>cluster_id</em><big>)</big><a class="headerlink" href="#hpsdnclient.net.NetMixin.get_cluster_tree" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the broadcast tree for a specific cluster</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hpsdnclient.net.NetMixin.get_clusters">
-<tt class="descname">get_clusters</tt><big>(</big><big>)</big><a class="headerlink" href="#hpsdnclient.net.NetMixin.get_clusters" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets a list of clusters</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of clusters</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="hpsdnclient.net.NetMixin.get_diag_observations">
-<tt class="descname">get_diag_observations</tt><big>(</big><em>packet_uid=None</em>, <em>packet_type=None</em><big>)</big><a class="headerlink" href="#hpsdnclient.net.NetMixin.get_diag_observations" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets a list of diagnostic observation posts</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hpsdnclient.net.NetMixin.get_diag_packet">
-<tt class="descname">get_diag_packet</tt><big>(</big><em>packet_uid</em><big>)</big><a class="headerlink" href="#hpsdnclient.net.NetMixin.get_diag_packet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a specific diagnostic packet</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hpsdnclient.net.NetMixin.get_diag_packet_nexthop">
-<tt class="descname">get_diag_packet_nexthop</tt><big>(</big><em>packet_uid</em>, <em>dpid</em><big>)</big><a class="headerlink" href="#hpsdnclient.net.NetMixin.get_diag_packet_nexthop" title="Permalink to this definition">¶</a></dt>
-<dd><p>Show next hop information for packet at a given dpid</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hpsdnclient.net.NetMixin.get_diag_packet_path">
-<tt class="descname">get_diag_packet_path</tt><big>(</big><em>packet_uid</em><big>)</big><a class="headerlink" href="#hpsdnclient.net.NetMixin.get_diag_packet_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get expected paths for diagnostic packet</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hpsdnclient.net.NetMixin.get_diag_packets">
-<tt class="descname">get_diag_packets</tt><big>(</big><em>packet_type=None</em><big>)</big><a class="headerlink" href="#hpsdnclient.net.NetMixin.get_diag_packets" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a list of all diagnostic packets in the system</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hpsdnclient.net.NetMixin.get_forward_path">
-<tt class="descname">get_forward_path</tt><big>(</big><em>src_dpid</em>, <em>dst_dpid</em><big>)</big><a class="headerlink" href="#hpsdnclient.net.NetMixin.get_forward_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the shortest computed path between src_dpid and dst_dpid</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hpsdnclient.net.NetMixin.get_links">
-<tt class="descname">get_links</tt><big>(</big><em>dpid=None</em><big>)</big><a class="headerlink" href="#hpsdnclient.net.NetMixin.get_links" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of all links discovered by the SDN controller</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hpsdnclient.net.NetMixin.get_lldp">
-<tt class="descname">get_lldp</tt><big>(</big><big>)</big><a class="headerlink" href="#hpsdnclient.net.NetMixin.get_lldp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets a list of LLDP supressed ports from the SDN Controller</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hpsdnclient.net.NetMixin.get_nodes">
-<tt class="descname">get_nodes</tt><big>(</big><em>ip=None</em>, <em>vid=None</em>, <em>dpid=None</em>, <em>port=None</em><big>)</big><a class="headerlink" href="#hpsdnclient.net.NetMixin.get_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Provides the end node detail for the given IP address and VID
-Provides the end node list for a given VID
-Provides the end node list for a given datapath ID
-Provides the end node list for a given datapath ID and port</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hpsdnclient.net.NetMixin.set_diag_observations">
-<tt class="descname">set_diag_observations</tt><big>(</big><em>observation</em><big>)</big><a class="headerlink" href="#hpsdnclient.net.NetMixin.set_diag_observations" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a diagnostic observation post</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hpsdnclient.net.NetMixin.set_diag_packet">
-<tt class="descname">set_diag_packet</tt><big>(</big><em>packet</em><big>)</big><a class="headerlink" href="#hpsdnclient.net.NetMixin.set_diag_packet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Crate a diagnositc packet</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hpsdnclient.net.NetMixin.set_diag_packet_action">
-<tt class="descname">set_diag_packet_action</tt><big>(</big><em>packet_uid</em>, <em>action</em><big>)</big><a class="headerlink" href="#hpsdnclient.net.NetMixin.set_diag_packet_action" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a copy of the packet on the network</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hpsdnclient.net.NetMixin.set_lldp">
-<tt class="descname">set_lldp</tt><big>(</big><em>ports</em><big>)</big><a class="headerlink" href="#hpsdnclient.net.NetMixin.set_lldp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Puts selected ports in to LLDP suppressed state</p>
-</dd></dl>
-
-</dd></dl>
-
 </div>
 
 
@@ -242,6 +100,9 @@ Provides the end node list for a given datapath ID and port</p>
   <div class="footer">
     &copy; Copyright 2014, Hewlett-Packard Development Company L.P.
     Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    <a href="https://github.com/dave-tucker/hp-sdn-client" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub" class="github"/>
+    </a>
   </div>
   
   </body>

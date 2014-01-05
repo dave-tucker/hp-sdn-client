@@ -20,23 +20,20 @@ import urllib
 from hpsdnclient.api import ApiBase
 from hpsdnclient.error import raise_errors
 
-"""
+"""Network Service REST API Methods
+
+This class contains methods that call the Network Services
+REST API functions in the HP VAN SDN Controller
+
+- Topology Service
+- Node Service
+- Link Service
+- Path Planner
+- Path Diagnostics Service
+
 """
 
 class NetMixin(ApiBase):
-
-    """Network Service REST API Methods
-
-    This class contains methods that call the Network Services
-    REST API functions in the HP VAN SDN Controller
-
-    - Topology Service
-    - Node Service
-    - Link Service
-    - Path Planner
-    - Path Diagnostics Service
-
-    """
 
     def __init__(self, controller, auth):
         super(NetMixin, self).__init__(controller, auth)
@@ -53,20 +50,39 @@ class NetMixin(ApiBase):
         url = self._net_base_url + 'clusters'
         return self.restclient.get(url)
 
-    def get_cluster_tree(self, cluster_id):
-        """ Gets the broadcast tree for a specific cluster """
+    def get_cluster_broadcast_tree(self, cluster_id):
+        """ Gets the broadcast tree for a specific cluster
+
+        :param str cluster_id: The cluster ID
+        :return: The broadcast tree for the provided cluster ID
+        :rtype: hpsdnclient.datatypes.Cluster
+
+        """
         url = self._net_base_url + 'clusters/{0}/tree'.format(cluster_id)
         return self.restclient.get(url)
 
     def get_links(self, dpid=None):
-        """ Returns a list of all links discovered by the SDN controller """
+        """ Returns a list of all links discovered by the SDN controller
+
+        :param str dpid: Return only the links for the specified DPID
+        :return: A list of Links
+        :rtype: list
+
+        """
         url = self._net_base_url + 'links'
         if dpid:
             url = url + '?dpid={0}'.format(urllib.quote(dpid))
         return self.restclient.get(url)
 
     def get_forward_path(self, src_dpid, dst_dpid):
-        """ Gets the shortest computed path between src_dpid and dst_dpid """
+        """ Gets the shortest computed path between src_dpid and dst_dpid
+
+        :param str src_dpid: The source DPID
+        :param str dst_dpid: THe destination DPID
+        :return: The shortest path between the two DPID's
+        :rtype: hpsdnclient.datatypes.Path
+
+        """
         url = (self._net_base_url +
                'paths/forward' +
                '?src_dpid={0}&dst_dpid={1}'.format(urllib.quote(src_dpid),
@@ -74,7 +90,14 @@ class NetMixin(ApiBase):
         return self.restclient.get(url)
 
     def get_arps(self, vid=None, ip=None):
-        """ Provides ARP details for the given IP address and VLAN ID """
+        """ Provides ARP details for the given IP address and VLAN ID
+
+        :param str vid: Return ARPs in the provided VLAN ID
+        :param str ip: Return only the ARP for the specified IP Address
+        :return: List of ARPs
+        :rtype: list
+
+        """
         url = self._net_base_url + 'arps'
 
         if vid and not ip:
@@ -85,10 +108,18 @@ class NetMixin(ApiBase):
         return self.restclient.get(url)
 
     def get_nodes(self, ip=None, vid=None, dpid=None, port=None):
-        """ Provides the end node detail for the given IP address and VID
-            Provides the end node list for a given VID
-            Provides the end node list for a given datapath ID
-            Provides the end node list for a given datapath ID and port
+        """ Get all Nodes discovered by the controller
+
+        - When supplied with``ip`` and ``vid`` returns node details
+        - When supplied with ``vid`` returns Nodes in the specified VLAN
+        - When supplied with ``dpid`` returns Nodes attached to the specified DPID
+        - When supplied with ``dpid`` and ``port`` returns Nodes attached to the given port on the specified DPID
+
+        :param str ip: IP address
+        :param str vid: VLAN ID
+        :param str dpid: Datapath ID
+        :param str port: Port
+
         """
         url = self._net_base_url + 'nodes'
 
@@ -103,29 +134,45 @@ class NetMixin(ApiBase):
 
         return self.restclient.get(url)
 
-    def get_lldp(self):
-        """ get_lldp()
+    def get_lldp_suppressed_ports(self):
+        """ Gets a list of LLDP suppressed ports from the controller
 
-            Gets a list of LLDP supressed ports from the SDN Controller
+        :return: A list of ports in the LLDP suppressed state
+        :rtype: list
 
         """
         url = self._net_base_url + 'lldp'
         return self.restclient.get(url)
 
-    def set_lldp(self, ports):
-        """ Puts selected ports in to LLDP suppressed state """
+    def set_lldp_supressed(self, ports):
+        """ Puts the provided ports in to LLDP suppressed state
+
+        :params str ports: The ports to be suppressed
+
+        """
         url = self._net_base_url + 'lldp'
         r = self.restclient.post(url, json.dumps(ports))
         raise_errors(r)
 
-    def delete_lldp(self, ports):
-        """ Removes ports from LLDP suppressed state """
+    def remove_lldp_supressed(self, ports):
+        """ Removes ports from LLDP suppressed state
+
+        :params str ports: The ports to be removed from LLDP suppressed state
+
+        """
         url = self._net_base_url + 'lldp'
         r = self.restclient.delete(url, json.dumps(ports))
         raise_errors(r)
 
-    def get_diag_observations(self, packet_uid=None, packet_type=None):
-        """ Gets a list of diagnostic observation posts"""
+    def get_diag_observation_posts(self, packet_uid=None, packet_type=None):
+        """ Gets a list of diagnostic observation posts
+
+        :param str packet_uid: Only return OP's with the provided Packet UID
+        :param str packet_type: Return only OP's with the provided Packet Type
+        :return: List of OP's
+        :rtype: list
+
+        """
         url = self._net_base_url + 'diag/observations'
         if packet_uid:
             url += '?packet_uid={}'.format(packet_uid)
@@ -133,55 +180,104 @@ class NetMixin(ApiBase):
             url += '?packet_type={}'.format(packet_type)
         return self.restclient.get(url)
 
-    def set_diag_observations(self, observation):
-        """ Creates a diagnostic observation post """
+    def create_diag_observation_post(self, observation):
+        """ Creates a diagnostic observation post
+
+        :param str observation: The observation post to create
+
+        """
         url = self._net_base_url + 'diag/observations'
         r = self.restclient.post(url, json.dumps(observation))
         raise_errors(r)
 
     def delete_diag_observations(self, observation):
-        """ Delete a diagnostic observation post """
+        """ Delete a diagnostic observation post
+
+        :param str observation: The observation post to delete
+
+        """
         url = self._net_base_url + 'diag/observations'
         r = self.restclient.delete(url, json.dumps(observation))
         raise_errors(r)
 
     def get_diag_packets(self, packet_type=None):
-        """ Get a list of all diagnostic packets in the system """
+        """ Get a list of all diagnostic packets in the system
+
+        :param packet_type: Filter result by provided packet type
+        :return: A list of diagnostics packets
+        :rtype: list
+
+        """
         url = self._net_base_url + 'diag/packets'
         if packet_type:
             url += '?type{}'.format(packet_type)
         return self.restclient.get(url)
 
-    def set_diag_packet(self, packet):
-        """ Crate a diagnositc packet """
+    def create_diag_packet(self, packet):
+        """ Create a diagnostic packet
+
+        :param str packet: The packet to create
+
+        """
         url = self._net_base_url + 'diag/packets'
         r = self.restclient.post(url, json.dumps(packet))
         raise_errors(r)
 
     def delete_diag_packet(self, packet):
-        """ Remove a diagnostic packet """
+        """ Delete a diagnostic packet
+
+        :param str packet: The packet to be deleted
+
+        """
         url = self._net_base_url + 'diag/packets'
         r = self.restclient.delete(url, json.dumps(packet))
         raise_errors(r)
 
     def get_diag_packet(self, packet_uid):
-        """ Get a specific diagnostic packet """
+        """ Get diagnostic packet details for the provided packet UID
+
+        :param str packet_uid: The packet UID to get details for
+        :return: Diagnostic Packet Details
+        :rtype: hpsdnclient.datatypes.Packet
+
+        """
         url = self._net_base_url + 'diag/packets/{}'.format(packet_uid)
         return self.restclient.get(url)
 
     def get_diag_packet_path(self, packet_uid):
-        """ Get expected paths for diagnostic packet """
+        """ Get expected paths for diagnostic packet
+
+        :param packet_uid: The UID of the diagnostic packet
+        :return: Path
+        :rtype: hpsdnclient.datatypes.Path
+
+        """
         url = self._net_base_url + 'diag/packets/{}/path'.format(packet_uid)
         return self.restclient.get(url)
 
     def get_diag_packet_nexthop(self, packet_uid, dpid):
-        """ Show next hop information for packet at a given dpid """
+        """ Show next hop information for packet at a given Datapath ID
+
+        :param str packet_uid: The packet UID
+        :param str dpid: The Datapath ID
+        :returns: The next hop
+        :rtype: hpsdnclient.datatypes.NextHop
+
+        """
         url = self._net_base_url + 'diag/packets/{}/nexthop'.format(packet_uid)
         url += '?src_dpid={}'.format(dpid)
         return self.restclient.get(url)
 
     def set_diag_packet_action(self, packet_uid, action):
-        """ Create a copy of the packet on the network """
+        """ Performs the specified simulation action on a packet
+
+        :param str packet_uid: The packet UID
+        :param str action: The action to perform
+        :returns: The next hop
+        :rtype: hpsdnclient.datatypes.NextHop
+
+        """
+        data = {"simulation" : action}
         url = self._net_base_url + 'diag/packets/{}/action'.format(packet_uid)
-        r = self.restclient.post(url, json.dumps(action))
+        r = self.restclient.post(url, json.dumps(data))
         raise_errors(r)
