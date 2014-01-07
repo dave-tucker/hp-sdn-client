@@ -35,7 +35,7 @@ class RestClient(object):
         self.args = {"auth": self.auth,
                      "verify": False,
                      "headers": UA,
-                     "timeout": 10
+                     "timeout": 30
         }
 
     def _download_args(self):
@@ -48,7 +48,7 @@ class RestClient(object):
     def _upload_args(self, filename):
         args = copy.deepcopy(self.args)
         args["headers"]["content-type"] = 'application/zip'
-        args["headers"]["filename"] = filename
+        args["headers"]["Filename"] = filename
         args["timeout"] = 60
         return args
 

@@ -21,21 +21,19 @@ from hpsdnclient.api import ApiBase
 from hpsdnclient.error import raise_errors
 from hpsdnclient.datatypes import LldpProperties
 
-"""Network Service REST API Methods
-
-This class contains methods that call the Network Services
-REST API functions in the HP VAN SDN Controller
-
-- Topology Service
-- Node Service
-- Link Service
-- Path Planner
-- Path Diagnostics Service
-
-"""
-
 class NetMixin(ApiBase):
+    """Network Service REST API Methods
 
+    This class contains methods that call the Network Services
+    REST API functions in the HP VAN SDN Controller
+
+    - Topology Service
+    - Node Service
+    - Link Service
+    - Path Planner
+    - Path Diagnostics Service
+
+    """
     def __init__(self, controller, auth):
         super(NetMixin, self).__init__(controller, auth)
         self._net_base_url = ("https://{0}:8443".format(self.controller) +

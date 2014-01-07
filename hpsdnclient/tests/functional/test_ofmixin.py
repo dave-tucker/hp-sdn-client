@@ -18,7 +18,7 @@ from hpsdnclient.tests.base import ApiTestCase
 from hpsdnclient.error import OpenflowProtocolError, VersionMismatch, NotFound
 import hpsdnclient.datatypes
 
-OF10_DPID = '00:00:00:00:00:00:00:0b'
+OF10_DPID = '00:00:00:00:00:00:00:03'
 
 
 class TestOfMixin10(ApiTestCase):

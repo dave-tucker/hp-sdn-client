@@ -19,6 +19,7 @@ import os
 import re
 import unittest
 #PY3.3
+import io
 try:
     from unittest.mock import MagicMock
 except ImportError:
@@ -46,20 +47,29 @@ class RestClientTests(unittest.TestCase):
         self.assertEqual(self.client.args["auth"], self.auth)
         self.assertEqual(self.client.args["headers"], UA)
         self.assertEqual(self.client.args["verify"], False)
-        self.assertEqual(self.client.args['timeout'], 0.5)
+        self.assertEqual(self.client.args['timeout'], 30)
 
     def test_user_agent_string(self):
-        #assert that the UA matches the following regexp
-        #
         exp = ("^(hpsdnclient/[0-9]\\.[0-9]\\.[0-9] " +
                "python-requests/[0-9]\\.[0-9]\\.[0-9])$")
         self.assertTrue(re.search(exp, UA['user-agent'], re.S))
 
-    def test__append_content_type(self):
-        args = self.client._append_content_type()
+    def test__download_args(self):
+        args = self.client._download_args()
         self.assertEqual(args['headers']['content-type'], 'application/zip')
         self.assertEqual(self.client.args['headers']['content-type'],
                          'application/json')
+        self.assertEquals(args["timeout"], 60)
+        self.assertEquals(args["stream"],True)
+
+    def test__upload_args(self):
+        filename = "test.txt"
+        args = self.client._upload_args(filename)
+        self.assertEqual(args['headers']['content-type'], 'application/zip')
+        self.assertEqual(self.client.args['headers']['content-type'],
+                         'application/json')
+        self.assertEquals(args["headers"]["filename"], filename)
+        self.assertEquals(args["timeout"], 60)
 
     @httpretty.activate
     def test__get_json(self):
@@ -84,6 +94,7 @@ class RestClientTests(unittest.TestCase):
                                status=201)
         httpretty.register_uri(httpretty.GET,
                                'http://foo.bar',
+
                                status=200)
 
         response = self.client._get('http://foo.bar', True)
@@ -144,16 +155,21 @@ class RestClientTests(unittest.TestCase):
                                'http://foo.bar',
                                status=201)
 
+        f = open("test.txt", "wb")
+        f.close()
+
         response = self.client._post('http://foo.bar',
-                                     json.dumps({"some": "data"}),
+                                     "test.txt",
                                      True)
 
         self.assertTrue(isinstance(response, requests.Response))
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.request.headers['content-type'],
                          'application/zip')
-        self.assertEqual(response.request.body,
-                         json.dumps({"some": "data"}))
+        self.assertEqual(response.request.headers['filename'],
+                         'test.txt')
+
+        os.remove("test.txt")
 
     @httpretty.activate
     def test__delete_no_data(self):
@@ -249,22 +265,27 @@ class RestClientTests(unittest.TestCase):
         self.assertRaises(NotFound, self.client.get, 'http://foo.bar')
 
     def test_get_file(self):
-        data = "Hello World!"
+        with open("test.txt", "wb") as f:
+            f.writelines("Hello World!")
+            f.flush()
+            f.close()
+
         response = requests.Response()
-        response._content = data
+        response.raw = io.open("test.txt")
         response.status_code = 201
         response.headers['content-type'] = 'application/zip'
-        response.headers['content-disposition'] = 'attachment; filename=h.txt'
+        response.headers['content-disposition'] = 'attachment; filename=test1.txt'
         self.client._get = MagicMock(name="_get", return_value=response)
 
         r = self.client.get('http://foo.bar', is_file=True)
 
         self.client._get.assert_called_with('http://foo.bar', is_file=True)
-        self.assertEqual(r, 'h.txt')
-        f = open('h.txt', 'rb')
+        self.assertEqual(r, 'test1.txt')
+        f = open('test1.txt', 'rb')
         self.assertEqual(f.read(), "Hello World!")
         f.close()
-        os.remove('h.txt')
+        os.remove('test.txt')
+        os.remove('test1.txt')
 
     def test_get_none(self):
         response = requests.Response()

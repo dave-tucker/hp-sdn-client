@@ -209,10 +209,10 @@ class ErrorTypeTests(unittest.TestCase):
             self.assertEquals(e.arguments, "test")
 
     def test_not_found(self):
-        key = "test"
-        expected_message = "The key test is not mapped to a datatype"
+        message = "test"
+        expected_message = "test"
         try:
-            raise error.NotFound(key)
+            raise error.NotFound(message)
         except error.NotFound as e:
             self.assertEquals(e.args[0], expected_message)
 

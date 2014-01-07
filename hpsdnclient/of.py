@@ -25,22 +25,19 @@ from hpsdnclient.api import ApiBase
 import hpsdnclient.datatypes as datatypes
 from hpsdnclient.error import raise_errors, DatatypeError
 
-
-"""OpenFlow REST API Methods
-
-This class contains methods that call the OpenFlow
-REST API on the HP VAN SDN Controller
-
-- Topology Service
-- Node Service
-- Link Service
-- Path Planner
-- Path Diagnostics Service
-
-"""
-
 class OfMixin(ApiBase):
+    """OpenFlow REST API Methods
 
+    This class contains methods that call the OpenFlow
+    REST API on the HP VAN SDN Controller
+
+    - Topology Service
+    - Node Service
+    - Link Service
+    - Path Planner
+    - Path Diagnostics Service
+
+    """
     def __init__(self, controller, restclient):
         super(OfMixin, self).__init__(controller, restclient)
         self._of_base_url = ("https://{0}:8443".format(self.controller) +
@@ -247,7 +244,6 @@ class OfMixin(ApiBase):
         return self.restclient.get(url)
 
     def _assemble_flows(self, flows):
-        data = None
         if isinstance(flows, list):
             tmp = []
             for f in flows:
@@ -255,9 +251,9 @@ class OfMixin(ApiBase):
                     tmp.append(f.to_dict())
                 else:
                     raise DatatypeError(datatypes.Flow, f.__class__())
-            data = { "flows" : tmp }
+            data = {"flows": tmp }
         elif isinstance(flows, datatypes.Flow):
-            data = { "flow" : flows.to_dict() }
+            data = {"flow": flows.to_dict() }
         else:
             raise DatatypeError([datatypes.Flow, list], f.__class__())
         return data

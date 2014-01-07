@@ -88,14 +88,20 @@ class FactoryTests(unittest.TestCase):
             class_map = datatypes.CLASS_MAP[type_name]
 
             for key in class_map:
-                attribute = eval('obj.%s' % key)
-                if type(attribute) == list:
-                    for item in attribute:
-                        cls = eval('datatypes.%s' % class_map[key])
-                        self.assertTrue(isinstance(item, cls))
+                if eval('obj.%s' % key) is None:
+                    continue
                 else:
-                    cls = eval('datatypes.%s' % class_map[key])
-                    self.assertTrue(isinstance(attribute, cls))
+                    attribute = eval('obj.%s' % key)
+                    if type(attribute) is None:
+                        break
+                    elif type(attribute) == list:
+                        for item in attribute:
+                            cls = eval('datatypes.%s' % class_map[key])
+                            self.assertTrue(isinstance(item, cls))
+
+                    else:
+                        cls = eval('datatypes.%s' % class_map[key])
+                        self.assertTrue(isinstance(attribute, cls))
         except KeyError:
             pass
 

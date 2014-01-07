@@ -30,22 +30,20 @@ import requests
 from hpsdnclient.api import ApiBase
 from hpsdnclient.error import raise_errors
 
-"""Core REST API Methods
-
-This class contains methods that call the Core REST API functions in
-the HP VAN SDN Controller
-
-- Application management
-- Authentication
-- Controller management
-    - Logs
-    - Support Reports
-- Licensing
-
-"""
-
 class CoreMixin(ApiBase):
+    """Core REST API Methods
 
+    This class contains methods that call the Core REST API functions in
+    the HP VAN SDN Controller
+
+    - Application management
+    - Authentication
+    - Controller management
+        - Logs
+        - Support Reports
+    - Licensing
+
+    """
     def __init__(self, controller, auth):
         super(CoreMixin, self).__init__(controller, auth)
         self._core_base_url = ("https://{0}:8443".format(self.controller) +
@@ -61,9 +59,11 @@ class CoreMixin(ApiBase):
 
         """
         url = self._core_base_url + 'support'
-        if id:
+        if id and fields:
+            url += '?id={}&fields={}'.format(id, fields)
+        elif id:
             url += '?id={}'.format(id)
-        if fields:
+        elif fields:
             url += '?fields={}'.format(fields)
         return self.restclient.get(url)
 

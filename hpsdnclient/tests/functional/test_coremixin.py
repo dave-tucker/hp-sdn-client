@@ -32,7 +32,7 @@ class TestCoreMixin(ApiTestCase):
         self.assertTrue(support)
 
         support = self.api.get_support(id="alert", fields="content")
-        self.assertTrue(support )
+        self.assertTrue(support)
 
     def test_add_license_get_details_and_deactivate(self):
         #ToDo: Get a test license that works wth the SDN Controller

@@ -16,19 +16,14 @@
 
 from hpsdnclient.tests.base import ApiTestCase
 from hpsdnclient.datatypes import LldpProperties, Observation, Packet, Ethernet, Ip, Udp
+import time
 
-OF10_DPID = "00:00:00:00:00:00:00:0c"
+OF10_DPID = "00:00:00:00:00:00:00:03"
 
 class TestNetMixin(ApiTestCase):
 
-    def setUp(self):
-        super(TestNetMixin, self).setUp()
-
-    def tearDown(self):
-        super(TestNetMixin, self).tearDown()
-
     def _create_diag_packet(self):
-        eth = Ethernet(eth_src="72:9d:6f:bc:db:28", eth_dst="a6:fa:fc:69:a6:19",
+        eth = Ethernet(eth_src="00:00:00:00:00:0b", eth_dst="00:00:00:00:00:15",
                        eth_type="IPv4", vlan_pcp="PRIORITY_5")
 
         ip = Ip(ipv4_src="10.0.0.11", ipv4_dst="10.0.0.21", ip_proto="UDP",
@@ -53,7 +48,7 @@ class TestNetMixin(ApiTestCase):
         self.assertTrue(data)
 
     def test_get_forward_path(self):
-        data = self.api.get_forward_path("00:00:00:00:00:00:00:0c", "00:00:00:00:00:00:00:0d")
+        data = self.api.get_forward_path("00:00:00:00:00:00:00:03", "00:00:00:00:00:00:00:05")
         self.assertTrue(data)
 
     def test_get_arps(self):
@@ -106,6 +101,7 @@ class TestNetMixin(ApiTestCase):
         self.assertEquals(remote_packet[0].udp, packet.udp)
 
         self.api.delete_diag_packet(remote_packet[0].uid)
+        time.sleep(2)
         self.assertEquals([], self.api.get_diag_packets())
 
     def test_get_diag_packet_path(self):
@@ -140,7 +136,7 @@ class TestNetMixin(ApiTestCase):
 
         packets = self.api.get_diag_packets()
 
-        simulation = {"dpid": "00:00:00:00:00:00:00:0c", "out_port": "1" }
+        simulation = {"dpid": "00:00:00:00:00:00:00:03", "out_port": "7" }
 
         self.api.set_diag_packet_action(packets[0].uid, simulation)
 
