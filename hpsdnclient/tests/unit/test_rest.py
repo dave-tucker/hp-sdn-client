@@ -68,7 +68,7 @@ class RestClientTests(unittest.TestCase):
         self.assertEqual(args['headers']['content-type'], 'application/zip')
         self.assertEqual(self.client.args['headers']['content-type'],
                          'application/json')
-        self.assertEquals(args["headers"]["filename"], filename)
+        self.assertEquals(args["headers"]["Filename"], filename)
         self.assertEquals(args["timeout"], 60)
 
     @httpretty.activate
