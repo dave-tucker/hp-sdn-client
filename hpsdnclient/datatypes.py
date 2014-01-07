@@ -168,19 +168,21 @@ METHODS = [ "factory", "to_json_string", "to_dict"]
 KEYWORDS = ["self"]
 
 JSON_MAP = {
-             'datapath' : 'Datapath',
-             'meter_features' : 'MeterFeatures',
-             'group_features' : 'GroupFeatures',
-             'port' : 'Port',
-             'meter' : 'Meter',
-             'flow' : 'Flow',
-             'group' : 'Group',
-             'cluster' : 'Cluster',
-             'packet' : 'Packet',
-             'path' : 'Path',
-             'app' : 'App',
+             'datapath': 'Datapath',
+             'meter_features': 'MeterFeatures',
+             'group_features': 'GroupFeatures',
+             'port': 'Port',
+             'meter': 'Meter',
+             'flow': 'Flow',
+             'group': 'Group',
+             'cluster': 'Cluster',
+             'packet': 'Packet',
+             'path': 'Path',
+             'app': 'App',
              'license' : 'License',
-             'support_report' : None,
+             'support_report': None,
+             'observation': 'Observation',
+             'nexthop': 'NextHop'
            }
 
 PLURALS = { 'datapaths': JSON_MAP['datapath'],
@@ -194,12 +196,34 @@ PLURALS = { 'datapaths': JSON_MAP['datapath'],
             'links': 'Link',
             'nodes': 'Node',
             'arps': 'Arp',
-            'lldp_suppressed' : 'LldpProperties',
-            'observations' : 'observation',
+            'lldp_suppressed': 'LldpProperties',
+            'observations': JSON_MAP['observation'],
             'packets': JSON_MAP['packet'],
-            'apps' : JSON_MAP['app'],
-            'licenses' : JSON_MAP['license']
+            'apps': JSON_MAP['app'],
+            'licenses': JSON_MAP['license'],
+            'paths': JSON_MAP['path'],
+            'nexthops': JSON_MAP['nexthop']
           }
+
+CLASS_MAP = {'ControllerStats': {'lost': 'Counter',
+                                 'packet_in': 'Counter',
+                                 'packet_out': 'Counter'},
+             'Team': {'systems': 'TeamSystem'},
+             'Flow': {'match': 'Match',
+                      'actions': 'Action',
+                      'instructions': 'Instruction'},
+             'Stats': {'port_stats': 'PortStats',
+                       'group_stats': 'GroupStats',
+                       'meter_stats': 'MeterStats'},
+             'Packet': {'eth': 'Ethernet',
+                        'ip': 'Ip',
+                        'ipv6': 'Ipv6',
+                        'udp': 'Udp',
+                        'tcp': 'Tcp',
+                        'dhcp': 'Dhcp',
+                        'icmp': 'Icmp',
+                        'icmpv6': 'Icmpv6'}
+}
 
 
 class JsonObjectFactory(object):
@@ -271,6 +295,20 @@ class JsonObject(object):
 
         return cls(**data)
 
+    def __eq__(self, other):
+        attributes = [attr for attr in dir(self)
+                      if not callable(getattr(self,attr))
+                      and not attr.startswith("__")]
+        for attr in attributes:
+            try:
+                if self.__getattribute__(attr) == other.__getattribute__(attr):
+                    continue
+                else:
+                    return False
+            except AttributeError:
+                return False
+        else:
+            return True
 
 ### OpenFlow ###
 
@@ -1069,6 +1107,7 @@ class Packet(JsonObject):
 
     def __init__(self, **kwargs):
         self.type = kwargs.get("type", None)
+        self.uid = kwargs.get("uid", None)
         self.eth = kwargs.get("eth", None)
         self.ip = kwargs.get("ip", None)
         self.icmp = kwargs.get("icmp", None)
@@ -1103,8 +1142,9 @@ class Ip(JsonObject):
         self.ipv4_src = kwargs.get("ipv4_src", None)
         self.ipv4_dst = kwargs.get("ipv4_dst", None)
         self.ip_proto = kwargs.get("ip_proto", None)
-        self.ip_dscn = kwargs.get("ip_dscn", None)
-        self.ip_scn = kwargs.get("ip_scn", None)
+        self.ip_dscp = kwargs.get("ip_dscp", None)
+        self.ip_ecn = kwargs.get("ip_ecn", None)
+        self.ip_ident = kwargs.get("ip_ident", 0)
 
 class Icmp(JsonObject):
     """ Icmp()
@@ -1263,17 +1303,3 @@ class Observation(JsonObject):
         self.status = kwargs.get("status", None)
 
 CLASS_LIST = [s() for s in JsonObject.__subclasses__()] #pylint: disable E1101
-
-CLASS_MAP = { 'ControllerStats': {'lost': 'Counter',
-                                  'packet_in' : 'Counter',
-                                  'packet_out' : 'Counter'},
-              'Team': {'systems' : 'TeamSystem' },
-              'Flow': {'match' : 'Match',
-                       'actions' : 'Action',
-                       'instructions': 'Instruction'},
-              'Stats': {'port_stats': 'PortStats',
-                        'group_stats': 'GroupStats',
-                        'meter_stats': 'MeterStats'}
-              #'links' : Link,
-             #'links' : TreeLink
-}

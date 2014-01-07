@@ -49,6 +49,7 @@ class XAuthToken(requests.auth.AuthBase):
         """This method requests an authentication token from the SDN
         controller and returns a dictionary with the token and
         expiration time."""
+        import pdb; pdb.set_trace()
         url = 'https://{0}:8443/sdn/v2.0/auth'.format(self.server)
         payload = {'login':{ 'user': self.user, 'password': self.password}}
         r = requests.post(url, data=json.dumps(payload),

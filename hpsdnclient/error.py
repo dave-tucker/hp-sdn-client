@@ -21,7 +21,6 @@ try:
 except ImportError:
     import urllib
 
-
 def raise_errors(response):
     if response.status_code == 400:
         raise_400(response)
@@ -89,8 +88,7 @@ class IllegalArgument(HpsdnclientError):
         self.arguments = arguments
 
 class NotFound(HpsdnclientError):
-    def __init__(self, key):
-        message = ("The key {} is not mapped to a datatype".format(key))
+    def __init__(self, message):
         super(NotFound, self).__init__(message)
 
 class OpenflowProtocolError(HpsdnclientError):

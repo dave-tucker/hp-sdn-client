@@ -33,7 +33,7 @@ class TestOfMixin10(ApiTestCase):
                         'ip_proto', 'tcp_dst']
         action_fields = ['output']
 
-        for f in self._api.get_flows(OF10_DPID):
+        for f in self.api.get_flows(OF10_DPID):
 
             if not flow.priority == f.priority:
                 continue
@@ -52,65 +52,65 @@ class TestOfMixin10(ApiTestCase):
         return False
 
     def test_get_stats(self):
-        data = self._api.get_stats()
+        data = self.api.get_stats()
         self.assertTrue(data)
 
     def test_get_port_stats(self):
-        data = self._api.get_port_stats(OF10_DPID, 1)
+        data = self.api.get_port_stats(OF10_DPID, 1)
         self.assertTrue(data)
 
     def test_get_group_stats(self):
-        self.assertRaises(VersionMismatch, self._api.get_group_stats,
+        self.assertRaises(VersionMismatch, self.api.get_group_stats,
                           OF10_DPID, 1)
 
     def test_get_meter_stats(self):
-        self.assertRaises(NotFound, self._api.get_meter_stats,
+        self.assertRaises(NotFound, self.api.get_meter_stats,
                           OF10_DPID, 1)
 
     def test_get_datapaths(self):
-        data = self._api.get_datapaths()
+        data = self.api.get_datapaths()
         self.assertTrue(data)
 
     def test_get_datapath_detail(self):
-        data = self._api.get_datapath_detail(OF10_DPID)
+        data = self.api.get_datapath_detail(OF10_DPID)
         self.assertTrue(data)
 
-    def test_get_datapath_meter_features(self):
+    def test_get_meter_features(self):
         self.assertRaises(NotFound,
-                          self._api.get_datapath_meter_features, OF10_DPID)
+                          self.api.get_meter_features, OF10_DPID)
 
-    def test_get_datapath_group_features(self):
+    def test_get_group_features(self):
         self.assertRaises(VersionMismatch,
-                          self._api.get_datapath_group_features, OF10_DPID)
+                          self.api.get_group_features, OF10_DPID)
 
     def test_get_ports(self):
-        data = self._api.get_ports(OF10_DPID)
+        data = self.api.get_ports(OF10_DPID)
         self.assertTrue(data)
 
     def test_get_port_detail(self):
-        data = self._api.get_port_detail(OF10_DPID, 1)
+        data = self.api.get_port_detail(OF10_DPID, 1)
         self.assertTrue(data)
 
     def test_get_meters(self):
         self.assertRaises(OpenflowProtocolError,
-                          self._api.get_meters, OF10_DPID)
+                          self.api.get_meters, OF10_DPID)
 
     def test_get_meter_details(self):
         self.assertRaises(OpenflowProtocolError,
-                          self._api.get_meter_details,
+                          self.api.get_meter_details,
                           OF10_DPID, 1)
 
     def test_get_flows(self):
-        data = self._api.get_flows(OF10_DPID)
+        data = self.api.get_flows(OF10_DPID)
         self.assertTrue(data)
 
 
     def test_get_groups(self):
-        self.assertRaises(VersionMismatch, self._api.get_groups, OF10_DPID)
+        self.assertRaises(VersionMismatch, self.api.get_groups, OF10_DPID)
 
     def test_get_group_details(self):
         self.assertRaises(VersionMismatch,
-                          self._api.get_group_details,
+                          self.api.get_group_details,
                           OF10_DPID, 1)
 
     def test_add_flow(self):
@@ -122,7 +122,7 @@ class TestOfMixin10(ApiTestCase):
         output6 = hpsdnclient.datatypes.Action(output=6)
         flow = hpsdnclient.datatypes.Flow(priority=12345, idle_timeout=30,
                                           match=match, actions=output6)
-        self._api.add_flows(OF10_DPID, flow)
+        self.api.add_flows(OF10_DPID, flow)
         self.assertTrue(self._flow_exists(flow))
 
     def test_delete_flow(self):
@@ -136,6 +136,6 @@ class TestOfMixin10(ApiTestCase):
                                           match=match, actions=output6)
 
         self.assertTrue(self._flow_exists(flow))
-        self._api.delete_flows(OF10_DPID, flow)
+        self.api.delete_flows(OF10_DPID, flow)
         self.assertFalse(self._flow_exists(flow))
 

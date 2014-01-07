@@ -35,17 +35,27 @@ class RestClient(object):
         self.args = {"auth": self.auth,
                      "verify": False,
                      "headers": UA,
-                     "timeout": 0.5
+                     "timeout": 10
         }
 
-    def _append_content_type(self):
+    def _download_args(self):
         args = copy.deepcopy(self.args)
         args["headers"]["content-type"] = 'application/zip'
+        args["timeout"] = 60
+        args["stream"] = True
         return args
 
+    def _upload_args(self, filename):
+        args = copy.deepcopy(self.args)
+        args["headers"]["content-type"] = 'application/zip'
+        args["headers"]["filename"] = filename
+        args["timeout"] = 60
+        return args
+
+
     def _get(self, url, is_file=False):
-        if is_file == True:
-            args = self._append_content_type()
+        if is_file:
+            args = self._download_args()
         else:
             args = self.args
         r = requests.get(url, **args)
@@ -57,10 +67,12 @@ class RestClient(object):
 
     def _post(self, url, data, is_file=False):
         if is_file:
-            args = self._append_content_type()
+            args = self._upload_args(data)
+            with open(data) as f:
+                r = requests.post(url, data=f, **args)
         else:
             args = self.args
-        r = requests.post(url, data=data, **args)
+            r = requests.post(url, data=data, **args)
         return r
 
     def _delete(self, url, data=None):
@@ -97,7 +109,10 @@ class RestClient(object):
                     datatype = JSON_MAP[key]
                 except KeyError:
                     raise NotFound(key)
-                result = JsonObjectFactory.create(datatype, data[key])
+                if datatype is None:
+                    result = data[key]
+                else:
+                    result = JsonObjectFactory.create(datatype, data[key])
             else:
                 datatype = PLURALS[key]
                 for d in data[key]:
@@ -107,15 +122,16 @@ class RestClient(object):
             result = r.text
 
         elif r.headers['Content-Type'] == 'application/zip':
-            data = r.content
+
             # Strip the 'attachment; filename='' from Content-Disposition
             filename = r.headers["Content-Disposition"][21:]
             # Save the data to a file
-            f = open(filename, 'wb')
-            f.write(data)
-            f.close()
-            # Return the filename
-            result = filename
+            with open(filename, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=1024):
+                    if chunk: # filter out keep-alive new chunks
+                        f.write(chunk)
+                        f.flush()
+            return filename
         else:
             result = None
         return result

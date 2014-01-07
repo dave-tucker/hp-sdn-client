@@ -65,7 +65,7 @@ class CoreMixin(ApiBase):
             url += '?id={}'.format(id)
         if fields:
             url += '?fields={}'.format(fields)
-        self._get(url)
+        return self.restclient.get(url)
 
     def get_licenses(self, key=None):
         """ Get all known licenses or find a specific license by key
@@ -78,7 +78,7 @@ class CoreMixin(ApiBase):
         url = self._core_base_url + 'licenses'
         if key:
             url += '?key={}'.format(key)
-        self._get(url)
+        self.restclient.get(url)
 
     def add_license(self, key):
         """ Add a new license
@@ -152,7 +152,7 @@ class CoreMixin(ApiBase):
     def upload_app(self, app):
         """ Upload an application to the controller
 
-        :param file app: A zip file containing the application to be uploaded
+        :param filename app: The path to the file to be uploaded
 
         """
         url = self._core_base_url + 'apps'
@@ -187,9 +187,8 @@ class CoreMixin(ApiBase):
         :param str action: The action to perform ("start", "stop" or "install")
 
         """
-        data = json.dumps({"action":action})
         url = self._core_base_url + 'apps/{}/action'.format(app)
-        r = self.restclient.post(url, data)
+        r = self.restclient.post(url, action)
         raise_errors(r)
 
     def get_app_health(self, app):
@@ -228,8 +227,8 @@ class CoreMixin(ApiBase):
         """
         url = 'https://{0}:8443/sdn/v2.0/auth'.format(self.controller)
         data = {'login':{ 'user': user, 'password': password}}
-        r = requests.post(url, data=json.dumps(data))
-        t = []
+        r = requests.post(url, data=json.dumps(data), verify=False, timeout=1)
+        t = {}
         r.raise_for_status()
         data = r.json()
         t['token'] = data[u'record'][u'token']
@@ -246,5 +245,5 @@ class CoreMixin(ApiBase):
         """
         url = 'https://{0}:8443/sdn/v2.0/auth'.format(self.controller)
         headers = {"X-Auth-Token": token}
-        r = requests.delete(url, headers=headers)
+        r = requests.delete(url, headers=headers, verify=False, timeout=1)
         r.raise_for_status()

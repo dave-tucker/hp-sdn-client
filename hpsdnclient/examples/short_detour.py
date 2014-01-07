@@ -18,7 +18,7 @@ import hpsdnclient as hp
 
 """ Short Detour 2.0 """
 
-# initialize the api
+#initialize the api
 controller = '10.44.254.129'
 auth = hp.XAuthToken(user='sdn',password='skyline', server=controller)
 api = hp.Api(controller=controller, auth=auth)
