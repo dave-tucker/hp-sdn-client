@@ -34,9 +34,9 @@ output6 = hp.datatypes.Action(output=6)
 
 #create the flows
 flow1 = hp.datatypes.Flow(priority=30000, idle_timeout=30,
-                          match=match, action=output6)
+                          match=match, actions=output6)
 flow2 = hp.datatypes.Flow(priority=30000, idle_timeout=30,
-                          match=match, action=output1)
+                          match=match, actions=output1)
 
 #push the flows to the datatpaths
 api.add_flows('00:00:00:00:00:00:00:0e', flow1)
