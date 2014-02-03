@@ -194,6 +194,10 @@ class FactoryTests(unittest.TestCase):
     def test_create_flow(self):
         self._test_type(test_data.FLOW, datatypes.Flow)
 
+    def test_create_flow_multiple_action(self):
+        obj = self._test_type(test_data.FLOW_MA, datatypes.Flow)
+        self.assertEquals(obj.actions.output, [1,2,3])
+
     def test_create_cluster(self):
         self._test_type(test_data.CLUSTER, datatypes.Cluster)
 

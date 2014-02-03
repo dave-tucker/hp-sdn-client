@@ -399,7 +399,8 @@ class Flow(JsonObject):
     def factory(cls, data):
         """ Override factory in the base class to create a single instance of
         the Match class for the 'match' key. We do this as each match field
-        may only exist once. """
+        may only exist once. Actions are trickier as keys here are not unique.
+        When multiple values are present, """
         try:
             cm = CLASS_MAP[cls.__name__]
             for key in data:
@@ -411,9 +412,26 @@ class Flow(JsonObject):
                     data[key] = JsonObjectFactory.create('Match', new_match)
                 elif key == 'actions':
                     new_action = {}
+                    keys = []
                     for d in data[key]:
-                        for k in d:
-                            new_action[k] = d[k]
+                        keys.extend([(k,v) for k,v in d.iteritems()])
+                    num_keys = range(len(keys))
+
+                    duplicates = {}
+
+                    for i in num_keys:
+                        key_name = keys[i][0]
+                        if duplicates.has_key(key_name):
+                            duplicates[key_name].append(i)
+                        else:
+                            duplicates[key_name] = [i]
+
+                    for k,v in duplicates.iteritems():
+                        if len(v) > 1:
+                            new_action[k] = [keys[i][1] for i in v]
+                        else:
+                            new_action[k] = keys[i]
+
                     data[key] = JsonObjectFactory.create('Action', new_action)
                 elif key in cm and isinstance(data[key], list):
                     l = []
@@ -531,6 +549,19 @@ class Action(JsonObject):
                       if not callable(getattr(self,attr))
                       and not attr.startswith("__")]
         for attr in attributes:
+            if attr == "output":
+                output = getattr(self, attr)
+                if type(output) == list:
+                    for port in output:
+                        tmp = {}
+                        tmp[attr.__str__()] = port
+                        data.append(tmp)
+                elif output:
+                    tmp = {}
+                    tmp[attr.__str__()] = getattr(self, attr)
+                    data.append(tmp)
+
+
             if getattr(self, attr):
                 tmp = {}
                 tmp[attr.__str__()] = getattr(self, attr)

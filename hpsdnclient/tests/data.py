@@ -420,6 +420,39 @@ FLOW = {
     ]
 }
 
+FLOW_MA = {
+    "duration_sec": 66,
+    "duration_nsec": 825000000,
+    "priority": 29999,
+    "idle_timeout": 300,
+    "hard_timeout": 0,
+    "cookie": "0x2328",
+    "packet_count": 2,
+    "byte_count": 140,
+    "match": [
+        {
+            "in_port": 3
+        },
+        {
+            "eth_src": "be:f9:8c:b6:5b:9c"
+        },
+        {
+            "eth_dst": "fe:b4:08:c5:23:fc"
+        }
+    ],
+    "actions": [
+        {
+            "output": 1
+        },
+        {
+            "output": 2
+        },
+        {
+            "output": 3
+        }
+    ]
+}
+
 CLUSTER = {
     "uid": "172334323",
     "links": [

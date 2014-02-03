@@ -113,6 +113,20 @@ class TestOfMixin10(ApiTestCase):
                           self.api.get_group_details,
                           OF10_DPID, 1)
 
+    def test_create_flow_multiple_actions(self):
+        match = hpsdnclient.datatypes.Match(eth_type="ipv4",
+                                            ipv4_src="10.0.0.1",
+                                            ipv4_dst="10.0.0.22",
+                                            ip_proto="tcp",
+                                            tcp_dst=80)
+        output1to6 = hpsdnclient.datatypes.Action(output=[1,2,3,4,5,6])
+        flow = hpsdnclient.datatypes.Flow(priority=12345, idle_timeout=30,
+                                          match=match, actions=output1to6)
+
+        data = flow.to_json_string()
+        for i in range(1,6):
+            self.assertIn('"output": {}'.format(i), data)
+
     def test_add_flow(self):
         match = hpsdnclient.datatypes.Match(eth_type="ipv4",
                                             ipv4_src="10.0.0.1",
