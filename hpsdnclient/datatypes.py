@@ -430,7 +430,7 @@ class Flow(JsonObject):
                         if len(v) > 1:
                             new_action[k] = [keys[i][1] for i in v]
                         else:
-                            new_action[k] = keys[i]
+                            new_action[k] = keys[i][1]
 
                     data[key] = JsonObjectFactory.create('Action', new_action)
                 elif key in cm and isinstance(data[key], list):
@@ -548,6 +548,7 @@ class Action(JsonObject):
         attributes = [attr for attr in dir(self)
                       if not callable(getattr(self,attr))
                       and not attr.startswith("__")]
+        import pdb; pdb.set_trace()
         for attr in attributes:
             if attr == "output":
                 output = getattr(self, attr)
@@ -560,12 +561,11 @@ class Action(JsonObject):
                     tmp = {}
                     tmp[attr.__str__()] = getattr(self, attr)
                     data.append(tmp)
-
-
-            if getattr(self, attr):
-                tmp = {}
-                tmp[attr.__str__()] = getattr(self, attr)
-                data.append(tmp)
+            else:
+                if getattr(self, attr):
+                    tmp = {}
+                    tmp[attr.__str__()] = getattr(self, attr)
+                    data.append(tmp)
         return data
 
 class Instruction(JsonObject,):

@@ -22,7 +22,7 @@ To use the library ::
     controller = '10.44.254.129'
     auth = hp.XAuthToken(user='sdn', password='skyline', server=controller)
     api = hp.Api(controller=controller, auth=auth)
-    
+
     api.get_datapaths()
 
 
@@ -39,3 +39,22 @@ The unit tests can be run with tox. Make sure you have modified hpsdnclient/test
 tox -e py27 -v -- -v
 
 tox.ini has py26, py27 and py33 environments, but only py27 is supported today.
+
+For functional testing, a working HP VAN SDN Controller is required. Mininet is used to generate a test topology.
+
+Set your environment variables on your workstation and mininet VM as follows ::
+
+export SDNCTL="10.44.254.129"
+export SDNUSER="sdn"
+export SDNPASS="skyline"
+
+It is recommended to download the Mininet VM. On the VM, start the following topology ::
+
+sudo mn --topo tree,2,6 --mac --switch ovsk --controller remote,ip=$SDNCTL
+
+Run the functional tests using ::
+
+tox -e functional
+
+The functional test for applciation uploads requires access to the internet to donwload a sample appliction.
+

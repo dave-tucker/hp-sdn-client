@@ -17,7 +17,7 @@
 """This library provides a Python interface to the HP SDN
 Controller API"""
 
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 
 from hpsdnclient.apibase import ApiBase
 from hpsdnclient.core import CoreMixin
