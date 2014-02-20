@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-#   Copyright 2013 Hewlett-Packard Development Company, L.P.
+#   Copyright 2014 Hewlett-Packard Development Company, L.P.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 """This library provides a Python interface to the HP SDN
 Controller API"""
 
-__version__ = '1.0.2'
 
 from hpsdnclient.apibase import ApiBase
 from hpsdnclient.core import CoreMixin
@@ -30,4 +29,3 @@ class Api(CoreMixin, OfMixin, NetMixin, ApiBase):
     def __init__(self, controller, auth):
         self.restclient = RestClient(auth)
         super(Api, self).__init__(controller, self.restclient)
-

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-#   Copyright 2013 Hewlett-Packard Development Company, L.P.
+#   Copyright 2014 Hewlett-Packard Development Company, L.P.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ import copy
 
 import requests
 
-from hpsdnclient.api import __version__
+from hpsdnclient.version import __version__
 from hpsdnclient.datatypes import JsonObjectFactory, JSON_MAP, PLURALS
 from hpsdnclient.error import raise_errors, NotFound
 

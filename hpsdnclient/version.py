@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-#   Copyright 2014 Hewlett-Packard Development Company, L.P.
+#   Copyright 2013 Hewlett-Packard Development Company, L.P.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,21 +14,4 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import os
-import unittest
-import hpsdnclient as hp
-
-SDNCTL = os.getenv("SDNCTL")
-USER = os.getenv("SDNUSER")
-PASS = os.getenv("SDNPASS")
-
-class ApiTestCase(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        auth = hp.XAuthToken(server=SDNCTL, user=USER, password=PASS)
-        cls.api = hp.Api(controller=SDNCTL, auth=auth)
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.api = None
-
+__version__ = "1.0.3"
