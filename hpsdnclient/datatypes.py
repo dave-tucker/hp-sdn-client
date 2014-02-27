@@ -548,7 +548,6 @@ class Action(JsonObject):
         attributes = [attr for attr in dir(self)
                       if not callable(getattr(self,attr))
                       and not attr.startswith("__")]
-        import pdb; pdb.set_trace()
         for attr in attributes:
             if attr == "output":
                 output = getattr(self, attr)
