@@ -14,6 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+import os
 import setuptools
 from pip.req import parse_requirements
 
@@ -21,11 +22,11 @@ from pip.req import parse_requirements
 execfile('hpsdnclient/version.py')
 
 # Parse requirements files
-requirements = parse_requirements('requirements.txt')
-test_requirements = parse_requirements('test-requirements.txt')
+requires = parse_requirements(os.path.abspath('requirements.txt'))
+test_requires = parse_requirements(os.path.abspath('test-requirements.txt'))
 
-install_reqs = [str(r.req) for r in requirements]
-test_reqs = [str(r.req) for r in test_requirements]
+install_reqs = [str(r.req) for r in requires]
+test_reqs = [str(r.req) for r in test_requires]
 
 def readme():
     with open('README.rst') as f:
