@@ -1,3 +1,2 @@
---index https://pypi.python.org/hp-sdn-client/
-
--e .
+requests>=2.0.1
+distribute>=0.7.3

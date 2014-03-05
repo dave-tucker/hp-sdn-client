@@ -15,14 +15,21 @@
 #   limitations under the License.
 
 import setuptools
+from pip.req import parse_requirements
 
 # Get version from hpsdclient.version
 execfile('hpsdnclient/version.py')
 
+# Parse requirements files
+requirements = parse_requirements('requirements.txt')
+test_requirements = parse_requirements('test-requirements.txt')
+
+install_reqs = [str(r.req) for r in requirements]
+test_reqs = [str(r.req) for r in test_requirements]
+
 def readme():
     with open('README.rst') as f:
         return f.read()
-
 
 setuptools.setup(name='hp-sdn-client',
                  version=__version__,
@@ -46,15 +53,8 @@ setuptools.setup(name='hp-sdn-client',
                  license='Apache License, Version 2.0',
                  packages=['hpsdnclient'],
                  include_package_data=True,
-                 install_requires=[
-                     'requests',
-                     'distribute'
-                 ],
+                 install_requires=install_reqs,
                  test_suite='nose.collector',
-                 tests_require=[
-                     'nose',
-                     'mock',
-                     'httpretty>=0.7.0'
-                 ],
+                 tests_require=test_reqs,
                  zip_safe=False,
 )
