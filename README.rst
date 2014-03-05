@@ -1,6 +1,7 @@
 HP SDN Client
 =============
-
+.. image:: https://travis-ci.org/dave-tucker/hp-sdn-client.png?branch=master
+    :target: https://travis-ci.org/dave-tucker/hp-sdn-client
 .. image:: https://badge.fury.io/py/hp-sdn-client.png
     :target: http://badge.fury.io/py/hp-sdn-client
 
