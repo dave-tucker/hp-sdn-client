@@ -1,3 +1,4 @@
+tox
 nose
 mock
 httpretty>=0.7.0
