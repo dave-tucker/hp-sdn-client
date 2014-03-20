@@ -29,3 +29,6 @@ nosetests.xml
 
 #Coverage
 .coverage
+
+#Sphinx build dir
+docs/build

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Datatypes &mdash; HP SDN Client 0.4.0 documentation</title>
+    <title>Datatypes &mdash; HP SDN Client 1.0.4 documentation</title>
     
     <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.4.0',
+        VERSION:     '1.0.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="HP SDN Client 0.4.0 documentation" href="../index.html" />
+    <link rel="top" title="HP SDN Client 1.0.4 documentation" href="../index.html" />
     <link rel="prev" title="Authenticators" href="auth.html" />
    
   
@@ -46,7 +46,7 @@
         <li class="right" >
           <a href="auth.html" title="Authenticators"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">HP SDN Client 0.4.0 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">HP SDN Client 1.0.4 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -246,7 +246,8 @@ this class are strings</p>
 <em class="property">classmethod </em><tt class="descname">factory</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#hpsdnclient.datatypes.Flow.factory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Override factory in the base class to create a single instance of
 the Match class for the &#8216;match&#8217; key. We do this as each match field
-may only exist once.</p>
+may only exist once. Actions are trickier as keys here are not unique.
+When multiple values are present,</p>
 </dd></dl>
 
 </dd></dl>
