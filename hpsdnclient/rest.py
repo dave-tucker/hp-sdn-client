@@ -131,7 +131,7 @@ class RestClient(object):
                         if type(chunk) == bytes:
                             f.write(chunk)
                         else:
-                            f.write(bytes(chunk, "UTF-8"))
+                            f.write(chunk.encode("UTF-8"))
                         f.flush()
             return filename
         else:
