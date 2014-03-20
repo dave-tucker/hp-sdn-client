@@ -14,6 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+#flake8: noqa
 from hpsdnclient.api import Api
 from hpsdnclient.auth import XAuthToken
 from hpsdnclient.version import __version__

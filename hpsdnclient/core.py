@@ -30,6 +30,7 @@ import requests
 from hpsdnclient.api import ApiBase
 from hpsdnclient.error import raise_errors
 
+
 class CoreMixin(ApiBase):
     """Core REST API Methods
 
@@ -47,7 +48,7 @@ class CoreMixin(ApiBase):
     def __init__(self, controller, auth):
         super(CoreMixin, self).__init__(controller, auth)
         self._core_base_url = ("https://{0}:8443".format(self.controller) +
-                             "/sdn/v2.0/")
+                               "/sdn/v2.0/")
 
     def get_support(self, id=None, fields=None):
         """ Generates a support report
@@ -117,7 +118,7 @@ class CoreMixin(ApiBase):
         :param str serial_no: The serial number of the license to deactivate
 
         """
-        action = json.dumps({"action":"deactivate"})
+        action = json.dumps({"action": "deactivate"})
         url = self._core_base_url + 'licenses/{}'.format(serial_no)
         r = self.restclient.post(url, action)
         raise_errors(r)
@@ -204,8 +205,9 @@ class CoreMixin(ApiBase):
 
     def download_logs(self):
         """ Downloads log files for the controller team.
-        The logs are a zip file containing an inner zip file of logs for each team member.
-        This is saved to the path where the application is being run.
+        The logs are a zip file containing an inner zip file of logs for each
+        team member.This is saved to the path where the application is being
+        run.
 
         :return: File path
         :rtype: String
@@ -216,8 +218,8 @@ class CoreMixin(ApiBase):
 
     def login(self, user, password):
         """ Login to the controller.
-        While not necessary (as the hp-sdn-client handles this for you), it's included here for
-        completeness
+        While not necessary (as the hp-sdn-client handles this for you)
+        it's included here for completeness
 
         :param str user: Username
         :param str password: Password
@@ -226,7 +228,7 @@ class CoreMixin(ApiBase):
 
         """
         url = 'https://{0}:8443/sdn/v2.0/auth'.format(self.controller)
-        data = {'login':{ 'user': user, 'password': password}}
+        data = {'login': {'user': user, 'password': password}}
         r = requests.post(url, data=json.dumps(data), verify=False, timeout=1)
         t = {}
         r.raise_for_status()

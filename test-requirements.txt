@@ -1,4 +1,7 @@
 tox
 nose
+coverage
 mock
 httpretty>=0.7.0
+flake8
+sphinx

@@ -21,6 +21,7 @@ from hpsdnclient.api import ApiBase
 from hpsdnclient.error import raise_errors
 from hpsdnclient.datatypes import LldpProperties
 
+
 class NetMixin(ApiBase):
     """Network Service REST API Methods
 
@@ -37,9 +38,9 @@ class NetMixin(ApiBase):
     def __init__(self, controller, auth):
         super(NetMixin, self).__init__(controller, auth)
         self._net_base_url = ("https://{0}:8443".format(self.controller) +
-                             "/sdn/v2.0/net/")
+                              "/sdn/v2.0/net/")
         self._diag_base_url = ("https://{0}:8443".format(self.controller) +
-                             "/sdn/v2.0/diag/")
+                               "/sdn/v2.0/diag/")
 
     def get_clusters(self):
         """ Gets a list of clusters
@@ -111,10 +112,10 @@ class NetMixin(ApiBase):
     def get_nodes(self, ip=None, vid=None, dpid=None, port=None):
         """ Get all Nodes discovered by the controller
 
-        - When supplied with``ip`` and ``vid`` returns node details
-        - When supplied with ``vid`` returns Nodes in the specified VLAN
-        - When supplied with ``dpid`` returns Nodes attached to the specified DPID
-        - When supplied with ``dpid`` and ``port`` returns Nodes attached to the given port on the specified DPID
+        - With `ip`` and ``vid`` returns node details
+        - With ``vid`` returns Nodes in the specified VLAN
+        - With ``dpid`` returns Nodes attached to the specified DPID
+        - With ``dpid`` and ``port`` returns Nodes for given port/DPID
 
         :param str ip: IP address
         :param str vid: VLAN ID
@@ -158,7 +159,7 @@ class NetMixin(ApiBase):
                     tmp.append(item.to_dict())
                 else:
                     tmp.append(item)
-            data = {"lldp_suppressed": tmp }
+            data = {"lldp_suppressed": tmp}
 
         else:
             data = {"lldp_suppressed": [ports.to_dict()]}
@@ -170,7 +171,8 @@ class NetMixin(ApiBase):
     def remove_lldp_suppressed(self, ports):
         """ Removes ports from LLDP suppressed state
 
-        :params hpsdnclient.datatypes.LldpProperties ports: The ports to be removed from LLDP suppressed state
+        :params hpsdnclient.datatypes.LldpProperties ports:
+            The ports to be removed from LLDP suppressed state
 
         """
 
@@ -181,7 +183,7 @@ class NetMixin(ApiBase):
                     tmp.append(item.to_dict())
                 else:
                     tmp.append(item)
-            data = {"lldp_suppressed": tmp }
+            data = {"lldp_suppressed": tmp}
 
         else:
             data = {"lldp_suppressed": [ports.to_dict()]}
@@ -208,10 +210,11 @@ class NetMixin(ApiBase):
     def create_diag_observation_post(self, observation):
         """ Creates a diagnostic observation post
 
-        :param hpsdnclient.datatypes.Observation observation: The observation post to create
+        :param hpsdnclient.datatypes.Observation observation:
+            The observation post to create
 
         """
-        data = { "observation" : observation.to_dict()}
+        data = {"observation": observation.to_dict()}
         url = self._diag_base_url + 'observations'
         r = self.restclient.post(url, json.dumps(data))
         raise_errors(r)
@@ -222,7 +225,7 @@ class NetMixin(ApiBase):
         :param str observation: The observation post to delete
 
         """
-        data = { "observation" : observation.to_dict()}
+        data = {"observation": observation.to_dict()}
         url = self._diag_base_url + 'observations'
         r = self.restclient.delete(url, json.dumps(data))
         raise_errors(r)
@@ -303,7 +306,7 @@ class NetMixin(ApiBase):
         :param str action: The action to perform
 
         """
-        data = {"simulation" : action}
+        data = {"simulation": action}
         url = self._diag_base_url + 'packets/{}/action'.format(packet_uid)
         r = self.restclient.post(url, json.dumps(data))
         raise_errors(r)

@@ -25,6 +25,7 @@ from hpsdnclient.api import ApiBase
 import hpsdnclient.datatypes as datatypes
 from hpsdnclient.error import raise_errors, DatatypeError
 
+
 class OfMixin(ApiBase):
     """OpenFlow REST API Methods
 
@@ -63,7 +64,7 @@ class OfMixin(ApiBase):
 
         """
         url = (self._of_base_url +
-              'stats/ports?dpid={0}'.format(urllib.quote(dpid)))
+               'stats/ports?dpid={0}'.format(urllib.quote(dpid)))
         if port_id:
             url = url + '&port_id={0}'.format(port_id)
         return self.restclient.get(url)
@@ -251,9 +252,9 @@ class OfMixin(ApiBase):
                     tmp.append(f.to_dict())
                 else:
                     raise DatatypeError(datatypes.Flow, f.__class__())
-            data = {"flows": tmp }
+            data = {"flows": tmp}
         elif isinstance(flows, datatypes.Flow):
-            data = {"flow": flows.to_dict() }
+            data = {"flow": flows.to_dict()}
         else:
             raise DatatypeError([datatypes.Flow, list], f.__class__())
         return data
@@ -275,7 +276,8 @@ class OfMixin(ApiBase):
         """Update a flow, or flows at the selected DPID
 
         :param str dpid: The datapath ID
-        :param list, hpsdnclient.datatypes.Flow flows: The flow or flows to update
+        :param list, hpsdnclient.datatypes.Flow flows:
+            The flow or flows to update
 
         """
         url = (self._of_base_url +
@@ -288,7 +290,8 @@ class OfMixin(ApiBase):
         """ Delete flow, or flows from the specified DPID
 
         :param str dpid: The datapath ID
-        :param list, hpsdnclient.datatypes.Flow flows: The flow or flows to delete
+        :param list, hpsdnclient.datatypes.Flow flows:
+            The flow or flows to delete
 
         """
         url = (self._of_base_url +

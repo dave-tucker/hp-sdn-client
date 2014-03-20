@@ -21,6 +21,7 @@ try:
 except ImportError:
     import urllib
 
+
 def raise_errors(response):
     if response.status_code == 400:
         raise_400(response)
@@ -31,6 +32,7 @@ def raise_errors(response):
     else:
         #let requests raise the error
         response.raise_for_status()
+
 
 def raise_400(response):
     data = response.json()
@@ -48,12 +50,14 @@ def raise_400(response):
     else:
         response.raise_for_status()
 
+
 def raise_404(response):
     data = response.json()
     if "NotFoundException" in data['error']:
         raise NotFound(data['message'])
     else:
         response.raise_for_status()
+
 
 def raise_500(response):
     data = response.json()
@@ -62,9 +66,11 @@ def raise_500(response):
     else:
         response.raise_for_status()
 
+
 class HpsdnclientError(Exception):
     """Base class for Flare API errors"""
     pass
+
 
 class InvalidJson(HpsdnclientError):
     def __init__(self, url, request_body, message):
@@ -72,6 +78,7 @@ class InvalidJson(HpsdnclientError):
         self.request_body = request_body
         self.message = message
         super(InvalidJson, self).__init__(message)
+
 
 class VersionMismatch(HpsdnclientError):
     def __init__(self, dpid, required_version):
@@ -82,14 +89,17 @@ class VersionMismatch(HpsdnclientError):
                                                               required_version)
         super(VersionMismatch, self).__init__(message)
 
+
 class IllegalArgument(HpsdnclientError):
     def __init__(self, arguments=None):
         super(IllegalArgument, self).__init__()
         self.arguments = arguments
 
+
 class NotFound(HpsdnclientError):
     def __init__(self, message):
         super(NotFound, self).__init__(message)
+
 
 class OpenflowProtocolError(HpsdnclientError):
     def __init__(self):
@@ -98,10 +108,10 @@ class OpenflowProtocolError(HpsdnclientError):
                    "on this device")
         super(OpenflowProtocolError, self).__init__(message)
 
+
 class DatatypeError(HpsdnclientError):
     def __init__(self, received, expected):
         self.received = received
         self.expected = expected
         message = "Received: {0} Expected: {1}".format(received, expected)
         super(DatatypeError, self).__init__(message)
-

@@ -46,7 +46,7 @@ CAPABILITIES = ['flow_stats',
                 'queue_stats',
                 'arp_match_ip',
                 'port_blocked'
-               ]
+                ]
 
 PORT_CONFIG = ["port_down",
                "no_stp",
@@ -64,7 +64,7 @@ PORT_STATE = ["link_down",
               "stp_learn",
               "stp_forward",
               "stp_block"
-             ]
+              ]
 
 PORT_FEATURES = ["rate_10mb_hd",
                  "rate_10mb_fd",
@@ -82,7 +82,7 @@ PORT_FEATURES = ["rate_10mb_hd",
                  "autoneg",
                  "pause",
                  "pause_asym"
-                ]
+                 ]
 
 FLOW_MOD_CMD = ["add",
                 "modify",
@@ -141,69 +141,68 @@ LINK_STATE = ["link_down",
 
 OPERATION = ["ADD", "CHANGE", "DELETE", "MOVE"]
 
-ENUMS = [ ETHERNET,
-          VERSION,
-          ACTIONS,
-          CAPABILITIES,
-          PORT_CONFIG,
-          PORT_STATE,
-          PORT_FEATURES,
-          FLOW_MOD_CMD,
-          FLOW_MOD_FLAGS,
-          IP_PROTOCOL,
-          ICMP_V6_TYPE,
-          MATCH_MODE,
-          ICMP_V6_TYPE,
-          MATCH_MODE,
-          IPV6_EXTHDR,
-          METER_FLAGS,
-          METER_TYPE,
-          GROUP_TYPE,
-          COMMANDS,
-          LINK_STATE,
-          OPERATION
-        ]
+ENUMS = [ETHERNET,
+         VERSION,
+         ACTIONS,
+         CAPABILITIES,
+         PORT_CONFIG,
+         PORT_STATE,
+         PORT_FEATURES,
+         FLOW_MOD_CMD,
+         FLOW_MOD_FLAGS,
+         IP_PROTOCOL,
+         ICMP_V6_TYPE,
+         MATCH_MODE,
+         ICMP_V6_TYPE,
+         MATCH_MODE,
+         IPV6_EXTHDR,
+         METER_FLAGS,
+         METER_TYPE,
+         GROUP_TYPE,
+         COMMANDS,
+         LINK_STATE,
+         OPERATION
+         ]
 
-METHODS = [ "factory", "to_json_string", "to_dict"]
+METHODS = ["factory", "to_json_string", "to_dict"]
 KEYWORDS = ["self"]
 
-JSON_MAP = {
-             'datapath': 'Datapath',
-             'meter_features': 'MeterFeatures',
-             'group_features': 'GroupFeatures',
-             'port': 'Port',
-             'meter': 'Meter',
-             'flow': 'Flow',
-             'group': 'Group',
-             'cluster': 'Cluster',
-             'packet': 'Packet',
-             'path': 'Path',
-             'app': 'App',
-             'license' : 'License',
-             'support_report': None,
-             'observation': 'Observation',
-             'nexthop': 'NextHop'
-           }
+JSON_MAP = {'datapath': 'Datapath',
+            'meter_features': 'MeterFeatures',
+            'group_features': 'GroupFeatures',
+            'port': 'Port',
+            'meter': 'Meter',
+            'flow': 'Flow',
+            'group': 'Group',
+            'cluster': 'Cluster',
+            'packet': 'Packet',
+            'path': 'Path',
+            'app': 'App',
+            'license': 'License',
+            'support_report': None,
+            'observation': 'Observation',
+            'nexthop': 'NextHop'
+            }
 
-PLURALS = { 'datapaths': JSON_MAP['datapath'],
-            'controller_stats': 'ControllerStats',
-            'stats': 'Stats',
-            'ports' : JSON_MAP['port'],
-            'meters': JSON_MAP['meter'],
-            'flows': JSON_MAP['flow'],
-            'groups': JSON_MAP['group'],
-            'clusters': JSON_MAP['cluster'],
-            'links': 'Link',
-            'nodes': 'Node',
-            'arps': 'Arp',
-            'lldp_suppressed': 'LldpProperties',
-            'observations': JSON_MAP['observation'],
-            'packets': JSON_MAP['packet'],
-            'apps': JSON_MAP['app'],
-            'licenses': JSON_MAP['license'],
-            'paths': JSON_MAP['path'],
-            'nexthops': JSON_MAP['nexthop']
-          }
+PLURALS = {'datapaths': JSON_MAP['datapath'],
+           'controller_stats': 'ControllerStats',
+           'stats': 'Stats',
+           'ports': JSON_MAP['port'],
+           'meters': JSON_MAP['meter'],
+           'flows': JSON_MAP['flow'],
+           'groups': JSON_MAP['group'],
+           'clusters': JSON_MAP['cluster'],
+           'links': 'Link',
+           'nodes': 'Node',
+           'arps': 'Arp',
+           'lldp_suppressed': 'LldpProperties',
+           'observations': JSON_MAP['observation'],
+           'packets': JSON_MAP['packet'],
+           'apps': JSON_MAP['app'],
+           'licenses': JSON_MAP['license'],
+           'paths': JSON_MAP['path'],
+           'nexthops': JSON_MAP['nexthop']
+           }
 
 CLASS_MAP = {'ControllerStats': {'lost': 'Counter',
                                  'packet_in': 'Counter',
@@ -223,7 +222,7 @@ CLASS_MAP = {'ControllerStats': {'lost': 'Counter',
                         'dhcp': 'Dhcp',
                         'icmp': 'Icmp',
                         'icmpv6': 'Icmpv6'}
-}
+             }
 
 
 class JsonObjectFactory(object):
@@ -244,6 +243,7 @@ class JsonObjectFactory(object):
             JsonObjectFactory.add_factory(id, eval(id))
         return JsonObjectFactory.factories[id].factory(data)
 
+
 class JsonObject(object):
 
     """ This is the base class for all HP SDN Client data types."""
@@ -259,7 +259,7 @@ class JsonObject(object):
     def to_dict(self):
         data = {}
         attributes = [attr for attr in dir(self)
-                      if not callable(getattr(self,attr))
+                      if not callable(getattr(self, attr))
                       and not attr.startswith("__")]
         for attr in attributes:
             if getattr(self, attr):
@@ -297,7 +297,7 @@ class JsonObject(object):
 
     def __eq__(self, other):
         attributes = [attr for attr in dir(self)
-                      if not callable(getattr(self,attr))
+                      if not callable(getattr(self, attr))
                       and not attr.startswith("__")]
         for attr in attributes:
             try:
@@ -311,6 +311,7 @@ class JsonObject(object):
             return True
 
 ### OpenFlow ###
+
 
 class Datapath(JsonObject):
     """ Datapath (JsonObject)
@@ -329,11 +330,13 @@ class Datapath(JsonObject):
         self.device_ip = kwargs.get('device_ip', None)
         self.device_port = kwargs.get('device_port', None)
 
+
 class DatapathControllers(JsonObject):
     """ A controller, from a datapath point of view """
     def __init__(self, **kwargs):
         self.master = kwargs.get('master', None)
         self.slaves = kwargs.get('slaves', [])
+
 
 class MeterFeatures(JsonObject):
     def __init__(self, **kwargs):
@@ -343,6 +346,7 @@ class MeterFeatures(JsonObject):
         self.max_meters = kwargs.get("max_meters", None)
         self.types = kwargs.get("types", None)
 
+
 class GroupFeatures(JsonObject):
     """ Docstirg here"""
     def __init__(self, **kwargs):
@@ -350,6 +354,7 @@ class GroupFeatures(JsonObject):
         self.capabilities = kwargs.get("capabilities", None)
         self.max_groups = kwargs.get("max_groups", None)
         self.types = kwargs.get("types", None)
+
 
 class Port(JsonObject):
     """ Port (JsonObject)
@@ -369,6 +374,7 @@ class Port(JsonObject):
         self.advertised_features = kwargs.get('advertised_features', [])
         self.supported_features = kwargs.get('supported_features', [])
         self.peer_features = kwargs.get('peer_features', [])
+
 
 class Flow(JsonObject):
     """ Flow (JsonObject)
@@ -414,19 +420,19 @@ class Flow(JsonObject):
                     new_action = {}
                     keys = []
                     for d in data[key]:
-                        keys.extend([(k,v) for k,v in d.iteritems()])
+                        keys.extend([(k, v) for k, v in d.iteritems()])
                     num_keys = range(len(keys))
 
                     duplicates = {}
 
                     for i in num_keys:
                         key_name = keys[i][0]
-                        if duplicates.has_key(key_name):
+                        if key_name in duplicates:
                             duplicates[key_name].append(i)
                         else:
                             duplicates[key_name] = [i]
 
-                    for k,v in duplicates.iteritems():
+                    for k, v in duplicates.iteritems():
                         if len(v) > 1:
                             new_action[k] = [keys[i][1] for i in v]
                         else:
@@ -443,6 +449,7 @@ class Flow(JsonObject):
         except KeyError:
             pass
         return cls(**data)
+
 
 class Match(JsonObject):
     """ Match (JsonObject)
@@ -501,7 +508,7 @@ class Match(JsonObject):
         """
         data = []
         attributes = [attr for attr in dir(self)
-                      if not callable(getattr(self,attr))
+                      if not callable(getattr(self, attr))
                       and not attr.startswith("__")]
         for attr in attributes:
             if getattr(self, attr):
@@ -509,6 +516,7 @@ class Match(JsonObject):
                 tmp[attr.__str__()] = getattr(self, attr)
                 data.append(tmp)
         return data
+
 
 class Action(JsonObject):
     """ Action (JsonObject)
@@ -546,7 +554,7 @@ class Action(JsonObject):
         """
         data = []
         attributes = [attr for attr in dir(self)
-                      if not callable(getattr(self,attr))
+                      if not callable(getattr(self, attr))
                       and not attr.startswith("__")]
         for attr in attributes:
             if attr == "output":
@@ -567,6 +575,7 @@ class Action(JsonObject):
                     data.append(tmp)
         return data
 
+
 class Instruction(JsonObject,):
     """ Instruction (JsonObject)
 
@@ -581,6 +590,7 @@ class Instruction(JsonObject,):
         self.mask = kwargs.get('mask', None)
         self.meter = kwargs.get('meter', None)
         self.experimenter = kwargs.get('experimenter', None)
+
 
 class MeterStats(JsonObject):
     """ MeterStats (JsonObject)
@@ -597,6 +607,7 @@ class MeterStats(JsonObject):
         self.duration_nsec = kwargs.get('duration_nsec', None)
         self.band_stats = kwargs.get('band_stats', [])
 
+
 class BandStats(JsonObject):
     """ BandStats (JsonObject)
 
@@ -606,6 +617,7 @@ class BandStats(JsonObject):
     def __init__(self, **kwargs):
         self.packet_count = kwargs.get('packet_count', None)
         self.byte_count = kwargs.get('byte_count', None)
+
 
 class Meter(JsonObject):
     """ Meter (JsonObject)
@@ -618,6 +630,7 @@ class Meter(JsonObject):
         self.command = kwargs.get('command', None)
         self.flags = kwargs.get('flags', [])
         self.bands = kwargs.get('bands', [])
+
 
 class MeterBand(JsonObject):
     """ MeterBand (JsonObject)
@@ -632,6 +645,7 @@ class MeterBand(JsonObject):
         self.prec_level = kwargs.get('prec_level', None)
         self.experimenter = kwargs.get('experimenter', None)
 
+
 class Group(JsonObject):
     """ Group (JsonObject)
 
@@ -639,7 +653,7 @@ class Group(JsonObject):
 
     """
     def __init__(self, **kwargs):
-        self.id = kwargs.get('id',None)
+        self.id = kwargs.get('id', None)
         self.properties = kwargs.get('properties', None)
         self.ref_count = kwargs.get('ref_count', None)
         self.packet_count = kwargs.get('packet_count', None)
@@ -649,6 +663,7 @@ class Group(JsonObject):
         self.bucket_stats = kwargs.get('bucket_stats', [])
         self.type = kwargs.get('type', None)
         self.buckets = kwargs.get('buckets', [])
+
 
 class Bucket(JsonObject):
     """ Bucket (JsonObject)
@@ -661,6 +676,7 @@ class Bucket(JsonObject):
         self.watch_group = kwargs.get('watch_group', None)
         self.watch_port = kwargs.get('watch_port', None)
         self.actions = kwargs.get('actions', [])
+
 
 class Stats(JsonObject):
     """ Stats (JsonObject)
@@ -699,6 +715,7 @@ class PortStats(JsonObject):
         self.rx_frame_err = kwargs.get('rx_frame_err', None)
         self.rx_over_err = kwargs.get('rx_over_err', None)
 
+
 class GroupStats(JsonObject):
     """ GroupStats (JsonObject)
 
@@ -716,6 +733,7 @@ class GroupStats(JsonObject):
 
 ### Network Services ###
 
+
 class Cluster(JsonObject):
     """ Cluster (JsonObject)
 
@@ -725,6 +743,7 @@ class Cluster(JsonObject):
     def __init__(self, **kwargs):
         self.uid = kwargs.get('uid', None)
         self.links = kwargs.get('links', [])
+
 
 class Link(JsonObject):
     """ Link (JsonObject)
@@ -738,6 +757,7 @@ class Link(JsonObject):
         self.dst_dpid = kwargs.get('dst_dpid', None)
         self.dst_port = kwargs.get('dst_port', None)
         self.info = kwargs.get('info', [])
+
 
 class LinkInfo(JsonObject):
     """ LinkInfo (JsonObject)
@@ -754,6 +774,7 @@ class LinkInfo(JsonObject):
 
 #lldp_suppressed == list of LldpProperties
 
+
 class LldpProperties(JsonObject):
     """ LldpProperties (JsonObject)
 
@@ -763,6 +784,7 @@ class LldpProperties(JsonObject):
     def __init__(self, **kwargs):
         self.dpid = kwargs.get('dpid', None)
         self.ports = kwargs.get('ports', [])
+
 
 class Arp(JsonObject):
     """ Arp (JsonObject)
@@ -774,6 +796,7 @@ class Arp(JsonObject):
         self.ip = kwargs.get('ip', None)
         self.mac = kwargs.get('mac', None)
         self.vid = kwargs.get('vid', None)
+
 
 class Node(JsonObject):
     """ Node (JsonObject)
@@ -788,6 +811,7 @@ class Node(JsonObject):
         self.dpid = kwargs.get('dpid', None)
         self.port = kwargs.get('port', None)
 
+
 class Path(JsonObject):
     """ Path (JsonObject)
 
@@ -797,6 +821,7 @@ class Path(JsonObject):
     def __init__(self, **kwargs):
         self.cost = kwargs.get('cost', None)
         self.links = kwargs.get('links', [])
+
 
 class LinkSync(JsonObject):
     """ LinkSync ()
@@ -812,6 +837,7 @@ class LinkSync(JsonObject):
         self.d_port = kwargs.get('d_port', None)
         self.info = kwargs.get('info', None)
 
+
 class ClusterSync(JsonObject):
     """ ClusterSync()
 
@@ -824,6 +850,7 @@ class ClusterSync(JsonObject):
         self.root = kwargs.get("root", None)
         self.nodes = kwargs.get("nodes", None)
 
+
 class NodeSync(JsonObject):
     """ NodeSync()
 
@@ -833,6 +860,7 @@ class NodeSync(JsonObject):
     def __init__(self, **kwargs):
         self.dpid = kwargs.get('dpid', None)
         self.links = kwargs.get('links', None)
+
 
 class NodeLink(JsonObject):
     """ NodeLink()
@@ -848,6 +876,7 @@ class NodeLink(JsonObject):
         self.d_port = kwargs.get('d_port', None)
         self.s_pt_state = kwargs.get('s_pt_state', None)
         self.d_pt_state = kwargs.get('d_pt_state', None)
+
 
 class NodeMessage(JsonObject):
     """ NodeMessage()
@@ -865,6 +894,7 @@ class NodeMessage(JsonObject):
 
 #Lldp_sync == a list of LldpProperties
 
+
 class Btree(JsonObject):
     """ Btree()
 
@@ -876,6 +906,7 @@ class Btree(JsonObject):
         self.links = kwargs.get('links', [])
         self.costs = kwargs.get('costs', [])
 
+
 class BtreeLink(JsonObject):
     """ BtreeLink()
 
@@ -886,6 +917,7 @@ class BtreeLink(JsonObject):
     def __init__(self, **kwargs):
         self.dpid = kwargs.get('dpid', None)
         self.link = kwargs.get('link', [])
+
 
 class TreeLink(JsonObject):
     """ TreeLink()
@@ -900,6 +932,7 @@ class TreeLink(JsonObject):
         self.d_dpid = kwargs.get('d_dpid', None)
         self.d_port = kwargs.get('d_port', None)
 
+
 class Cost(JsonObject):
     """ Cost()
 
@@ -912,6 +945,7 @@ class Cost(JsonObject):
         self.cost = kwargs.get("cost", None)
 
 ### Core ###
+
 
 class AuditLogEntry(JsonObject):
     """ AuditLogEntry()
@@ -927,6 +961,7 @@ class AuditLogEntry(JsonObject):
         self.ts = kwargs.get("ts", None)
         self.activity = kwargs.get("activity", None)
         self.description = kwargs.get("description", None)
+
 
 class Alert(JsonObject):
     """ Alert()
@@ -957,6 +992,7 @@ class AlertTopic(JsonObject):
         self.topic = kwargs.get("topic", None)
         self.org = kwargs.get("org", None)
         self.desc = kwargs.get("desc", None)
+
 
 class AlertTopicListener(JsonObject):
     """ AlertTopicListener()
@@ -996,6 +1032,7 @@ class Config(JsonObject):
         self.trim_enabled = kwargs.get("trim_enabled", [])
         self.trim_interval_hours = kwargs.get("trim_interval_hours", [])
 
+
 class ConfigItem(JsonObject):
     """ ConfigItem()
 
@@ -1007,6 +1044,7 @@ class ConfigItem(JsonObject):
         self.val = kwargs.get("val", None)
         self.def_val = kwargs.get("def_val", None)
         self.desc = kwargs.get("desc", None)
+
 
 class SupportEntry(JsonObject):
     """ SupportEntry()
@@ -1020,6 +1058,7 @@ class SupportEntry(JsonObject):
         self.id = kwargs.get("id", None)
         self.content = kwargs.get("content", [])
 
+
 class System(JsonObject):
     """ A system """
     def __init__(self, **kwargs):
@@ -1027,11 +1066,13 @@ class System(JsonObject):
         self.version = kwargs.get("version", None)
         self.role = kwargs.get("role", None)
         self.core_data_version = kwargs.get("core_data_version", None)
-        self.core_data_version_timestamp = kwargs.get( \
-            "core_data_version_timestamp", None)
+        self.core_data_version_timestamp = kwargs.get(
+            "core_data_version_timestamp", None
+        )
         self.time = kwargs.get("time", None)
         self.self_ = kwargs.get("self_", None)
         self.status = kwargs.get("status", None)
+
 
 class ControllerNode(JsonObject):
     """ A Controller Node """
@@ -1040,13 +1081,15 @@ class ControllerNode(JsonObject):
         self.ip = kwargs.get("ip", None)
         self.name = kwargs.get("name", None)
 
+
 class Region(JsonObject):
     """ A Region """
     def __init__(self, **kwargs):
         self.uid = kwargs.get("uid", None)
         self.master = kwargs.get("master", None)
         self.slaves = kwargs.get("slaves", [])
-        self.devices = kwargs.get("devices",[])
+        self.devices = kwargs.get("devices", [])
+
 
 class Team(JsonObject):
     """ Team()
@@ -1060,6 +1103,7 @@ class Team(JsonObject):
         self.ip = kwargs.get("ip", None)
         self.version = kwargs.get("version")
         self.systems = kwargs.get("systems")
+
 
 class TeamSystem(JsonObject):
     """ TeamSystems()
@@ -1094,6 +1138,7 @@ class Metric(JsonObject):
         self.summary_interval = kwargs.get("summary_interval", None)
         self.priming_value = kwargs.get("priming_value", None)
 
+
 class MetricUpdate(JsonObject):
     """ Metric()
 
@@ -1112,6 +1157,7 @@ class MetricUpdate(JsonObject):
         self.mark = kwargs.get("mark", None)
         self.type = kwargs.get("type", None)
 
+
 class License(JsonObject):
     """ A License """
     def __init__(self, **kwargs):
@@ -1127,6 +1173,7 @@ class License(JsonObject):
         self.expiry_date = kwargs.get("expiry_date", None)
         self.license_status = kwargs.get("license_status", None)
         self.deactivated_key = kwargs.get("deactivated_key", None)
+
 
 class Packet(JsonObject):
     """ Packet()
@@ -1147,6 +1194,7 @@ class Packet(JsonObject):
         self.udp = kwargs.get("udp", None)
         self.dhcp = kwargs.get("dhcp", None)
 
+
 class Ethernet(JsonObject):
     """ Ethernet()
 
@@ -1160,6 +1208,7 @@ class Ethernet(JsonObject):
         self.eth_type = kwargs.get("eth_type", None)
         self.vlan_vid = kwargs.get("vlan_vid", None)
         self.vlan_pcp = kwargs.get("vlan_pcp", None)
+
 
 class Ip(JsonObject):
     """ Ip()
@@ -1176,6 +1225,7 @@ class Ip(JsonObject):
         self.ip_ecn = kwargs.get("ip_ecn", None)
         self.ip_ident = kwargs.get("ip_ident", 0)
 
+
 class Icmp(JsonObject):
     """ Icmp()
 
@@ -1185,6 +1235,7 @@ class Icmp(JsonObject):
 
     def __init__(self, **kwargs):
         self.icmp_code = kwargs.get("icmp_code", None)
+
 
 class Ipv6(JsonObject):
     """ Ipv6()
@@ -1200,6 +1251,7 @@ class Ipv6(JsonObject):
         self.ip_dscn = kwargs.get("ip_dscn", None)
         self.ip_hop_limit = kwargs.get("ip_hop_limit", None)
 
+
 class Icmpv6(JsonObject):
     """ Icmp()
 
@@ -1214,6 +1266,7 @@ class Icmpv6(JsonObject):
         self.override = kwargs.get("override", None)
         self.target_address = ('target_address', None)
 
+
 class Tcp(JsonObject):
     """ Tcp()
 
@@ -1225,6 +1278,7 @@ class Tcp(JsonObject):
         self.tcp_dst = kwargs.get("tcp_dst", None)
         self.tcp_src = kwargs.get("tcp_src", None)
 
+
 class Udp(JsonObject):
     """ Udp()
 
@@ -1235,6 +1289,7 @@ class Udp(JsonObject):
     def __init__(self, **kwargs):
         self.udp_dst = kwargs.get("udp_dst", None)
         self.udp_src = kwargs.get("udp_src", None)
+
 
 class Dhcp(JsonObject):
     """ Dhcp()
@@ -1253,6 +1308,7 @@ class Dhcp(JsonObject):
         self.client_mac = kwargs.get("client_mac", None)
         self.options = kwargs.get("options", None)
 
+
 class DhcpOptions(JsonObject):
     """ DhcpOptions()
 
@@ -1263,6 +1319,7 @@ class DhcpOptions(JsonObject):
         self.type = kwargs.get("type", None)
         self.parameter_request_list = kwargs.get("parameter_request_list",
                                                  None)
+
 
 class App(JsonObject):
     """ An app """
@@ -1275,6 +1332,7 @@ class App(JsonObject):
         self.vendor = kwargs.get("vendor", None)
         self.version = kwargs.get("version", None)
 
+
 class AppHealth(JsonObject):
     """ An app health object """
     def __init__(self, **kwargs):
@@ -1284,11 +1342,13 @@ class AppHealth(JsonObject):
         self.state = kwargs.get("state", None)
         self.status = kwargs.get("status", None)
 
+
 class MetricApp(JsonObject):
     """ An application with metering data on disk """
     def __init__(self, **kwargs):
         self.app_id = kwargs.get("app_id", None)
         self.app_name = kwargs.get("app_name", None)
+
 
 class MetricValues(JsonObject):
     """ The metric values """
@@ -1298,6 +1358,7 @@ class MetricValues(JsonObject):
         self.datapoint_count = kwargs.get("datapoint_count", None)
         self.datapoints = kwargs.get("datapoints", [])
 
+
 class DataPoint(JsonObject):
     """ A datapoint """
     def __init__(self, **kwargs):
@@ -1305,10 +1366,12 @@ class DataPoint(JsonObject):
         self.milliseconds_span = kwargs.get("milliseconds_span", None)
         self.update_time = kwargs.get("upate_time", None)
 
+
 class NextHop(JsonObject):
     def __init__(self, **kwargs):
         self.dpid = kwargs.get("dpid", None)
         self.out_port = kwargs.get("out_port", None)
+
 
 class ControllerStats(JsonObject):
     def __init__(self, **kwargs):
@@ -1320,10 +1383,12 @@ class ControllerStats(JsonObject):
         self.packet_in = kwargs.get("packet_in", None)
         self.packet_out = kwargs.get("packet_out", None)
 
+
 class Counter(JsonObject):
     def __init__(self, **kwargs):
         self.packets = kwargs.get("packets", None)
         self.bytes = kwargs.get("bytes", None)
+
 
 class Observation(JsonObject):
     def __init__(self, **kwargs):
@@ -1332,4 +1397,4 @@ class Observation(JsonObject):
         self.packet_uid = kwargs.get("packet_uid", None)
         self.status = kwargs.get("status", None)
 
-CLASS_LIST = [s() for s in JsonObject.__subclasses__()] #pylint: disable E1101
+CLASS_LIST = [s() for s in JsonObject.__subclasses__()]

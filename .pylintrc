@@ -1,7 +1,7 @@
 [MASTER]
 # Add <file or directory> to the black list. It should be a base name, not a
 # path. You may set this option multiple times.
-ignore=test
+ignore=tests
 
 [Messages Control]
 # C0111: Don't require docstrings on every method

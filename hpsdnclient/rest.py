@@ -36,7 +36,7 @@ class RestClient(object):
                      "verify": False,
                      "headers": UA,
                      "timeout": 30
-        }
+                     }
 
     def _download_args(self):
         args = copy.deepcopy(self.args)
@@ -51,7 +51,6 @@ class RestClient(object):
         args["headers"]["Filename"] = filename
         args["timeout"] = 60
         return args
-
 
     def _get(self, url, is_file=False):
         if is_file:
@@ -128,7 +127,7 @@ class RestClient(object):
             # Save the data to a file
             with open(filename, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=1024):
-                    if chunk: # filter out keep-alive new chunks
+                    if chunk:  # filter out keep-alive new chunks
                         f.write(chunk)
                         f.flush()
             return filename

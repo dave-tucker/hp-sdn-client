@@ -19,13 +19,15 @@
 MAC = 12
 DPID = 16
 
-def string_to_hex(s, length):
+
+def string_to_hex(st, length):
     """ Convert a string like 00:00 in to hex 0x0000 format"""
-    tmp = '{0:#x}'.format(int(s.replace(':', '').lstrip('0'),length))
+    tmp = '{0:#x}'.format(int(st.replace(':', '').lstrip('0'), length))
     return tmp
 
-def hex_to_string(h, length):
+
+def hex_to_string(hx, length):
     """Convert a hex number from 0x0000 to 00:00 format"""
-    tmp = h.lstrip('0x').zfill(length)
-    tmp = ':'.join(a+b for a,b in zip(tmp[::2], tmp[1::2]))
+    tmp = hx.lstrip('0x').zfill(length)
+    tmp = ':'.join(a+b for a, b in zip(tmp[::2], tmp[1::2]))
     return tmp

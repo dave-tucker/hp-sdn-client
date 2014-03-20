@@ -19,6 +19,7 @@ import datetime
 
 import requests
 
+
 class XAuthToken(requests.auth.AuthBase):
     """This class handles authentication against the HP SDN REST API and
     uses the Requests API. XAuthToken derives from
@@ -40,7 +41,7 @@ class XAuthToken(requests.auth.AuthBase):
         required. We first check that the token exists and has not
         expired and then return the X-Auth-Token request header."""
         if (self.token is None or
-                    self.token_expiration <= datetime.datetime.now()):
+                self.token_expiration <= datetime.datetime.now()):
             self.get_auth()
         request.headers['X-Auth-Token'] = self.token
         return request
@@ -50,7 +51,7 @@ class XAuthToken(requests.auth.AuthBase):
         controller and returns a dictionary with the token and
         expiration time."""
         url = 'https://{0}:8443/sdn/v2.0/auth'.format(self.server)
-        payload = {'login':{ 'user': self.user, 'password': self.password}}
+        payload = {'login': {'user': self.user, 'password': self.password}}
         r = requests.post(url, data=json.dumps(payload),
                           verify=False, timeout=0.5)
         r.raise_for_status()
@@ -63,10 +64,9 @@ class XAuthToken(requests.auth.AuthBase):
         """Delete Authentication Token, AKA, Logout. This method logs
         the current user out"""
         url = 'https://{0}:8443/sdn/v2.0/auth'.format(self.server)
-        headers = {"X-Auth-Token":self.token}
+        headers = {"X-Auth-Token": self.token}
         r = requests.delete(url, headers=headers,
                             verify=False, timeout=0.5)
         r.raise_for_status()
         self.token = None
         self.token_expiration = None
-

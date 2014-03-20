@@ -14,7 +14,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-__version__ = "1.0.3"
 
 class ApiBase(object):
     """Base class for the Api object"""
