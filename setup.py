@@ -18,14 +18,16 @@ import os
 from setuptools import setup
 from pip.req import parse_requirements
 
-# Get version from hpsdclient.version
-execfile('hpsdnclient/version.py')
+# Get version from hpsdclient.version in a PY3 safe manner
+with open("hpsdnclient/version.py") as f:
+    code = compile(f.read(), "hpsdnclient/version.py", 'exec')
+    exec(code)
 
-# Parse requirements files
 
 def requires(filename):
     requirements = parse_requirements(os.path.abspath(filename))
     return [str(r.req) for r in requirements]
+
 
 def readme():
     with open('README.rst') as f:

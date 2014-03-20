@@ -228,7 +228,7 @@ class RestClientTests(unittest.TestCase):
     def test_get_json_valid_datatype(self):
         data = json.dumps({"version": "1.0.0", "datapath": DATAPATH})
         response = requests.Response()
-        response._content = data
+        response._content = data.encode("UTF-8")
         response.status_code = 201
         response.headers['content-type'] = 'application/json'
         self.client._get = MagicMock(name="_get", return_value=response)
@@ -242,7 +242,7 @@ class RestClientTests(unittest.TestCase):
         data = json.dumps({"version": "1.0.0",
                            "datapaths": [DATAPATH, DATAPATH]})
         response = requests.Response()
-        response._content = data
+        response._content = data.encode("UTF-8")
         response.status_code = 201
         response.headers['content-type'] = 'application/json'
         self.client._get = MagicMock(name="_get", return_value=response)
@@ -257,7 +257,7 @@ class RestClientTests(unittest.TestCase):
     def test_get_json_invalid_datatype(self):
         data = json.dumps({"version": "1.0.0", "datapathz": DATAPATH})
         response = requests.Response()
-        response._content = data
+        response._content = data.encode("UTF-8")
         response.status_code = 201
         response.headers['content-type'] = 'application/json'
         self.client._get = MagicMock(name="_get", return_value=response)
@@ -266,7 +266,7 @@ class RestClientTests(unittest.TestCase):
 
     def test_get_file(self):
         with open("test.txt", "wb") as f:
-            f.writelines("Hello World!")
+            f.write("Hello World!".encode("UTF-8"))
             f.flush()
             f.close()
 
@@ -282,7 +282,7 @@ class RestClientTests(unittest.TestCase):
         self.client._get.assert_called_with('http://foo.bar', is_file=True)
         self.assertEqual(r, 'test1.txt')
         f = open('test1.txt', 'rb')
-        self.assertEqual(f.read(), "Hello World!")
+        self.assertEqual(f.read().decode("UTF-8"), "Hello World!")
         f.close()
         os.remove('test.txt')
         os.remove('test1.txt')

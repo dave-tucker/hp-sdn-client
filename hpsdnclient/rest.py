@@ -128,7 +128,10 @@ class RestClient(object):
             with open(filename, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=1024):
                     if chunk:  # filter out keep-alive new chunks
-                        f.write(chunk)
+                        if type(chunk) == bytes:
+                            f.write(chunk)
+                        else:
+                            f.write(chunk.encode("UTF-8"))
                         f.flush()
             return filename
         else:
