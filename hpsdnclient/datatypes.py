@@ -420,7 +420,7 @@ class Flow(JsonObject):
                     new_action = {}
                     keys = []
                     for d in data[key]:
-                        keys.extend([(k, v) for k, v in d.iteritems()])
+                        keys.extend([(k, v) for k, v in d.items()])
                     num_keys = range(len(keys))
 
                     duplicates = {}
@@ -432,7 +432,7 @@ class Flow(JsonObject):
                         else:
                             duplicates[key_name] = [i]
 
-                    for k, v in duplicates.iteritems():
+                    for k, v in duplicates.items():
                         if len(v) > 1:
                             new_action[k] = [keys[i][1] for i in v]
                         else:
