@@ -48,7 +48,7 @@ setup(
         'Programming Language :: Python',
         'Natural Language :: English',
         'Operating System :: OS Independent',
-        'Topic :: Software Development :: Libraries :: Python  Modules'
+        'Topic :: Software Development :: Libraries :: Python Modules'
     ],
     keywords=['hp', 'sdn', 'rest', 'api'],
     url='https://github.com/dave-tucker/hp-sdn-client',
