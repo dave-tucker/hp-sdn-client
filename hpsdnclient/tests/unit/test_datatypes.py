@@ -24,15 +24,16 @@ class JsonObjectTests(unittest.TestCase):
 
     def setUp(self):
         self.json_object = datatypes.JsonObject()
-        self.json_object.a = 1
-        self.json_object.b = [2, 3, 4]
+        self.json_object.a = 0
+        self.json_object.b = [1, 2, 3, 4]
         self.json_object.c = {"d": 5, "e": "six", "f": [7, "eight", 9]}
         metric_app = datatypes.JsonObjectFactory.create('MetricApp',
                                                         test_data.METRIC_APP)
         self.json_object.metric_app = metric_app
         self.string = ('{\n'
-                       '    "a": 1,\n'
+                       '    "a": 0,\n'
                        '    "b": [\n'
+                       '        1,\n'
                        '        2,\n'
                        '        3,\n'
                        '        4\n'
@@ -59,17 +60,17 @@ class JsonObjectTests(unittest.TestCase):
 
     def test_to_dict(self):
         result = self.json_object.to_dict()
-        expected = {"a": 1,
-                    "b": [2, 3, 4],
+        expected = {"a": 0,
+                    "b": [1, 2, 3, 4],
                     "c": {"d": 5, "e": "six", "f": [7, "eight", 9]},
                     "metric_app": {
                         "app_id": "com.hp.sdn.cloud",
                         "app_name": "HP VAN SDN Cloud Controller",
                     }
-        }
+                    }
         self.assertEquals(result, expected)
 
-#Omitted test case for test_factory....
+# Omitted test case for test_factory....
 #factory method is tested by the child classes in the suite below
 
 class FactoryTests(unittest.TestCase):

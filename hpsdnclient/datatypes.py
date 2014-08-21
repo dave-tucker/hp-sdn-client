@@ -262,7 +262,7 @@ class JsonObject(object):
                       if not callable(getattr(self, attr))
                       and not attr.startswith("__")]
         for attr in attributes:
-            if getattr(self, attr):
+            if getattr(self, attr) is not None:
                 value = getattr(self, attr)
                 if isinstance(value, list):
                     tmp = []
