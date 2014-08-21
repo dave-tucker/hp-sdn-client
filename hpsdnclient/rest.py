@@ -103,7 +103,7 @@ class RestClient(object):
                 if not k == 'version':
                     key = k
 
-            if not key in PLURALS:
+            if key not in PLURALS:
                 try:
                     datatype = JSON_MAP[key]
                 except KeyError:

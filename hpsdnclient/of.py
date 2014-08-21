@@ -15,7 +15,7 @@
 #   limitations under the License.
 
 import json
-#Python3 compatibility
+# Python3 compatibility
 try:
     import urllib.parse as urllib
 except ImportError:

@@ -239,7 +239,7 @@ class JsonObjectFactory(object):
             if key in KEYWORDS:
                 new_key = key + "_"
                 data[new_key] = data.pop(key)
-        if not id in JsonObjectFactory.factories:
+        if id not in JsonObjectFactory.factories:
             JsonObjectFactory.add_factory(id, eval(id))
         return JsonObjectFactory.factories[id].factory(data)
 
@@ -310,7 +310,7 @@ class JsonObject(object):
         else:
             return True
 
-### OpenFlow ###
+# OpenFlow #
 
 
 class Datapath(JsonObject):
@@ -731,7 +731,7 @@ class GroupStats(JsonObject):
         self.duration_nsec = kwargs.get('duration_nsec', None)
         self.bucket_stats = kwargs.get('bucket_stats', [])
 
-### Network Services ###
+# Network Services #
 
 
 class Cluster(JsonObject):
@@ -772,7 +772,7 @@ class LinkInfo(JsonObject):
         self.dst_port_state = kwargs.get('d_pt_state', [])
         self.link_type = kwargs.get('link_type', None)
 
-#lldp_suppressed == list of LldpProperties
+# lldp_suppressed == list of LldpProperties
 
 
 class LldpProperties(JsonObject):
@@ -892,7 +892,7 @@ class NodeMessage(JsonObject):
         self.dpid = kwargs.get('dpid', None)
         self.port = kwargs.get('operation', None)
 
-#Lldp_sync == a list of LldpProperties
+# Lldp_sync == a list of LldpProperties
 
 
 class Btree(JsonObject):
@@ -944,7 +944,7 @@ class Cost(JsonObject):
         self.dpid = kwargs.get("dpid", None)
         self.cost = kwargs.get("cost", None)
 
-### Core ###
+# Core #
 
 
 class AuditLogEntry(JsonObject):

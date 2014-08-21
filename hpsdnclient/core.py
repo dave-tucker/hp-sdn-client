@@ -123,17 +123,17 @@ class CoreMixin(ApiBase):
         r = self.restclient.post(url, action)
         raise_errors(r)
 
-    #Config data structure is wild! Need to find a way to tame it
+    # Config data structure is wild! Need to find a way to tame it
     #
-    #def get_configs(self):
+    # def get_configs(self):
     #    """ Get a list of configuration paramters """
     #    pass
     #
-    #def get_config_component(self, component):
+    # def get_config_component(self, component):
     #    #As above
     #    pass
     #
-    #def update_config_component(self, component):
+    # def update_config_component(self, component):
     #    pass
     #
     # def delete_config_component(self, component):

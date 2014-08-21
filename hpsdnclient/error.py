@@ -15,7 +15,7 @@
 #   limitations under the License.
 
 import json
-#Python3 compatibility
+# Python3 compatibility
 try:
     import urllib.parse as urllib
 except ImportError:
@@ -30,7 +30,7 @@ def raise_errors(response):
     elif response.status_code == 500:
         raise_500(response)
     else:
-        #let requests raise the error
+        # let requests raise the error
         response.raise_for_status()
 
 

@@ -3,5 +3,5 @@ nose
 coverage
 mock
 httpretty>=0.8.0
-flake8
+flake8==2.2.2
 sphinx
