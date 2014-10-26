@@ -5,8 +5,11 @@ env:
   - TOXENV=docs
   - TOXENV=pep8
 
-install: 
+install:
   "pip install -r requirements.txt -r test-requirements.txt"
 
-script: 
-  - tox  
+script:
+  - tox
+
+after_success:
+  - coveralls

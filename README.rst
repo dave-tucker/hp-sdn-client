@@ -4,6 +4,8 @@ HP SDN Client
     :target: https://travis-ci.org/dave-tucker/hp-sdn-client
 .. image:: https://badge.fury.io/py/hp-sdn-client.png
     :target: http://badge.fury.io/py/hp-sdn-client
+.. image:: https://coveralls.io/repos/dave-tucker/hp-sdn-client/badge.png
+  :target: https://coveralls.io/r/dave-tucker/hp-sdn-client
 
 **A Python library that makes interaction with the HP SDN Controller REST API easy**
 
