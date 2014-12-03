@@ -572,7 +572,7 @@ class Action(JsonObject):
                 if getattr(self, attr):
                     tmp = {}
                     tmp[attr.__str__()] = getattr(self, attr)
-                    data.append(tmp)
+                    data.insert(0, tmp)
         return data
 
 

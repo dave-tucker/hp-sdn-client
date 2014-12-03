@@ -153,3 +153,16 @@ class TestOfMixin10(ApiTestCase):
         self.api.delete_flows(OF10_DPID, flow)
         self.assertFalse(self._flow_exists(flow))
 
+
+    def test_create_flow_multiple_actions_order(self):
+        match = hpsdnclient.datatypes.Match(eth_type="ipv4",
+                                            ipv4_src="10.0.0.1",
+                                            ipv4_dst="10.0.0.22",
+                                            ip_proto="tcp",
+                                            tcp_dst=80)
+        outputvlan13and1 = hpsdnclient.datatypes.Action(set_field={"vlan_vid":13}, output=1)
+        flow = hpsdnclient.datatypes.Flow(priority=12345, idle_timeout=30,
+                                          match=match, actions=outputvlan13and1)
+
+        data = flow.to_json_string()
+        self.assertIn('"vlan_vid": 13\n            }\n        },\n        {\n            "output": 1', data)
