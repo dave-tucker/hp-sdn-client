@@ -1,34 +1,73 @@
-# Compiled python modules.
-*.pyc
+### https://raw.github.com/github/gitignore/master/Python.gitignore
 
-# Setuptools build and distribution folder.
-/dist/
-/build/
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
 
-# Python egg metadata, regenerated from source files by setuptools.
-/*.egg-info
+# C extensions
+*.so
 
-# Sublime text project files
-*.sublime-project
-*.sublime-workspace
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
 
-#Tox
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
 .tox/
-
-#venv
-.venv/
-
-#DS Store files
-.DS_Store
-
-#Nosetests XML report
-nosetests.xml
-
-#PyCharm project
-.idea/
-
-#Coverage
 .coverage
+.cache
+nosetests.xml
+coverage.xml
 
-#Sphinx build dir
-docs/build
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+
+### https://raw.github.com/github/gitignore/master/Global/Virtualenv.gitignore
+
+# Virtualenv
+# http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
+.Python
+[Bb]in
+[Ii]nclude
+[Ll]ib
+[Ss]cripts
+pyvenv.cfg
+
+### Local
+
+# Files created from tests...
+hm-1.0.0-SNAPSHOT.zip

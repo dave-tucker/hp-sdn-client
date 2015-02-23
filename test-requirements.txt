@@ -1,6 +1,6 @@
 tox
 nose
-coverage
+coverage==3.7.1
 mock
 httpretty>=0.8.0
 flake8==2.2.2
