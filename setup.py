@@ -16,18 +16,11 @@
 
 import os
 from setuptools import setup
-from pip.req import parse_requirements
 
 # Get version from hpsdclient.version in a PY3 safe manner
 with open("hpsdnclient/version.py") as f:
     code = compile(f.read(), "hpsdnclient/version.py", 'exec')
     exec(code)
-
-
-def requires(filename):
-    requirements = parse_requirements(os.path.abspath(filename))
-    return [str(r.req) for r in requirements]
-
 
 def readme():
     with open('README.rst') as f:
@@ -57,8 +50,19 @@ setup(
     license='Apache License, Version 2.0',
     packages=['hpsdnclient'],
     include_package_data=True,
-    install_requires=requires('requirements.txt'),
+    install_requires=[
+        "distribute",
+        "requests"
+    ],
     test_suite='nose.collector',
-    tests_require=requires('test-requirements.txt'),
+    tests_require=[
+        "tox",
+        "nose",
+        "coverage==3.7.1",
+        "mock",
+        "httpretty>=0.8.0",
+        "flake8==2.2.2",
+        "python-coveralls"
+    ],
     zip_safe=False,
 )
