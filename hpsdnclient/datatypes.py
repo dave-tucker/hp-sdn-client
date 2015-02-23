@@ -259,8 +259,8 @@ class JsonObject(object):
     def to_dict(self):
         data = {}
         attributes = [attr for attr in dir(self)
-                      if not callable(getattr(self, attr))
-                      and not attr.startswith("__")]
+                      if not callable(getattr(self, attr)) and
+                      not attr.startswith("__")]
         for attr in attributes:
             if getattr(self, attr) is not None:
                 value = getattr(self, attr)
@@ -297,8 +297,8 @@ class JsonObject(object):
 
     def __eq__(self, other):
         attributes = [attr for attr in dir(self)
-                      if not callable(getattr(self, attr))
-                      and not attr.startswith("__")]
+                      if not callable(getattr(self, attr)) and
+                      not attr.startswith("__")]
         for attr in attributes:
             try:
                 if self.__getattribute__(attr) == other.__getattribute__(attr):
@@ -508,8 +508,8 @@ class Match(JsonObject):
         """
         data = []
         attributes = [attr for attr in dir(self)
-                      if not callable(getattr(self, attr))
-                      and not attr.startswith("__")]
+                      if not callable(getattr(self, attr)) and
+                      not attr.startswith("__")]
         for attr in attributes:
             if getattr(self, attr):
                 tmp = {}
@@ -554,8 +554,8 @@ class Action(JsonObject):
         """
         data = []
         attributes = [attr for attr in dir(self)
-                      if not callable(getattr(self, attr))
-                      and not attr.startswith("__")]
+                      if not callable(getattr(self, attr)) and
+                      not attr.startswith("__")]
         for attr in attributes:
             if attr == "output":
                 output = getattr(self, attr)
