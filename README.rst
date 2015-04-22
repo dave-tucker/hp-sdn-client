@@ -29,6 +29,13 @@ To use the library::
     api.get_datapaths()
 
 
+Running with Docker
+-------------------
+
+To run an interactive python prompt using Docker::
+
+    docker run -it davetucker/hp-sdn-client
+
 Sample Application
 ------------------
 
